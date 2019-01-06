@@ -1,24 +1,27 @@
-var mongoose = require('mongoose'),
-    encryption = require('../../utilities/cripto');
+const mongoose = require('mongoose');
 
-module.exports.init = function () {
-  var userSchema = new mongoose.Schema({
-      username: { type: String, require: '{PATH} is required', unique: true },
-      salt: String,
-      hashPass: String,
-      roles: [String]
+const encryption = require('../../utilities/cripto');
+
+module.exports.init = () => {
+  const userSchema = new mongoose.Schema({
+    username: { type: String, require: '{PATH} is required', unique: true },
+    salt: String,
+    hashPass: String,
+    roles: [String]
   });
-  
+
   userSchema.method({
-      authenticate: function(password) {
-          if (encryption.generateHashedPassword(this.salt, password) === this.hashPass) {
-              return true;
-          }
-          else {
-              return false;
-          }
+    authenticate(password) {
+      if (
+        encryption.generateHashedPassword(this.salt, password) === this.hashPass
+      ) {
+        return true;
       }
+
+      return false;
+    }
   });
 
-  var User = mongoose.model('User', userSchema);
+  // eslint-disable-next-line prefer-const, no-unused-vars
+  let User = mongoose.model('User', userSchema);
 };

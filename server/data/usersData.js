@@ -1,11 +1,11 @@
-var User = require('mongoose').model('User');
+const User = require('mongoose').model('User');
 
 module.exports = {
-  createUser: function (user, callback) {
+  createUser(user, callback) {
     User.create(user, callback);
   },
-  
-  updateUser: function (query, user, callback) {
-      User.update(query, user, callback);
+
+  updateUser(query, user, callback) {
+    User.update(query, user, callback);
   }
 };

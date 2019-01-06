@@ -1,22 +1,23 @@
-var mongoose = require('mongoose'),
-  UserModel = require('../data/models/User');
+const mongoose = require('mongoose');
 
-module.exports = function(config) {
-    mongoose.connect(config.db);
-    var db = mongoose.connection;
+const UserModel = require('../data/models/User');
 
-    db.once('open', function(err) {
-        if (err) {
-            console.log('Database could not be opened: ' + err);
-            return;
-        }
+module.exports = config => {
+  mongoose.connect(config.db);
+  const db = mongoose.connection;
 
-        console.log('Database up and running...')
-    });
+  db.once('open', err => {
+    if (err) {
+      console.log(`Database could not be opened: ${err}`);
+      return;
+    }
 
-    db.on('error', function(err){
-        console.log('Database error: ' + err);
-    });
+    console.log('Database up and running...');
+  });
 
-    UserModel.init();
+  db.on('error', err => {
+    console.log(`Database error: ${err}`);
+  });
+
+  UserModel.init();
 };
