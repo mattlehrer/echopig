@@ -9,7 +9,7 @@ module.exports = function(app, config) {
     app.set('views', config.rootPath + '/server/views');
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded( {extended: true} ));
-    app.use(session({secret: '56950fe494af8e88204adf6d', resave: true, saveUninitialized: true}));
+    app.use(session({secret: '124 10003', resave: true, saveUninitialized: true}));
 
     app.use(passport.initialize());
     app.use(passport.session());
