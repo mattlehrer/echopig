@@ -3,13 +3,14 @@ const crypto = require('bcrypt');
 const saltRounds = 10;
 
 module.exports = {
-  async generateSalt() {
-    return crypto.genSalt(saltRounds);
+  // TODO switch to async - not sure why I can't get it to work
+  generateSalt() {
+    return crypto.genSaltSync(saltRounds);
   },
-  async generateHashedPassword(salt, pwd) {
-    return crypto.hash(pwd, salt);
+  generateHashedPassword(salt, pwd) {
+    return crypto.hashSync(pwd, salt);
   },
-  async compareHashedPasswords(plainText, hash) {
-    return crypto.compare(plainText, hash);
+  compareHashedPasswords(plainText, hash) {
+    return crypto.compareSync(plainText, hash);
   }
 };
