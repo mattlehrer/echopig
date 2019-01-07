@@ -3,13 +3,13 @@ const crypto = require('bcrypt');
 const saltRounds = 10;
 
 module.exports = {
-  generateSalt() {
-    return crypto.genSaltSync(saltRounds);
+  async generateSalt() {
+    return crypto.genSalt(saltRounds);
   },
-  generateHashedPassword(salt, pwd) {
-    return crypto.hashSync(pwd, salt);
+  async generateHashedPassword(salt, pwd) {
+    return crypto.hash(pwd, salt);
   },
-  compareHashedPasswords(plainText, hash) {
-    return crypto.compareSync(plainText, hash);
+  async compareHashedPasswords(plainText, hash) {
+    return crypto.compare(plainText, hash);
   }
 };
