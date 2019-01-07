@@ -2,7 +2,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
+const mongoose = require('mongoose');
 const auth = require('./auth');
 
 module.exports = (app, config) => {
@@ -11,7 +13,21 @@ module.exports = (app, config) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(
-    session({ secret: '124 10003', resave: true, saveUninitialized: true })
+    session({
+      store: new MongoStore({
+        mongooseConnection: mongoose.connection,
+        collection: 'epSessions'
+      }),
+      cookie: {
+        httpOnly: true,
+        secure: false,
+        signed: true,
+        maxAge: 1000 * 60 * 60 * 24 * 30 // 30 days
+      },
+      secret: '124 10003',
+      resave: false,
+      saveUninitialized: true
+    })
   );
 
   app.use(passport.initialize());

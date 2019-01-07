@@ -1,5 +1,4 @@
 const auth = require('./auth');
-
 const controllers = require('../controllers');
 
 module.exports = app => {

@@ -8,4 +8,9 @@ module.exports = {
     db: 'mongodb://localhost/echopig',
     port: process.env.PORT || 9001
   }
+  // , production: {
+  //   rootPath,
+  //   db: 'mongodb://localhost/echopig',
+  //   port: process.env.PORT || 9001
+  // }
 };

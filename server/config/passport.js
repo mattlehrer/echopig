@@ -1,8 +1,6 @@
 /* eslint-disable consistent-return */
 const passport = require('passport');
-
 const LocalPassport = require('passport-local');
-
 const User = require('mongoose').model('User');
 
 module.exports = () => {

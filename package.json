@@ -7,8 +7,10 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "bcrypt": "^3.0.3",
     "body-parser": "^1.14.2",
     "connect-busboy": "0.0.2",
+    "connect-mongo": "^2.0.3",
     "cookie-parser": "~1.4.0",
     "express": "^4.13.3",
     "express-session": "^1.12.1",
@@ -25,8 +27,6 @@
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jest": "^22.1.2",
     "eslint-plugin-prettier": "^3.0.1",
-    "jest": "^23.6.0",
-    "jest-cli": "^23.6.0",
     "prettier": "^1.15.3"
   }
 }

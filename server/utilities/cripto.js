@@ -1,11 +1,15 @@
-const crypto = require('crypto');
+const crypto = require('bcrypt');
+
+const saltRounds = 10;
 
 module.exports = {
   generateSalt() {
-    return crypto.randomBytes(128).toString('base64');
+    return crypto.genSaltSync(saltRounds);
   },
   generateHashedPassword(salt, pwd) {
-    const hmac = crypto.createHmac('sha1', salt);
-    return hmac.update(pwd).digest('hex');
+    return crypto.hashSync(pwd, salt);
+  },
+  compareHashedPasswords(plainText, hash) {
+    return crypto.compareSync(plainText, hash);
   }
 };

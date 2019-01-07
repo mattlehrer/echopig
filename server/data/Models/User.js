@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const encryption = require('../../utilities/cripto');
 
 module.exports.init = () => {
@@ -12,13 +11,7 @@ module.exports.init = () => {
 
   userSchema.method({
     authenticate(password) {
-      if (
-        encryption.generateHashedPassword(this.salt, password) === this.hashPass
-      ) {
-        return true;
-      }
-
-      return false;
+      return encryption.compareHashedPasswords(password, this.hashPass);
     }
   });
 

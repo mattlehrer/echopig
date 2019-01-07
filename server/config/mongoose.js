@@ -3,7 +3,13 @@ const mongoose = require('mongoose');
 const UserModel = require('../data/models/User');
 
 module.exports = config => {
-  mongoose.connect(config.db);
+  mongoose.Promise = global.Promise;
+  mongoose.connect(
+    config.db,
+    {
+      useMongoClient: true
+    }
+  );
   const db = mongoose.connection;
 
   db.once('open', err => {

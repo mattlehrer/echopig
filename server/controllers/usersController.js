@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 const encryption = require('../utilities/cripto');
-
 const usersData = require('../data/usersData');
 
 module.exports = {
