@@ -4,9 +4,11 @@ const encryption = require('../../utilities/cripto');
 module.exports.init = () => {
   const userSchema = new mongoose.Schema({
     username: { type: String, require: '{PATH} is required', unique: true },
+    normalizedUsername: { type: String, unique: true },
     salt: String,
     hashPass: String,
-    email: { type: String, unique: true },
+    email: String,
+    normalizedEmail: { type: String, unique: true },
     roles: [String]
   });
 

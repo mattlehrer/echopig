@@ -1,7 +1,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
+const validator = require('validator');
+
 const encryption = require('../utilities/cripto');
 const usersData = require('../data/usersData');
+const reservedNames = require('../utilities/reserved-names').reserved;
 
 module.exports = {
   getRegister(req, res, next) {
@@ -14,8 +17,18 @@ module.exports = {
   createUser(req, res, next) {
     const newUserData = req.body;
 
-    if (newUserData.password !== newUserData.confirmPassword) {
-      req.session.error = 'Passwords do not match!';
+    if (!validator.isAlphanumeric(newUserData.username)) {
+      req.session.error =
+        'Please enter a username using only letters and numbers.';
+      res.redirect('/register');
+    } else if (newUserData.password !== newUserData.confirmPassword) {
+      req.session.error = 'Passwords do not match. Please try again.';
+      res.redirect('/register');
+    } else if (validator.isIn(newUserData.username, reservedNames)) {
+      req.session.error = 'That username is reserved. Please try again.';
+      res.redirect('/register');
+    } else if (!validator.isEmail(newUserData.email)) {
+      req.session.error = 'Please enter a valid email address.';
       res.redirect('/register');
     } else {
       newUserData.salt = encryption.generateSalt();
@@ -23,9 +36,13 @@ module.exports = {
         newUserData.salt,
         newUserData.password
       );
+      newUserData.normalizedEmail = validator.normalizeEmail(newUserData.email);
+      newUserData.normalizedUsername = newUserData.username.toLowerCase();
+      // create secret email for posting
+
       usersData.createUser(newUserData, (err, user) => {
         if (err) {
-          req.session.error = 'Username exists!';
+          req.session.error = 'That username is taken. Please try again.';
           res.redirect('/register');
           return;
         }
