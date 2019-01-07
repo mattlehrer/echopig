@@ -6,7 +6,7 @@ module.exports.init = () => {
     username: { type: String, require: '{PATH} is required', unique: true },
     salt: String,
     hashPass: String,
-    // TODO add email
+    email: { type: String, unique: true },
     roles: [String]
   });
 

@@ -1,9 +1,9 @@
 {
-    "name": "echopig2",
-    "description": "personal podcast feed service",
-    "version": "0.0.0",
-    "dependencies": {
-        "bootstrap": "~3.3.6",
-        "jquery": "~2.1.4"
-    }
+  "name": "echopig",
+  "description": "personal podcast feed service",
+  "version": "0.0.0",
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "jquery": "~2.1.4"
+  }
 }
