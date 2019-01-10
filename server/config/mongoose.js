@@ -7,9 +7,7 @@ module.exports = config => {
   mongoose.Promise = global.Promise;
   mongoose.connect(
     config.db,
-    {
-      useMongoClient: true
-    }
+    { useNewUrlParser: true, useCreateIndex: true }
   );
   const db = mongoose.connection;
 
