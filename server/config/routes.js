@@ -1,6 +1,11 @@
 const auth = require('./auth');
 const controllers = require('../controllers');
 
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) next();
+  else res.redirect('/');
+}
+
 module.exports = app => {
   app.get('/register', controllers.users.getRegister);
   app.post('/register', controllers.users.createUser);
@@ -8,7 +13,7 @@ module.exports = app => {
   app.post('/login', auth.login);
   app.get('/logout', auth.logout);
   app.get('/login', controllers.users.getLogin);
-  app.get('/settings', controllers.users.getSettings);
+  app.get('/settings', ensureAuthenticated, controllers.users.getSettings);
 
   app.post('/post', controllers.episodes.addNewEpisode);
 

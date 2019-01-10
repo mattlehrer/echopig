@@ -1,11 +1,13 @@
-extends layout
+extends ../shared/layout
 
-block content
-	h1 Settings
-	p  Username: #{user}
-	p  Email: #{user_email}
-	p  Send episode recommendations to post+#{tag}@echopig.com  
-		a(href='/postepvcard') (add to contacts)
-	- posts = '/u/'+user
-	p
-		a(href=posts) See your posts
+block main-content
+  h1 Settings
+  p  Username: #{currentUser.username}
+  p  Email: #{currentUser.email}
+  p  Send episode recommendations to 
+    a(href='mailto:post+#{currentUser.postTag}@echopig.com') post+#{currentUser.postTag}@echopig.com
+    span 
+    a(href='/postepvcard') (add to contacts)
+  - posts = '/u/'+currentUser.username
+  p
+    a(href=posts) See your posts
