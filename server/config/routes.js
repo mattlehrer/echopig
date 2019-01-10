@@ -8,12 +8,18 @@ module.exports = app => {
   app.post('/login', auth.login);
   app.get('/logout', auth.logout);
   app.get('/login', controllers.users.getLogin);
+  app.get('/settings', controllers.users.getSettings);
+
+  app.post('/post', controllers.episodes.addNewEpisode);
+
+  // app.get('/u/:username', controllers.users.getUserProfile);
+  // app.get('/rss/:username', controllers.users.getRSSFeed);
 
   app.get('/', (req, res) => {
     res.render('index', { currentUser: req.user });
   });
 
-  app.get('*', (req, res) => {
-    res.render('index', { currentUser: req.user });
-  });
+  // app.get('*', (req, res) => {
+  //   res.render('index', { currentUser: req.user });
+  // });
 };

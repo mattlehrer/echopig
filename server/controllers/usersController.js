@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 const validator = require('validator');
+const nanoid = require('nanoid');
 
 const encryption = require('../utilities/cripto');
 const usersData = require('../data/usersData');
@@ -38,14 +39,17 @@ module.exports = {
       );
       newUserData.normalizedEmail = validator.normalizeEmail(newUserData.email);
       newUserData.normalizedUsername = newUserData.username.toLowerCase();
-      // create secret email for posting
-
+      // create secret email tag for posting
+      newUserData.postTag = nanoid(15);
       usersData.createUser(newUserData, (err, user) => {
         if (err) {
           req.session.error = 'That username is taken. Please try again.';
           res.redirect('/register');
           return;
         }
+
+        // TODO add new user to mailgun mailing list
+        // TODO send welcome email
 
         // eslint-disable-next-line consistent-return, no-shadow
         req.logIn(user, err => {
@@ -92,7 +96,24 @@ module.exports = {
       res.render('users/login');
     }
   },
-  getProfile(req, res, next) {
+  getSettings(req, res, next) {
+    if (!req.user) {
+      res.redirect('/');
+    } else {
+      res.render('users/settings', {
+        currentUser: req.user
+      });
+    }
+  },
+  // TODO
+  getUserProfile(req, res, next) {
+    res.render('users/userProfile', {
+      currentUser: req.user,
+      userToUpdate: req.user
+    });
+  },
+  // TODO
+  getRSSFeed(req, res, next) {
     if (!req.user) {
       res.redirect('/');
     } else {

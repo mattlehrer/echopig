@@ -12,10 +12,14 @@
     "connect-mongo": "^2.0.3",
     "express": "^4.13.3",
     "express-session": "^1.12.1",
+    "got": "^9.5.0",
     "mongoose": "^4.3.4",
+    "nanoid": "^2.0.0",
+    "node-fetch": "^2.3.0",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pug": "^2.0.3",
+    "simple-get": "^3.0.3",
     "validator": "^10.10.0"
   },
   "devDependencies": {

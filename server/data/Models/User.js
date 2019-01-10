@@ -9,6 +9,7 @@ module.exports.init = () => {
     hashPass: String,
     email: String,
     normalizedEmail: { type: String, unique: true },
+    postTag: { type: String, unique: true },
     roles: [String]
   });
 
@@ -18,6 +19,6 @@ module.exports.init = () => {
     }
   });
 
-  // eslint-disable-next-line prefer-const, no-unused-vars
-  let User = mongoose.model('User', userSchema);
+  // eslint-disable-next-line no-unused-vars
+  const User = mongoose.model('User', userSchema);
 };

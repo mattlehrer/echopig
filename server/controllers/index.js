@@ -1,5 +1,7 @@
 const UsersController = require('./usersController');
+const EpisodesController = require('./episodesController');
 
 module.exports = {
-  users: UsersController
+  users: UsersController,
+  episodes: EpisodesController
 };

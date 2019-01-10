@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const UserModel = require('../data/models/User');
+const EpisodeModel = require('../data/models/Episode');
 
 module.exports = config => {
   mongoose.Promise = global.Promise;
@@ -26,4 +27,5 @@ module.exports = config => {
   });
 
   UserModel.init();
+  EpisodeModel.init();
 };

@@ -1,0 +1,11 @@
+extends layout
+
+block content
+	h1 Settings
+	p  Username: #{user}
+	p  Email: #{user_email}
+	p  Send episode recommendations to post+#{tag}@echopig.com  
+		a(href='/postepvcard') (add to contacts)
+	- posts = '/u/'+user
+	p
+		a(href=posts) See your posts
