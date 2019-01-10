@@ -2,8 +2,7 @@
   "extends": [
     "airbnb-base",
     "prettier",
-    "plugin:prettier/recommended",
-    "plugin:pug"
+    "plugin:prettier/recommended"
   ],
   "env": {
     "browser": true,
@@ -18,7 +17,6 @@
     ]
   },
   "plugins": [
-    "prettier",
-    "pug"
+    "prettier"
   ]
 }
