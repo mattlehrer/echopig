@@ -61,6 +61,7 @@ module.exports = {
     // lookup user by tag
     const tag = postJson.recipient.split('@')[0].split('+')[1];
     episodesData.findUsernameByTag(tag, (err, postingUser) => {
+      if (err) throw err;
       const newEpisodeData = {
         postedByUser: postingUser,
         postedAt: postJson.Date,
@@ -86,6 +87,7 @@ module.exports = {
       newEpisodeData.episodeShareURL = inputURL;
       newEpisodeData.comment = strippedText.split(inputURL).join('\n');
 
+      // eslint-disable-next-line no-shadow
       get.concat(inputURL, (err, resp, data) => {
         if (err) throw err;
         let episodeMP3URL;
