@@ -14,6 +14,7 @@ module.exports = app => {
   app.get('/logout', auth.logout);
   app.get('/login', controllers.users.getLogin);
   app.get('/settings', ensureAuthenticated, controllers.users.getSettings);
+  app.get('/vcard', ensureAuthenticated, controllers.users.getVcard);
 
   app.get('/post', controllers.episodes.getNewEpisodeViaWeb);
   app.post(

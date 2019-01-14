@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const express = require('express');
+const favicon = require('serve-favicon');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
@@ -9,6 +10,7 @@ const auth = require('./auth');
 
 module.exports = (app, config) => {
   app.set('view engine', 'pug');
+  app.use(favicon(`${config.rootPath}/public/favicon.ico`));
   app.set('views', `${config.rootPath}/server/views`);
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));

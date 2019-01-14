@@ -2,6 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 const validator = require('validator');
 const nanoid = require('nanoid');
+const vCard = require('vcards-js');
 
 const encryption = require('../utilities/cripto');
 const usersData = require('../data/usersData');
@@ -118,5 +119,27 @@ module.exports = {
         });
       }
     );
+  },
+  getVcard(req, res, next) {
+    if (!req.user) {
+      res.redirect('/');
+    } else {
+      const postVCard = vCard();
+
+      // set properties
+      postVCard.firstName = 'Post To';
+      postVCard.lastName = 'Echopig';
+      postVCard.organization = 'Echopig';
+      postVCard.url = 'http://www.echopig.com';
+      postVCard.email = `post+${req.user.postTag}@echopig.com`;
+      // postVCard.photo.attachFromUrl('/android-chrome-256x256.png');
+
+      // set content-type and disposition including desired filename
+      res.set('Content-Type', 'text/vcard; name="echopig.vcf"');
+      res.set('Content-Disposition', 'inline; filename="echopig.vcf"');
+
+      // send the response
+      res.send(postVCard.getFormattedString());
+    }
   }
 };
