@@ -107,24 +107,16 @@ module.exports = {
     }
   },
   getUserProfile(req, res, next) {
-    usersData.findAllLikesByUser(req.params.username, (err, likes) => {
-      if (err) throw err;
-      res.render('users/userProfile', {
-        currentUser: req.user,
-        profileOfUser: req.params.username,
-        likes
-      });
-    });
-  },
-  // TODO
-  getRSSFeed(req, res, next) {
-    if (!req.user) {
-      res.redirect('/');
-    } else {
-      res.render('profile/profile', {
-        currentUser: req.user,
-        userToUpdate: req.user
-      });
-    }
+    usersData.findAllLikesByUser(
+      req.params.username.toLowerCase(),
+      (err, likes) => {
+        if (err) throw err;
+        res.render('users/userProfile', {
+          currentUser: req.user,
+          profileOfUser: req.params.username,
+          likes
+        });
+      }
+    );
   }
 };

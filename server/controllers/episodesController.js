@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 const validator = require('validator');
 const get = require('simple-get');
+const uuid = require('uuid/v4');
 
 const episodesData = require('../data/episodesData');
 const appHandler = require('./apps');
@@ -29,6 +30,7 @@ module.exports = {
     }
     newEpisodeData.episodeShareURL = postData.shareURL;
     newEpisodeData.comment = postData.comment;
+    newEpisodeData.guid = uuid();
 
     get.concat(postData.shareURL, (err, resp, data) => {
       if (err) throw err;
@@ -86,6 +88,7 @@ module.exports = {
       }
       newEpisodeData.episodeShareURL = inputURL;
       newEpisodeData.comment = strippedText.split(inputURL).join('\n');
+      newEpisodeData.guid = uuid();
 
       // eslint-disable-next-line no-shadow
       get.concat(inputURL, (err, resp, data) => {

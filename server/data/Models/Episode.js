@@ -10,7 +10,8 @@ module.exports.init = () => {
     postBodyPlainText: String,
     comment: String,
     episodeShareURL: String,
-    episodeMP3URL: String
+    episodeMP3URL: String,
+    guid: String
   });
 
   // eslint-disable-next-line no-unused-vars
