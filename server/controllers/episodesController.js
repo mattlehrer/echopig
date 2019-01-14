@@ -6,13 +6,60 @@ const episodesData = require('../data/episodesData');
 const appHandler = require('./apps');
 
 module.exports = {
-  addNewEpisode(req, res, next) {
+  getNewEpisodeViaWeb(req, res, next) {
+    if (!req.user) {
+      res.redirect('/');
+    } else {
+      res.render('episodes/postEpisode', {
+        currentUser: req.user
+      });
+    }
+  },
+  addNewEpisodeViaWeb(req, res, next) {
+    // should send HTTP 201 on success
+    // 401 for unauthorized
+    // 500 on internal failure or 501 for podcast app not implemented
+    const postData = req.body;
+    const newEpisodeData = {
+      postedWithTag: req.user.postTag,
+      postedAt: Date.now()
+    };
+    if (!validator.isURL(postData.shareURL)) {
+      res.status(400).send('No share URL in post');
+    }
+    newEpisodeData.episodeShareURL = postData.shareURL;
+    newEpisodeData.comment = postData.comment;
+
+    get.concat(postData.shareURL, (err, resp, data) => {
+      if (err) throw err;
+      let episodeMP3URL;
+      if (postData.shareURL.search('overcast.fm') !== -1) {
+        episodeMP3URL = appHandler.overcast(data);
+      } else if (postData.shareURL.search('itunes.apple.com') !== -1) {
+        episodeMP3URL = appHandler.podcastsApp(data);
+      } else {
+        req.session.error = 'Podcast app not yet implemented';
+        res.status(501).send(req.session.error);
+      }
+
+      newEpisodeData.episodeMP3URL = episodeMP3URL;
+      // eslint-disable-next-line no-shadow
+      episodesData.addNewEpisode(newEpisodeData, (err, ep) => {
+        if (err) {
+          req.session.error = 'Failed to add episode';
+          res.status(500).send(req.session.error);
+        }
+        res.status(201).redirect(`/u/${req.user.username}`);
+      });
+    });
+  },
+  addNewEpisodeViaMailgun(req, res, next) {
     // should send HTTP 201 on success
     // 401 for unauthorized
     // 500 on internal failure or 501 for podcast app not implemented
     const postJson = req.body;
     const newEpisodeData = {
-      postedViaTag: postJson.recipient.split('@')[0].split('+')[1],
+      postedWithTag: postJson.recipient.split('@')[0].split('+')[1],
       postedAt: postJson.Date,
       postedFromEmail: postJson.sender,
       postSubject: postJson.subject,

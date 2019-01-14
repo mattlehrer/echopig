@@ -15,7 +15,13 @@ module.exports = app => {
   app.get('/login', controllers.users.getLogin);
   app.get('/settings', ensureAuthenticated, controllers.users.getSettings);
 
-  app.post('/post', controllers.episodes.addNewEpisode);
+  app.get('/post', controllers.episodes.getNewEpisodeViaWeb);
+  app.post(
+    '/post',
+    ensureAuthenticated,
+    controllers.episodes.addNewEpisodeViaWeb
+  );
+  app.post('/mailpost', controllers.episodes.addNewEpisodeViaMailgun);
 
   // app.get('/u/:username', controllers.users.getUserProfile);
   // app.get('/rss/:username', controllers.users.getRSSFeed);

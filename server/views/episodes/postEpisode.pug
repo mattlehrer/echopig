@@ -1,0 +1,21 @@
+extends ../shared/layout
+
+block main-content
+	.container
+		.col-md-6.col-md-offset-3
+			.well
+				form(method="post", action="", class='form-horizontal')
+					fieldset
+						legend Post Episode
+						.form-group
+							label(for="shareURL", class='col-md-2 control-label') Share URL
+							.col-md-10
+								input(id="shareURL" class="form-control" type="text" name="shareURL" placeholder="Share URL")
+						.form-group
+							label(for="comment", class='col-md-2 control-label') Comment
+							.col-md-10
+								input(id="comment" class="form-control" type="text" name="comment" placeholder="Comment on the episode")
+						.form-group
+							col-md-10.col-md-offset-2
+								button(type="reset" class="btn btn-default") Cancel
+								button(type="submit" class="btn btn-primary") Submit

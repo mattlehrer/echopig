@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 module.exports.init = () => {
   const episodeSchema = new mongoose.Schema({
-    postedViaTag: String,
+    postedWithTag: String,
     postedAt: Date,
     postedFromEmail: String,
     postSubject: String,
