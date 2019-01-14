@@ -2,33 +2,34 @@ doctype
 html
   head
     title Echopig
-    link(rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css")
-    link(rel="stylesheet" href="/css/app.css")
-  body(ng-app="myApp")
+    link(rel='stylesheet' href='/lib/bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet' href='/css/app.css')
+  body(ng-app='myApp')
     header.navbar.navbar-default
       .container
         .navbar-header
-          a.navbar-brand(href="/") Echopig
+          a.navbar-brand(href='/') Echopig
         .navbar-collapse.collapse
           ul.nav.navbar-nav
             li
-              a(href="/") Home
+              a(href='/') Home
           ul.nav.navbar-nav.navbar-right
             if(currentUser)
               li
-                a(href="/profile") Hello 
+                - profile = '/u/'+currentUser.username
+                a(href=profile) Hello 
                     span#currentUsername #{currentUser.username}   
               li
                 a(href='/post') Post an episode
               li
-                a(href="/settings") Settings  
+                a(href='/settings') Settings  
               li
-                a(href="/logout") Logout   
+                a(href='/logout') Logout   
             else
               li
-                a(href="/register") Register   
+                a(href='/register') Register   
               li
-                a(href="/login") Login   
+                a(href='/login') Login   
     .container
       if (errorMessage)
         .alert.alert-dismissible.alert-danger
