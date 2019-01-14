@@ -23,7 +23,7 @@ module.exports = app => {
   );
   app.post('/mailpost', controllers.episodes.addNewEpisodeViaMailgun);
 
-  // app.get('/u/:username', controllers.users.getUserProfile);
+  app.get('/u/:username', controllers.users.getUserProfile);
   // app.get('/rss/:username', controllers.users.getRSSFeed);
 
   app.get('/', (req, res) => {

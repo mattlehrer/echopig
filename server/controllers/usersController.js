@@ -41,6 +41,7 @@ module.exports = {
       newUserData.normalizedUsername = newUserData.username.toLowerCase();
       // create secret email tag for posting
       newUserData.postTag = nanoid(15);
+      newUserData.signupTime = Date.now();
       usersData.createUser(newUserData, (err, user) => {
         if (err) {
           req.session.error = 'That username is taken. Please try again.';
@@ -105,11 +106,14 @@ module.exports = {
       });
     }
   },
-  // TODO
   getUserProfile(req, res, next) {
-    res.render('users/userProfile', {
-      currentUser: req.user,
-      userToUpdate: req.user
+    usersData.findAllLikesByUser(req.params.username, (err, likes) => {
+      if (err) throw err;
+      res.render('users/userProfile', {
+        currentUser: req.user,
+        profileOfUser: req.params.username,
+        likes
+      });
     });
   },
   // TODO

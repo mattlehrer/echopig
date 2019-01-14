@@ -1,0 +1,24 @@
+extends ../shared/layout
+
+block main-content
+  h2 #{profileOfUser}
+    //- p User since: #{profileOfUser}
+    //- p Liked: #{posts}
+    p
+      - feed = '/rss/'+profileOfUser
+      a(href=feed) RSS feed
+    br
+    if likes.length > 0
+      table.likes
+        tr
+          th.description Episode
+          th.date Posted
+
+        each ep in likes
+          tr
+            td
+              if ep.comment
+                a(href=ep.episodeMP3URL) #{ep.comment}
+              else
+                a(href=ep.episodeMP3URL) #{ep.episodeMP3URL}
+            td= new Date(Number(ep.postedAt)).toLocaleString()

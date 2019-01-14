@@ -10,6 +10,7 @@ module.exports.init = () => {
     email: String,
     normalizedEmail: { type: String, unique: true },
     postTag: { type: String, unique: true },
+    signupTime: Date,
     roles: [String]
   });
 
