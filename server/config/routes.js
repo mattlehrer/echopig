@@ -39,6 +39,7 @@ module.exports = app => {
   });
 
   // error handler
+  // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
     // set locals, only providing error in development
     res.locals.message = err.message;
@@ -46,7 +47,7 @@ module.exports = app => {
 
     // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.render('error', { currentUser: req.user });
   });
 
   // app.get('*', (req, res) => {
