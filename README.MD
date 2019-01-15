@@ -2,6 +2,7 @@
 personalized podcast rss feed web app
 
 First run a mongo db with:
+
 `docker run --name echopig-mongo -p 27017:27017 -d mongo`
 
 (TODO: setup docker compose)
