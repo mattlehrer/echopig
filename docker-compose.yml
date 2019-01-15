@@ -5,11 +5,18 @@ services:
     image: mongo
     ports:
      - "27017:27017"
+    volumes:
+     - mongo:/data/db
   web:
     build: .
     image: epwebapp:linux
     ports:
      - "9001:9001"
+    volumes:
+     - .:/usr/src/app
+     - /usr/src/app/node_modules
     depends_on:
       - db
-  
+
+volumes:
+  mongo:

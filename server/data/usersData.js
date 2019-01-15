@@ -11,5 +11,9 @@ module.exports = {
 
   findUsernameByTag(tag, callback) {
     User.findOne({ postTag: tag }, 'username', callback);
+  },
+
+  doesUserExist(username, callback) {
+    User.findOne({ username }, callback);
   }
 };

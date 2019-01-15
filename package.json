@@ -4,7 +4,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon --watch server server.js"
   },
   "dependencies": {
     "bcrypt": "^3.0.3",
@@ -31,6 +32,7 @@
     "eslint-config-prettier": "^3.4.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-prettier": "^3.0.1",
+    "nodemon": "^1.18.9",
     "prettier": "^1.15.3"
   }
 }

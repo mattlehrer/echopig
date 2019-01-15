@@ -109,17 +109,28 @@ module.exports = {
     }
   },
   getUserProfile(req, res, next) {
-    episodesData.findAllLikesByUser(
-      req.params.username.toLowerCase(),
-      (err, likes) => {
-        if (err) throw err;
-        res.render('users/userProfile', {
-          currentUser: req.user,
-          profileOfUser: req.params.username,
-          likes
-        });
+    // does profile requested exist?
+    usersData.doesUserExist(req.params.username, (err, exists) => {
+      if (err) throw err;
+      if (exists === null) {
+        const error = new Error('User Not Found');
+        error.status = 404;
+        next(error);
+      } else {
+        episodesData.findAllLikesByUser(
+          req.params.username.toLowerCase(),
+          // eslint-disable-next-line no-shadow
+          (err, likes) => {
+            if (err) throw err;
+            res.render('users/userProfile', {
+              currentUser: req.user,
+              profileOfUser: req.params.username,
+              likes
+            });
+          }
+        );
       }
-    );
+    });
   },
   getVcard(req, res, next) {
     if (!req.user) {
