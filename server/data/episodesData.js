@@ -14,7 +14,7 @@ module.exports = {
     Episode.deleteOne(query, episode, callback);
   },
 
-  findUsernameByTag(tag, callback) {
-    User.findOne({ postTag: tag }, 'username', callback);
+  findAllLikesByUser(username, callback) {
+    Episode.find({ postedByUser: username }, callback);
   }
 };

@@ -1,0 +1,15 @@
+version: '3'
+services:
+  db:
+    container_name: echopig-mongo
+    image: mongo
+    ports:
+     - "27017:27017"
+  web:
+    build: .
+    image: epwebapp:linux
+    ports:
+     - "9001:9001"
+    depends_on:
+      - db
+  

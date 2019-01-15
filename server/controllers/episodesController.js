@@ -4,6 +4,7 @@ const get = require('simple-get');
 const uuid = require('uuid/v4');
 
 const episodesData = require('../data/episodesData');
+const usersData = require('../data/usersData');
 const appHandler = require('./apps');
 
 module.exports = {
@@ -62,7 +63,7 @@ module.exports = {
     const postJson = req.body;
     // lookup user by tag
     const tag = postJson.recipient.split('@')[0].split('+')[1];
-    episodesData.findUsernameByTag(tag, (err, postingUser) => {
+    usersData.findUsernameByTag(tag, (err, postingUser) => {
       if (err) throw err;
       const newEpisodeData = {
         postedByUser: postingUser,

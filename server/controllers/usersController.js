@@ -6,6 +6,7 @@ const vCard = require('vcards-js');
 
 const encryption = require('../utilities/cripto');
 const usersData = require('../data/usersData');
+const episodesData = require('../data/episodesData');
 const reservedNames = require('../utilities/reserved-names').reserved;
 
 module.exports = {
@@ -108,7 +109,7 @@ module.exports = {
     }
   },
   getUserProfile(req, res, next) {
-    usersData.findAllLikesByUser(
+    episodesData.findAllLikesByUser(
       req.params.username.toLowerCase(),
       (err, likes) => {
         if (err) throw err;

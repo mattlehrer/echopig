@@ -1,5 +1,4 @@
 const User = require('mongoose').model('User');
-const Episode = require('mongoose').model('Episode');
 
 module.exports = {
   createUser(user, callback) {
@@ -10,7 +9,7 @@ module.exports = {
     User.update(query, user, callback);
   },
 
-  findAllLikesByUser(username, callback) {
-    Episode.find({ postedByUser: username }, callback);
+  findUsernameByTag(tag, callback) {
+    User.findOne({ postTag: tag }, 'username', callback);
   }
 };

@@ -1,4 +1,4 @@
-FROM node:10.15.0
+FROM node:lts-jessie
 
 # Create app directory
 WORKDIR /usr/src/app
