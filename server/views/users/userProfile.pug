@@ -1,29 +1,28 @@
 extends ../shared/layout
 
 block main-content
-  .container
-    h3 #{profileOfUser}
-    //- p User since: #{profileOfUser}
-    p Liked: #{likes.length}
-    p
-      - feed = '/rss/'+profileOfUser
-      a(href=feed) RSS feed
-    br
-    if likes.length > 0
-      div.table-responsive
-        table.col
-          tr
-            th.description Episode
-            th.date Posted
+  h3 #{profileOfUser}
+  //- p User since: #{profileOfUser}
+  p Liked: #{likes.length}
+  p
+    - feed = '/rss/'+profileOfUser
+    a(href=feed) RSS feed
+  br
+  if likes.length > 0
+    div.table-responsive
+      table.col
+        tr
+          th.description Episode
+          th.date Posted
 
-          each ep in likes
-            tr
-              td
-                if ep.comment
-                  a(href=ep.episodeMP3URL) #{ep.comment}
-                else
-                  - 
-                    const slashes = ep.episodeMP3URL.split('/');
-                    const filename = slashes[slashes.length-1].split('.mp3')[0];
-                  a(href=ep.episodeMP3URL) #{filename}
-              td= new Date(Number(ep.postedAt)).toLocaleString()
+        each ep in likes
+          tr
+            td
+              if ep.comment
+                a(href=ep.episodeMP3URL) #{ep.comment}
+              else
+                - 
+                  const slashes = ep.episodeMP3URL.split('/');
+                  const filename = slashes[slashes.length-1].split('.mp3')[0];
+                a(href=ep.episodeMP3URL) #{filename}
+            td= new Date(Number(ep.postedAt)).toLocaleString()
