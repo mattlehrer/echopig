@@ -34,7 +34,9 @@ module.exports = {
     newEpisodeData.guid = uuid();
 
     get.concat(postData.shareURL, (err, resp, data) => {
-      if (err) throw err;
+      if (err) {
+        next(err);
+      }
       let episodeMP3URL;
       if (postData.shareURL.search('overcast.fm') !== -1) {
         episodeMP3URL = appHandler.overcast(data);
@@ -64,7 +66,9 @@ module.exports = {
     // lookup user by tag
     const tag = postJson.recipient.split('@')[0].split('+')[1];
     usersData.findUsernameByTag(tag, (err, postingUser) => {
-      if (err) throw err;
+      if (err) {
+        next(err);
+      }
       const newEpisodeData = {
         postedByUser: postingUser,
         postedAt: postJson.Date,
@@ -93,7 +97,9 @@ module.exports = {
 
       // eslint-disable-next-line no-shadow
       get.concat(inputURL, (err, resp, data) => {
-        if (err) throw err;
+        if (err) {
+          next(err);
+        }
         let episodeMP3URL;
         if (inputURL.search('overcast.fm') !== -1) {
           episodeMP3URL = appHandler.overcast(data);

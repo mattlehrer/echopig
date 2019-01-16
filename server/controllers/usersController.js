@@ -111,7 +111,9 @@ module.exports = {
   getUserProfile(req, res, next) {
     // does profile requested exist?
     usersData.doesUserExist(req.params.username, (err, exists) => {
-      if (err) throw err;
+      if (err) {
+        next(err);
+      }
       if (exists === null) {
         const error = new Error('User Not Found');
         error.status = 404;
@@ -121,7 +123,9 @@ module.exports = {
           req.params.username.toLowerCase(),
           // eslint-disable-next-line no-shadow
           (err, likes) => {
-            if (err) throw err;
+            if (err) {
+              next(err);
+            }
             res.render('users/userProfile', {
               currentUser: req.user,
               profileOfUser: req.params.username,
