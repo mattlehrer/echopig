@@ -1,5 +1,8 @@
 extends shared/layout
 block main-content
-	h1= message
-	h2= error.status
-	pre #{error.stack}
+  .container
+    br
+    - errorMessage = error.status + ': ' + message;
+    h2= errorMessage
+    br
+    pre #{error.stack}
