@@ -13,6 +13,7 @@
     "connect-mongo": "^2.0.3",
     "express": "^4.13.3",
     "express-session": "^1.12.1",
+    "moment": "^2.23.0",
     "mongoose": "^5.4.3",
     "nanoid": "^2.0.0",
     "passport": "^0.4",

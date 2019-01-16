@@ -6,6 +6,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const mongoose = require('mongoose');
+const moment = require('moment');
 const auth = require('./auth');
 
 module.exports = (app, config) => {
@@ -35,6 +36,7 @@ module.exports = (app, config) => {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(express.static(`${config.rootPath}/public`));
+  app.locals.moment = moment;
 
   app.use('/admin', (req, res, next) => {
     if (!auth.isInRole('admin')(req, res, next)) {

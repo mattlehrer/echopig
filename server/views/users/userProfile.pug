@@ -25,4 +25,4 @@ block main-content
                   const slashes = ep.episodeMP3URL.split('/');
                   const filename = slashes[slashes.length-1].split('.mp3')[0];
                 a(href=ep.episodeMP3URL) #{filename}
-            td= new Date(Number(ep.postedAt)).toLocaleString()
+            td= moment(ep.postedAt).fromNow()
