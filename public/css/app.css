@@ -1,0 +1,34 @@
+body {
+	color: black;
+	font: "Roboto", Helvetica, Arial, sans-serif;
+}
+
+a {
+	color: #0077FF;
+  text-decoration: none;
+}
+
+.navbar-brand {
+	font-family: "Indie Flower", sans-serif;
+	font-size: 3rem;
+	text-decoration: none;
+	color: black;
+  padding-left: 0px;
+	margin-left: 0px;
+}
+
+th {
+	font-size: 1.8vw;
+}
+
+tr {
+	border-bottom: 1px solid #060606;
+}
+
+td {
+	padding: 8px 8px 8px 0px;
+}
+
+.description {
+	width: 80%;
+}
