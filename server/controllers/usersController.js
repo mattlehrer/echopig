@@ -7,7 +7,7 @@ const vCard = require('vcards-js');
 const encryption = require('../utilities/cripto');
 const usersData = require('../data/usersData');
 const episodesData = require('../data/episodesData');
-const reservedNames = require('../utilities/reserved-names').reserved;
+const reservedNames = require('../utilities/reservedNames').reserved;
 
 module.exports = {
   getRegister(req, res, next) {
