@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 const Podcast = require('podcast');
 
-const usersData = require('../data/usersData');
+const episodesData = require('../data/episodesData');
 
 module.exports = {
   getRSSFeed(req, res, next) {
     const usernameForFeed = req.params.username.toLowerCase();
-    usersData.findAllLikesByUser(usernameForFeed, (err, likes) => {
+    episodesData.findAllLikesByUser(usernameForFeed, (err, likes) => {
       if (err) throw err;
       const mostRecent = likes.length > 0 ? likes[0].postedAt : new Date();
       /* create an rss feed */
