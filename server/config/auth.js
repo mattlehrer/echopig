@@ -14,7 +14,10 @@ module.exports = {
 
       req.logIn(user, err => {
         if (err) return next(err);
-        res.redirect('/');
+        // TODO make the homepage more interesting
+        // until then redirect to user profile on login
+        // res.redirect('/');
+        res.redirect(`/u/${req.user.username}`);
       });
     });
 
