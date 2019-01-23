@@ -17,14 +17,22 @@ module.exports = {
     Episode.findOne({ shareURLs: shareURL }, callback);
   },
 
-  findEpisodeBymp3URL(mp3URL, callback) {
-    Episode.findOne({ mp3URL }, callback);
+  findEpisodeBymp3URL(epData, callback) {
+    Episode.findOne({ mp3URL: epData.mp3URL }, callback);
   },
 
   addPostOfEpisode(post, episode, callback) {
     Episode.findByIdAndUpdate(
       { _id: episode.id },
       { $push: { posts: post } },
+      callback
+    );
+  },
+
+  addShareURLtoEpisode(shareURL, episode, callback) {
+    Episode.findByIdAndUpdate(
+      { _id: episode.id },
+      { $push: { shareURLs: shareURL } },
       callback
     );
   },

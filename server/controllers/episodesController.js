@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable no-unused-vars */
 const validator = require('validator');
 
@@ -16,7 +17,6 @@ module.exports = {
         if (episode !== null) {
           return callback(null, episode);
         }
-        // eslint-disable-next-line no-shadow
         return shareURLHandler(shareURL, (err, episodeData) => {
           if (err) return callback(err, null);
           const podcastData = {
@@ -29,18 +29,37 @@ module.exports = {
           };
           return podcastsController.findOrCreatePodcast(
             podcastData,
-            // eslint-disable-next-line no-shadow
             (err, podcast) => {
               if (err) return callback(err, null);
               const newEpisodeData = episodeData;
               newEpisodeData.podcast = podcast;
-              // always adds a new episode if the share url doesn't exist yet
-              // TODO: check db for mp3 url and update missing fields if we got new info
-              // eslint-disable-next-line no-shadow
-              return episodesData.addNewEpisode(newEpisodeData, (err, ep) => {
-                if (err) return callback(err, null);
-                return callback(null, ep);
-              });
+              return episodesData.findEpisodeBymp3URL(
+                newEpisodeData,
+                (err, existingEpisode) => {
+                  if (err) return callback(err, null);
+                  if (existingEpisode !== null) {
+                    // push new share URL to episode
+                    episodesData.addShareURLtoEpisode(
+                      shareURL,
+                      existingEpisode,
+                      (err, ep) => {
+                        if (err)
+                          console.log(
+                            `Error on share URL add to episode ${ep}`
+                          );
+                      }
+                    );
+                    return callback(null, existingEpisode);
+                  }
+                  return episodesData.addNewEpisode(
+                    newEpisodeData,
+                    (err, newEpisode) => {
+                      if (err) return callback(err, null);
+                      return callback(null, newEpisode);
+                    }
+                  );
+                }
+              );
             }
           );
         });
