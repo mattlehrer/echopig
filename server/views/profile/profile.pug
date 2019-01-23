@@ -5,18 +5,22 @@ block main-content
   p User since: #{relativeTime(profiledUser.createdAt)}
   p Posts: #{profiledUser.posts.length}
   p
-    - feed = '/rss/'+profiledUser.normalizedUsername
-    a(href=feed) RSS feed
-  br
+    a(href=`/rss/${profiledUser.normalizedUsername}`) RSS feed
   if profiledUser.posts.length > 0
-    div.table-responsive
-      table.col
-        tr
-          th.description Episode
-          th.date Posted
-
-        each post in profiledUser.posts
-          tr
-            td
-              a(href=post.episode.mp3URL) !{post.episode.title}
-            td= relativeTime(post.createdAt)
+    .table-responsive
+      table.table
+        thead
+          tr.no-gutters
+            th.border-top-0.col-10.lead Episode
+            th.border-top-0.col-2.lead Posted
+        tbody
+          each post in profiledUser.posts
+            tr.no-gutters
+              td.col-10.border-0
+                strong: a(href=post.episode.mp3URL) !{post.episode.title}
+                strong: span  - 
+                strong: span !{post.episode.podcast.title}
+              td.col-2.border-0= relativeTime(post.createdAt)
+            tr.border-bottom.pb-3
+              td.col-10.border-0.pt-0.pl-0.pr-5 !{post.episode.description}
+              td.col-10.border-0.pt-0 

@@ -16,19 +16,3 @@ a {
   padding-left: 0px;
 	margin-left: 0px;
 }
-
-th {
-	font-size: 1.8vw;
-}
-
-tr {
-	border-bottom: 1px solid #060606;
-}
-
-td {
-	padding: 8px 8px 8px 0px;
-}
-
-.description {
-	width: 80%;
-}
