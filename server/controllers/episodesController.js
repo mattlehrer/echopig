@@ -34,8 +34,8 @@ module.exports = {
               if (err) return callback(err, null);
               const newEpisodeData = episodeData;
               newEpisodeData.podcast = podcast;
-              // TODO: always adds a new episode if the share url doesn't exist yet
-              // check db for mp3 url and update missing fields if we got new info
+              // always adds a new episode if the share url doesn't exist yet
+              // TODO: check db for mp3 url and update missing fields if we got new info
               // eslint-disable-next-line no-shadow
               return episodesData.addNewEpisode(newEpisodeData, (err, ep) => {
                 if (err) return callback(err, null);
