@@ -47,6 +47,9 @@ module.exports = {
       });
     }
   },
+  addPostOfEpisode(post, episode, callback) {
+    episodesData.addPostOfEpisode(post, episode, callback);
+  },
   updateEpisode() {},
   deleteEpisode() {}
 };

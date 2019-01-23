@@ -6,7 +6,6 @@ const vCard = require('vcards-js');
 
 const encryption = require('../utilities/cripto');
 const usersData = require('../data/usersData');
-const episodesData = require('../data/episodesData');
 const reservedNames = require('../utilities/reservedNames').reserved;
 
 module.exports = {
@@ -128,5 +127,11 @@ module.exports = {
       // send the response
       res.send(postVCard.getFormattedString());
     }
+  },
+  findUserByTag(tag, callback) {
+    usersData.findUserByTag(tag, callback);
+  },
+  addPostByUser(post, user, callback) {
+    usersData.addPostByUser(post, user, callback);
   }
 };

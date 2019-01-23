@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-shadow */
 const validator = require('validator');
 const uuid = require('uuid/v4');
 
 const postsData = require('../data/postsData');
-const usersData = require('../data/usersData');
+const usersController = require('./usersController');
 const episodesController = require('./episodesController');
 
 function createPost(postData, cb) {
@@ -13,18 +14,26 @@ function createPost(postData, cb) {
     (err, episode) => {
       if (err) return cb(err, null);
       newPost.episode = episode;
-      // eslint-disable-next-line no-shadow
       return postsData.addNewPost(newPost, (err, post) => {
-        if (err) return cb(err, null);
-        // eslint-disable-next-line no-shadow
-        return usersData.addPostByUser(post, newPost.byUser, (err, user) => {
+        if (err) cb(err, null);
+        // TODO log post
+        // get back to the user quickly with cb first
+        cb(null, post);
+        // but also add post reference to User
+        usersController.addPostByUser(post, newPost.byUser, (err, user) => {
           if (err) {
             console.log(
               `failed to add post ${post} to user ${user}'s posts array`
             );
           }
-          // TODO log post
-          return cb(null, post);
+        });
+        // and add post reference to Episode
+        episodesController.addPostOfEpisode(post, episode, (err, ep) => {
+          if (err) {
+            console.log(
+              `failed to add post ${post} to episode ${episode}'s posts array`
+            );
+          }
         });
       });
     }
@@ -69,7 +78,7 @@ module.exports = {
     const postJson = req.body;
     // lookup user by tag
     const tag = postJson.recipient.split('@')[0].split('+')[1];
-    usersData.findUserByTag(tag, (err, postingUser) => {
+    usersController.findUserByTag(tag, (err, postingUser) => {
       if (err) {
         return next(err);
       }

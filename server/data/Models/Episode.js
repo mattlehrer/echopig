@@ -14,7 +14,12 @@ module.exports.init = () => {
     mp3URL: String,
     releaseDate: Date,
     shareURLs: [String],
-    posts: Number,
+    posts: [
+      {
+        type: 'ObjectId',
+        ref: 'Post'
+      }
+    ],
     duration: Number,
     parentalRating: Number,
     ratingRiaa: Number
