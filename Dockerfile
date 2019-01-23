@@ -14,6 +14,7 @@ RUN npm install
 COPY . .
 
 EXPOSE 9001
+EXPOSE 9229
 
 USER node
 

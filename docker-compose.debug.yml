@@ -12,11 +12,16 @@ services:
     image: epweb:latest
     ports:
      - "9001:9001"
+     - "9229:9229"
     volumes:
      - .:/usr/src/app
      - /usr/src/app/node_modules
     depends_on:
       - db
+    command:
+      - npm
+      - run
+      - dev 
 
 volumes:
   mongo:
