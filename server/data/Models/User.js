@@ -2,17 +2,28 @@ const mongoose = require('mongoose');
 const encryption = require('../../utilities/cripto');
 
 module.exports.init = () => {
-  const userSchema = new mongoose.Schema({
-    username: { type: String, require: '{PATH} is required', unique: true },
-    normalizedUsername: { type: String, unique: true },
-    salt: String,
-    hashPass: String,
-    email: String,
-    normalizedEmail: { type: String, unique: true },
-    postTag: { type: String, unique: true },
-    signupTime: Date,
-    roles: [String]
-  });
+  const userSchema = new mongoose.Schema(
+    {
+      username: { type: String, require: '{PATH} is required' },
+      normalizedUsername: { type: String, unique: true },
+      salt: String,
+      hashPass: String,
+      email: String,
+      normalizedEmail: String,
+      postTag: { type: String, unique: true },
+      posts: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Post',
+          default: []
+        }
+      ],
+      roles: [String]
+    },
+    {
+      timestamps: true
+    }
+  );
 
   userSchema.method({
     authenticate(password) {

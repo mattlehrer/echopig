@@ -16,15 +16,11 @@ module.exports = app => {
   app.get('/settings', ensureAuthenticated, controllers.users.getSettings);
   app.get('/vcard', ensureAuthenticated, controllers.users.getVcard);
 
-  app.get('/post', controllers.episodes.getNewEpisodeViaWeb);
-  app.post(
-    '/post',
-    ensureAuthenticated,
-    controllers.episodes.addNewEpisodeViaWeb
-  );
-  app.post('/mailpost', controllers.episodes.addNewEpisodeViaMailgun);
+  app.get('/post', controllers.posts.getNewPost);
+  app.post('/post', ensureAuthenticated, controllers.posts.addNewPostViaWeb);
+  app.post('/mailpost', controllers.posts.addNewPostViaMailgun);
 
-  app.get('/u/:username', controllers.users.getUserProfile);
+  app.get('/u/:username', controllers.profiles.getProfile);
   app.get('/rss/:username', controllers.rss.getRSSFeed);
 
   app.get('/', (req, res) => {

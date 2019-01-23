@@ -1,127 +1,52 @@
 /* eslint-disable no-unused-vars */
 const validator = require('validator');
-const get = require('simple-get');
-const uuid = require('uuid/v4');
 
 const episodesData = require('../data/episodesData');
-const usersData = require('../data/usersData');
-const appHandler = require('./apps');
+const podcastsController = require('./podcastsController');
+const shareURLHandler = require('./apps');
 
 module.exports = {
-  getNewEpisodeViaWeb(req, res, next) {
-    if (!req.user) {
-      res.redirect('/');
+  findOrCreateEpisodeWithShareURL(shareURL, callback) {
+    if (!validator.isURL(shareURL)) {
+      const err = new Error('Not a URL');
+      callback(err, null);
     } else {
-      res.render('episodes/postEpisode', {
-        currentUser: req.user
-      });
-    }
-  },
-  addNewEpisodeViaWeb(req, res, next) {
-    // should send HTTP 201 on success
-    // 401 for unauthorized
-    // 500 on internal failure or 501 for podcast app not implemented
-    const postData = req.body;
-    const newEpisodeData = {
-      postedByUser: req.user.username,
-      postedAt: Date.now()
-    };
-    if (!validator.isURL(postData.shareURL)) {
-      res.status(400).send('No share URL in post');
-    }
-    newEpisodeData.episodeShareURL = postData.shareURL;
-    newEpisodeData.comment = postData.comment;
-    newEpisodeData.guid = uuid();
-
-    get.concat(postData.shareURL, (err, resp, data) => {
-      if (err) {
-        next(err);
-      }
-      let episodeMP3URL;
-      if (postData.shareURL.search('overcast.fm') !== -1) {
-        episodeMP3URL = appHandler.overcast(data);
-      } else if (postData.shareURL.search('itunes.apple.com') !== -1) {
-        episodeMP3URL = appHandler.podcastsApp(data);
-      } else {
-        req.session.error = 'Podcast app not yet implemented';
-        res.status(501).send(req.session.error);
-      }
-
-      newEpisodeData.episodeMP3URL = episodeMP3URL;
-      // eslint-disable-next-line no-shadow
-      episodesData.addNewEpisode(newEpisodeData, (err, ep) => {
-        if (err) {
-          req.session.error = 'Failed to add episode';
-          res.status(500).send(req.session.error);
+      episodesData.findEpisodeByShareURL(shareURL, (err, episode) => {
+        if (err) return callback(err, null);
+        if (episode !== null) {
+          return callback(null, episode);
         }
-        res.status(201).redirect(`/u/${req.user.username}`);
-      });
-    });
-  },
-  addNewEpisodeViaMailgun(req, res, next) {
-    // should send HTTP 201 on success
-    // 401 for unauthorized
-    // 500 on internal failure or 501 for podcast app not implemented
-    const postJson = req.body;
-    // lookup user by tag
-    const tag = postJson.recipient.split('@')[0].split('+')[1];
-    usersData.findUsernameByTag(tag, (err, postingUser) => {
-      if (err) {
-        next(err);
-      }
-      const newEpisodeData = {
-        postedByUser: postingUser,
-        postedAt: postJson.Date,
-        postedFromEmail: postJson.sender,
-        postSubject: postJson.subject,
-        postBodyHTML: postJson['body-html'],
-        postBodyPlainText: postJson['body-plain']
-      };
-      const strippedText = postJson['stripped-text'];
-      let inputURL;
-      try {
-        inputURL = strippedText
-          .slice(strippedText.indexOf('http'))
-          .split(/\s/)[0]
-          .trim();
-        if (!validator.isURL(inputURL)) {
-          throw new Error('No URL in email');
-        }
-      } catch (error) {
-        res.status(400).send('No share URL in post');
-        // return;
-      }
-      newEpisodeData.episodeShareURL = inputURL;
-      newEpisodeData.comment = strippedText.split(inputURL).join('\n');
-      newEpisodeData.guid = uuid();
-
-      // eslint-disable-next-line no-shadow
-      get.concat(inputURL, (err, resp, data) => {
-        if (err) {
-          next(err);
-        }
-        let episodeMP3URL;
-        if (inputURL.search('overcast.fm') !== -1) {
-          episodeMP3URL = appHandler.overcast(data);
-        } else if (inputURL.search('itunes.apple.com') !== -1) {
-          episodeMP3URL = appHandler.podcastsApp(data);
-        } else {
-          req.session.error = 'Podcast app not yet implemented';
-          res.status(501).send(req.session.error);
-        }
-
-        newEpisodeData.episodeMP3URL = episodeMP3URL;
         // eslint-disable-next-line no-shadow
-        episodesData.addNewEpisode(newEpisodeData, (err, ep) => {
-          if (err) {
-            req.session.error = 'Failed to add episode';
-            res.status(500).send(req.session.error);
-          }
-          res.status(201).send();
+        return shareURLHandler(shareURL, (err, episodeData) => {
+          if (err) return callback(err, null);
+          const podcastData = {
+            title: episodeData.podcastTitle,
+            iTunesID: episodeData.podcastiTunesID,
+            artwork: {
+              unknown: episodeData.podcastArtwork || ''
+            },
+            author: episodeData.podcastAuthor || ''
+          };
+          return podcastsController.findOrCreatePodcast(
+            podcastData,
+            // eslint-disable-next-line no-shadow
+            (err, podcast) => {
+              if (err) return callback(err, null);
+              const newEpisodeData = episodeData;
+              newEpisodeData.podcast = podcast;
+              // TODO: always adds a new episode if the share url doesn't exist yet
+              // check db for mp3 url and update missing fields if we got new info
+              // eslint-disable-next-line no-shadow
+              return episodesData.addNewEpisode(newEpisodeData, (err, ep) => {
+                if (err) return callback(err, null);
+                return callback(null, ep);
+              });
+            }
+          );
         });
       });
-    });
+    }
   },
-  updateEpisode(req, res, next) {},
-  deleteEpisode(req, res, next) {}
+  updateEpisode() {},
+  deleteEpisode() {}
 };

@@ -15,6 +15,7 @@
     "express-session": "^1.12.1",
     "moment": "^2.23.0",
     "mongoose": "^5.4.3",
+    "mongoose-autopopulate": "^0.9.1",
     "nanoid": "^2.0.0",
     "passport": "^0.4",
     "passport-local": "^1.0.0",

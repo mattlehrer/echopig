@@ -1,0 +1,22 @@
+extends ../shared/layout
+
+block main-content
+  h3 #{profiledUser.username}
+  p User since: #{relativeTime(profiledUser.createdAt)}
+  p Posts: #{profiledUser.posts.length}
+  p
+    - feed = '/rss/'+profiledUser.normalizedUsername
+    a(href=feed) RSS feed
+  br
+  if profiledUser.posts.length > 0
+    div.table-responsive
+      table.col
+        tr
+          th.description Episode
+          th.date Posted
+
+        each post in profiledUser.posts
+          tr
+            td
+              a(href=post.episode.mp3URL) !{post.episode.title}
+            td= relativeTime(post.createdAt)

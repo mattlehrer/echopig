@@ -1,14 +1,15 @@
 /* eslint-disable no-unused-vars */
 const Podcast = require('podcast');
 
-const episodesData = require('../data/episodesData');
+const usersData = require('../data/usersData');
 
 module.exports = {
   getRSSFeed(req, res, next) {
     const usernameForFeed = req.params.username.toLowerCase();
-    episodesData.findAllLikesByUser(usernameForFeed, (err, likes) => {
+    usersData.findUserByUsername(usernameForFeed, (err, user) => {
       if (err) throw err;
-      const mostRecent = likes.length > 0 ? likes[0].postedAt : new Date();
+      const { posts } = user;
+      const mostRecent = posts.length > 0 ? posts[0].postedAt : new Date();
       /* create an rss feed */
       const feed = new Podcast({
         title: `${usernameForFeed}'s Favorites`,
@@ -33,20 +34,21 @@ module.exports = {
         itunesExplicit: false
         // itunesImage: 'http://link.to/image.png'
       });
-      likes.forEach(ep => {
+      posts.forEach(post => {
         feed.addItem({
-          title: ep.comment,
-          description: ep.comment,
-          url: ep.episodeShareURL, // link to the post
-          guid: ep.guid,
+          title: post.episode.title,
+          description: post.episode.description,
+          url: post.shareURL, // link to the post
+          guid: post.guid,
           // categories: ['Personal'], // optional - array of item categories
           // author: 'Guest Author', // optional - defaults to feed author property
-          enclosure: { url: ep.episodeMP3URL },
-          date: ep.postedAt,
+          // author: post.episode.podcast.author
+          enclosure: { url: post.episode.mp3URL },
+          date: post.createdAt,
           itunesAuthor: usernameForFeed,
           itunesExplicit: false
-          // itunesSubtitle: ep.comment,
-          // itunesSummary: ep.comment,
+          // itunesSubtitle: post.comment,
+          // itunesSummary: post.comment,
           // itunesDuration: 1234,
           // itunesKeywords: ['javascript', 'podcast']
         });

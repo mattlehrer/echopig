@@ -2,12 +2,14 @@ const mongoose = require('mongoose');
 
 const UserModel = require('../data/models/User');
 const EpisodeModel = require('../data/models/Episode');
+const PodcastModel = require('../data/models/Podcast');
+const PostModel = require('../data/models/Post');
 
 module.exports = config => {
   mongoose.Promise = global.Promise;
   mongoose.connect(
     config.db,
-    { useNewUrlParser: true, useCreateIndex: true }
+    { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }
   );
   const db = mongoose.connection;
 
@@ -26,4 +28,6 @@ module.exports = config => {
 
   UserModel.init();
   EpisodeModel.init();
+  PodcastModel.init();
+  PostModel.init();
 };

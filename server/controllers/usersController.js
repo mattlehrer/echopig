@@ -19,16 +19,15 @@ module.exports = {
   },
   createUser(req, res, next) {
     const newUserData = req.body;
-
     if (!validator.isAlphanumeric(newUserData.username)) {
       req.session.error =
         'Please enter a username using only letters and numbers.';
       res.redirect('/register');
-    } else if (newUserData.password !== newUserData.confirmPassword) {
-      req.session.error = 'Passwords do not match. Please try again.';
-      res.redirect('/register');
     } else if (validator.isIn(newUserData.username, reservedNames)) {
       req.session.error = 'That username is reserved. Please try again.';
+      res.redirect('/register');
+    } else if (newUserData.password !== newUserData.confirmPassword) {
+      req.session.error = 'Passwords do not match. Please try again.';
       res.redirect('/register');
     } else if (!validator.isEmail(newUserData.email)) {
       req.session.error = 'Please enter a valid email address.';
@@ -43,9 +42,9 @@ module.exports = {
       newUserData.normalizedUsername = newUserData.username.toLowerCase();
       // create secret email tag for posting
       newUserData.postTag = nanoid(15);
-      newUserData.signupTime = Date.now();
       usersData.createUser(newUserData, (err, user) => {
         if (err) {
+          console.log(err);
           req.session.error = 'That username is taken. Please try again.';
           res.redirect('/register');
           return;
@@ -107,34 +106,6 @@ module.exports = {
         currentUser: req.user
       });
     }
-  },
-  getUserProfile(req, res, next) {
-    // does profile requested exist?
-    usersData.doesUserExist(req.params.username, (err, exists) => {
-      if (err) {
-        next(err);
-      }
-      if (exists === null) {
-        const error = new Error('User Not Found');
-        error.status = 404;
-        next(error);
-      } else {
-        episodesData.findAllLikesByUser(
-          req.params.username.toLowerCase(),
-          // eslint-disable-next-line no-shadow
-          (err, likes) => {
-            if (err) {
-              next(err);
-            }
-            res.render('users/userProfile', {
-              currentUser: req.user,
-              profileOfUser: req.params.username,
-              likes
-            });
-          }
-        );
-      }
-    });
   },
   getVcard(req, res, next) {
     if (!req.user) {

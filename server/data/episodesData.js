@@ -1,5 +1,4 @@
 const Episode = require('mongoose').model('Episode');
-const User = require('mongoose').model('User');
 
 module.exports = {
   addNewEpisode(episode, callback) {
@@ -14,7 +13,11 @@ module.exports = {
     Episode.deleteOne(query, episode, callback);
   },
 
-  findAllLikesByUser(username, callback) {
-    Episode.find({ postedByUser: username }, callback);
+  findEpisodeByShareURL(shareURL, callback) {
+    Episode.findOne({ shareURLs: shareURL }, callback);
+  },
+
+  findAllEpisodesByPodcast(podcast, callback) {
+    Episode.find({ podcast }, callback);
   }
 };
