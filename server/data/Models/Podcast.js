@@ -2,19 +2,21 @@ const mongoose = require('mongoose');
 
 module.exports.init = () => {
   const podcastSchema = new mongoose.Schema({
-    title: String, // collectionName
-    iTunesID: Number, // collectionId
-    artwork: {
-      url30: String,
-      url60: String,
-      url100: String,
-      url600: String,
-      unknown: String
-    },
-    feedURL: String,
-    author: String, // artistName
-    iTunesURL: String, // collectionViewUrl
-    rating: String, // collectionExplicitness & contentAdvisoryRating
+    iTunesID: { type: Number, alias: 'collectionId' },
+    author: { type: String, alias: 'artistName' },
+    title: { type: String, alias: 'collectionName' },
+    collectionViewUrl: { type: String, alias: 'iTunesURL' },
+    feedUrl: String,
+    artworkUrl30: String,
+    artworkUrl60: String,
+    artworkUrl100: String,
+    collectionExplicitness: String,
+    trackExplicitness: String,
+    country: String,
+    primaryGenreName: String,
+    contentAdvisoryRating: String,
+    artworkUrl600: String,
+    genreIds: [Number],
     genres: [String]
   });
 

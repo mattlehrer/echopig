@@ -5,8 +5,8 @@ module.exports = {
     Podcast.create(podcast, callback);
   },
 
-  updatePodcast(query, podcast, callback) {
-    Podcast.update(query, podcast, callback);
+  updatePodcast(id, podcastData, callback) {
+    Podcast.findByIdAndUpdate(id, podcastData, callback);
   },
 
   deletePodcast(query, podcast, callback) {
