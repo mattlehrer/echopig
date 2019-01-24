@@ -4,7 +4,7 @@ const autopopulate = require('mongoose-autopopulate');
 module.exports.init = () => {
   const postSchema = new mongoose.Schema(
     {
-      byUser: { type: 'ObjectId', ref: 'User' },
+      byUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       email: {
         fromAddress: String,
         subject: String,
@@ -14,7 +14,7 @@ module.exports.init = () => {
       shareURL: String,
       comment: String,
       episode: {
-        type: 'ObjectId',
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Episode',
         autopopulate: true
       },

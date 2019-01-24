@@ -4,7 +4,7 @@ const autopopulate = require('mongoose-autopopulate');
 module.exports.init = () => {
   const episodeSchema = new mongoose.Schema({
     podcast: {
-      type: 'ObjectId',
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Podcast',
       autopopulate: true
     },
@@ -16,7 +16,7 @@ module.exports.init = () => {
     shareURLs: [String],
     posts: [
       {
-        type: 'ObjectId',
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'
       }
     ],
