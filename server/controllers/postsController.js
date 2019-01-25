@@ -6,6 +6,7 @@ const uuid = require('uuid/v4');
 const postsData = require('../data/postsData');
 const usersController = require('./usersController');
 const episodesController = require('./episodesController');
+const mailgun = require('../utilities/mailgun');
 
 function createPost(postData, cb) {
   const newPost = postData;
@@ -76,48 +77,64 @@ module.exports = {
     // 401 for unauthorized
     // 500 on internal failure or 501 for podcast app not implemented
     const postJson = req.body;
-    // lookup user by tag
-    const tag = postJson.recipient.split('@')[0].split('+')[1];
-    usersController.findUserByTag(tag, (err, postingUser) => {
-      if (err) {
-        return next(err);
-      }
-      if (postingUser === null) {
-        const error = 'No such user';
-        return next(error, null);
-      }
-      let inputURL;
-      const strippedText = postJson['stripped-text'];
-      try {
-        inputURL = strippedText
-          .slice(strippedText.indexOf('http'))
-          .split(/\s/)[0]
-          .trim();
-        if (!validator.isURL(inputURL)) {
-          return res.status(400).send('No share URL');
+    // ensure post from mailgun
+    mailgun.confirmSignature(
+      postJson.token,
+      postJson.timestamp,
+      postJson.signature,
+      (err, confirmed) => {
+        if (err) {
+          return next(err);
         }
-      } catch (error) {
-        return res.status(400).send('No share URL');
-      }
+        if (!confirmed) {
+          // Unauthorized
+          return res.status(401).send('Unauthorized access');
+        }
 
-      const newPostData = {
-        byUser: postingUser,
-        shareURL: inputURL,
-        comment: strippedText.split(inputURL).join('\n'),
-        guid: uuid(),
-        email: {
-          fromAddress: postJson.sender,
-          subject: postJson.subject,
-          bodyHTML: postJson['body-html'],
-          bodyPlainText: postJson['body-plain']
-        }
-      };
-      // eslint-disable-next-line no-shadow
-      return createPost(newPostData, (err, post) => {
-        if (err) next(err);
-        res.status(201).send();
-      });
-    });
+        // lookup user by tag
+        const tag = postJson.recipient.split('@')[0].split('+')[1];
+        return usersController.findUserByTag(tag, (err, postingUser) => {
+          if (err) {
+            return next(err);
+          }
+          if (postingUser === null) {
+            const error = 'No such user';
+            return next(error, null);
+          }
+          let inputURL;
+          const strippedText = postJson['stripped-text'];
+          try {
+            inputURL = strippedText
+              .slice(strippedText.indexOf('http'))
+              .split(/\s/)[0]
+              .trim();
+            if (!validator.isURL(inputURL)) {
+              return res.status(400).send('No share URL');
+            }
+          } catch (error) {
+            return res.status(400).send('No share URL');
+          }
+
+          const newPostData = {
+            byUser: postingUser,
+            shareURL: inputURL,
+            comment: strippedText.split(inputURL).join('\n'),
+            guid: uuid(),
+            email: {
+              fromAddress: postJson.sender,
+              subject: postJson.subject,
+              bodyHTML: postJson['body-html'],
+              bodyPlainText: postJson['body-plain']
+            }
+          };
+          // eslint-disable-next-line no-shadow
+          return createPost(newPostData, (err, post) => {
+            if (err) next(err);
+            res.status(201).send();
+          });
+        });
+      }
+    );
   },
   updatePost(req, res, next) {},
   deletePost(req, res, next) {}
