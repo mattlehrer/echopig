@@ -82,6 +82,10 @@ module.exports = {
       if (err) {
         return next(err);
       }
+      if (postingUser === null) {
+        const error = 'No such user';
+        return next(error, null);
+      }
       let inputURL;
       const strippedText = postJson['stripped-text'];
       try {
