@@ -68,7 +68,7 @@ module.exports = (data, cb) => {
   }
   [, episodeData.title] = resultArray;
 
-  // find episode description
+  // find episode description - this needs puppeteer
   regex = new RegExp(/(?:sort-value=")(.*)(?:" class="description)/m);
   resultArray = regex.exec(episodeRow);
   if (resultArray === null) {
