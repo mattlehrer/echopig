@@ -131,6 +131,9 @@ module.exports = {
   findUserByTag(tag, callback) {
     usersData.findUserByTag(tag, callback);
   },
+  findUserByIdWithPosts(id, callback) {
+    usersData.findUserByIdWithPosts(id, callback);
+  },
   addPostByUser(post, user, callback) {
     usersData.addPostByUser(post, user, callback);
   }

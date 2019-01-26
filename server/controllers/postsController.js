@@ -13,30 +13,57 @@ function createPost(postData, cb) {
   episodesController.findOrCreateEpisodeWithShareURL(
     newPost.shareURL,
     (err, episode) => {
-      if (err) return cb(err, null);
-      newPost.episode = episode;
-      return postsData.addNewPost(newPost, (err, post) => {
-        if (err) cb(err, null);
-        // TODO log post
-        // get back to the user quickly with cb first
-        cb(null, post);
-        // but also add post reference to User
-        usersController.addPostByUser(post, newPost.byUser, (err, user) => {
-          if (err) {
-            console.log(
-              `failed to add post ${post} to user ${user}'s posts array`
+      if (err) cb(err, null);
+      // check if user has already posted this episode
+      let alreadyPosted = false;
+      newPost.byUser.posts.forEach(post => {
+        if (!alreadyPosted && episode.id === post.episode.id) {
+          alreadyPosted = true;
+          if (post.updatedAt >= Date.now() - 24 * 60 * 60 * 1000) {
+            // if in the last day, do nothing
+            // cb(null, post);
+            const error = new Error(
+              'You have already posted that episode within the last 24 hours'
+            );
+            error.status = 400;
+            cb(error, null);
+          } else {
+            // update post time to now
+            postsData.updatePost(
+              { $currentDate: { updatedAt: true } },
+              post,
+              (err, post) => {
+                if (err) cb(err, null);
+              }
             );
           }
-        });
-        // and add post reference to Episode
-        episodesController.addPostOfEpisode(post, episode, (err, ep) => {
-          if (err) {
-            console.log(
-              `failed to add post ${post} to episode ${episode}'s posts array`
-            );
-          }
-        });
+        }
       });
+      if (!alreadyPosted) {
+        newPost.episode = episode;
+        postsData.addNewPost(newPost, (err, post) => {
+          if (err) cb(err, null);
+          // TODO log post
+          // get back to the user quickly with cb first
+          cb(null, post);
+          // but also add post reference to User
+          usersController.addPostByUser(post, newPost.byUser, (err, user) => {
+            if (err) {
+              console.log(
+                `failed to add post ${post} to user ${user}'s posts array`
+              );
+            }
+          });
+          // and add post reference to Episode
+          episodesController.addPostOfEpisode(post, episode, (err, ep) => {
+            if (err) {
+              console.log(
+                `failed to add post ${post} to episode ${episode}'s posts array`
+              );
+            }
+          });
+        });
+      }
     }
   );
 }
@@ -61,16 +88,27 @@ module.exports = {
       return res.status(400).send('No share URL in post');
     }
 
-    const newPostData = {
-      byUser: req.user,
-      shareURL: postData.shareURL,
-      comment: postData.comment,
-      guid: uuid()
-    };
-    return createPost(newPostData, (err, post) => {
-      if (err) next(err);
-      res.status(201).redirect(`/u/${req.user.username}`);
-    });
+    return usersController.findUserByIdWithPosts(
+      req.user.id,
+      (err, userWithPosts) => {
+        const newPostData = {
+          byUser: userWithPosts,
+          shareURL: postData.shareURL,
+          comment: postData.comment,
+          guid: uuid()
+        };
+        return createPost(newPostData, (err, post) => {
+          if (err) {
+            if (err.status === 400) {
+              req.session.error = err.message;
+              return res.status(400).redirect(`/u/${req.user.username}`);
+            }
+            return next(err);
+          }
+          return res.status(201).redirect(`/u/${req.user.username}`);
+        });
+      }
+    );
   },
   addNewPostViaMailgun(req, res, next) {
     // should send HTTP 201 on success

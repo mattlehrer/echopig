@@ -10,12 +10,20 @@ module.exports = {
   },
 
   findUserByTag(tag, callback) {
-    User.findOne({ postTag: tag }, callback);
+    User.findOne({ postTag: tag })
+      .populate({ path: 'posts', options: { sort: { updatedAt: -1 } } })
+      .exec(callback);
   },
 
   findUserByUsername(username, callback) {
     User.findOne({ username })
-      .populate({ path: 'posts', options: { sort: { createdAt: -1 } } })
+      .populate({ path: 'posts', options: { sort: { updatedAt: -1 } } })
+      .exec(callback);
+  },
+
+  findUserByIdWithPosts(id, callback) {
+    User.findOne({ _id: id })
+      .populate({ path: 'posts', options: { sort: { updatedAt: -1 } } })
       .exec(callback);
   },
 
