@@ -136,5 +136,8 @@ module.exports = {
   },
   addPostByUser(post, user, callback) {
     usersData.addPostByUser(post, user, callback);
+  },
+  removePostByUser(post, user, callback) {
+    usersData.removePostByUser(post, user, callback);
   }
 };

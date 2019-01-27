@@ -69,6 +69,9 @@ module.exports = {
   addPostOfEpisode(post, episode, callback) {
     episodesData.addPostOfEpisode(post, episode, callback);
   },
+  removePostOfEpisode(postId, callback) {
+    episodesData.removePostOfEpisode(postId, callback);
+  },
   updateEpisode() {},
   deleteEpisode() {}
 };

@@ -19,6 +19,7 @@ module.exports = app => {
   app.get('/post', controllers.posts.getNewPost);
   app.post('/post', ensureAuthenticated, controllers.posts.addNewPostViaWeb);
   app.post('/mailpost', controllers.posts.addNewPostViaMailgun);
+  app.get('/deletePost', ensureAuthenticated, controllers.posts.deletePost);
 
   app.get('/u/:username', controllers.profiles.getProfile);
   app.get('/rss/:username', controllers.rss.getRSSFeed);

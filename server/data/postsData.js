@@ -9,7 +9,7 @@ module.exports = {
     Post.update(query, post, callback);
   },
 
-  deletePost(query, post, callback) {
-    Post.deleteOne(query, post, callback);
+  deletePost(query, callback) {
+    Post.findOneAndDelete(query, callback);
   }
 };

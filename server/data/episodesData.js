@@ -1,4 +1,6 @@
-const Episode = require('mongoose').model('Episode');
+const mongoose = require('mongoose');
+
+const Episode = mongoose.model('Episode');
 
 module.exports = {
   addNewEpisode(episode, callback) {
@@ -25,6 +27,15 @@ module.exports = {
     Episode.findByIdAndUpdate(
       { _id: episode.id },
       { $push: { posts: post } },
+      callback
+    );
+  },
+
+  removePostOfEpisode(postId, callback) {
+    const objId = mongoose.Types.ObjectId(postId);
+    Episode.findOneAndUpdate(
+      { posts: objId },
+      { $pull: { posts: objId } },
       callback
     );
   },

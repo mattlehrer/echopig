@@ -20,7 +20,11 @@ block main-content
                 strong: a(href=post.episode.mp3URL) !{post.episode.title}
                 strong: span  - 
                 strong: span !{post.episode.podcast.title}
-              td.col-2.border-0= relativeTime(post.updatedAt)
+              td.col-2.border-0
+                =relativeTime(post.updatedAt)
+                if (currentUser && profiledUser.id === currentUser.id)
+                  span.px-2
+                  a.btn.btn-outline-danger.btn-sm(href=`/deletePost?p=${post.id}` title='Delete post') x
             tr.border-bottom.pb-3
               td.col-10.border-0.pt-0.pl-0.pr-5 !{post.episode.description}
               td.col-10.border-0.pt-0 

@@ -1,4 +1,6 @@
-const User = require('mongoose').model('User');
+const mongoose = require('mongoose');
+
+const User = mongoose.model('User');
 
 module.exports = {
   createUser(user, callback) {
@@ -35,10 +37,11 @@ module.exports = {
     );
   },
 
-  removePostByUser(post, user, callback) {
+  removePostByUser(postId, user, callback) {
+    const objId = mongoose.Types.ObjectId(postId);
     User.findByIdAndUpdate(
       { _id: user.id },
-      { $pull: { posts: post } },
+      { $pull: { posts: objId } },
       callback
     );
   }
