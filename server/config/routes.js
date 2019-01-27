@@ -3,7 +3,10 @@ const controllers = require('../controllers');
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) next();
-  else res.redirect('/');
+  else {
+    req.session.error = 'Please log in or register for an account.';
+    res.redirect(req.get('Referrer') || '/');
+  }
 }
 
 module.exports = app => {
