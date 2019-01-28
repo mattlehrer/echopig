@@ -28,6 +28,8 @@ module.exports = (app, config) => {
         maxAge: 1000 * 60 * 60 * 24 * 30 // 30 days
       },
       secret: '124 10003',
+      key: 'epCookie',
+      // domain: 'echopig.com',
       resave: false,
       saveUninitialized: true
     })
