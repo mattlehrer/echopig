@@ -23,7 +23,7 @@ module.exports = {
         'Please enter a username using only letters and numbers.';
       res.redirect('/register');
     } else if (validator.isIn(newUserData.username, reservedNames)) {
-      req.session.error = 'That username is reserved. Please try again.';
+      req.session.error = 'That username is unavailable. Please try again.';
       res.redirect('/register');
     } else if (newUserData.password !== newUserData.confirmPassword) {
       req.session.error = 'Passwords do not match. Please try again.';
