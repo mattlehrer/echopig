@@ -1,12 +1,18 @@
 version: '3'
 services:
-  db:
+  mongo:
     container_name: echopig-mongo
     image: mongo
     ports:
      - "27017:27017"
     volumes:
      - mongo:/data/db
+  mongo-express:
+    image: mongo-express
+    ports:
+     - "8081:8081"
+    links:
+     - mongo
   web:
     build: .
     image: epweb:latest
@@ -17,7 +23,7 @@ services:
      - .:/usr/src/app
      - /usr/src/app/node_modules
     depends_on:
-      - db
+      - mongo
     command:
       - npm
       - run
