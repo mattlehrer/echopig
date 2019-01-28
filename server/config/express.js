@@ -2,6 +2,7 @@
 const express = require('express');
 const favicon = require('serve-favicon');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const mongoose = require('mongoose');
@@ -31,6 +32,7 @@ module.exports = (app, config) => {
       saveUninitialized: true
     })
   );
+  app.use(cookieParser());
 
   app.use(passport.initialize());
   app.use(passport.session());

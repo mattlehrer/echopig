@@ -1,3 +1,4 @@
+const csrf = require('csurf');
 const auth = require('./auth');
 const controllers = require('../controllers');
 
@@ -9,27 +10,43 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
+const csrfProtection = csrf({ cookie: true });
+
 module.exports = app => {
-  app.get('/register', controllers.users.getRegister);
-  app.post('/register', controllers.users.createUser);
+  app
+    .route('/register')
+    .get(csrfProtection, controllers.users.getRegister)
+    .post(csrfProtection, controllers.users.createUser);
 
-  app.post('/login', auth.login);
+  app
+    .route('/login')
+    .get(csrfProtection, controllers.users.getLogin)
+    .post(csrfProtection, auth.login);
+
   app.get('/logout', auth.logout);
-  app.get('/login', controllers.users.getLogin);
-  app.get('/settings', ensureAuthenticated, controllers.users.getSettings);
-  app.get('/vcard', ensureAuthenticated, controllers.users.getVcard);
-
-  app.get('/post', controllers.posts.getNewPost);
-  app.post('/post', ensureAuthenticated, controllers.posts.addNewPostViaWeb);
-  app.post('/mailpost', controllers.posts.addNewPostViaMailgun);
-  app.get('/deletePost', ensureAuthenticated, controllers.posts.deletePost);
 
   app.get('/u/:username', controllers.profiles.getProfile);
   app.get('/rss/:username', controllers.rss.getRSSFeed);
+  // app.get('/p/:podcast', controllers.
 
   app.get('/', (req, res) => {
     res.render('index', { currentUser: req.user });
   });
+
+  app.get('/settings', ensureAuthenticated, controllers.users.getSettings);
+  app.get('/vcard', ensureAuthenticated, controllers.users.getVcard);
+
+  app
+    .route('/post')
+    .get(csrfProtection, controllers.posts.getNewPost)
+    .post(
+      ensureAuthenticated,
+      csrfProtection,
+      controllers.posts.addNewPostViaWeb
+    );
+  app.post('/mailpost', controllers.posts.addNewPostViaMailgun);
+
+  app.get('/deletePost', ensureAuthenticated, controllers.posts.deletePost);
 
   // catch 404 and forward to error handler
   app.use((req, res, next) => {

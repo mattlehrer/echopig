@@ -13,7 +13,7 @@ module.exports = {
     if (req.user) {
       res.redirect('/');
     } else {
-      res.render('users/register');
+      res.render('users/register', { csrfToken: req.csrfToken() });
     }
   },
   createUser(req, res, next) {
@@ -94,7 +94,7 @@ module.exports = {
     if (req.user) {
       res.redirect('/');
     } else {
-      res.render('users/login');
+      res.render('users/login', { csrfToken: req.csrfToken() });
     }
   },
   getSettings(req, res, next) {

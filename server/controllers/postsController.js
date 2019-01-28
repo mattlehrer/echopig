@@ -74,7 +74,8 @@ module.exports = {
       res.redirect('/');
     } else {
       res.render('posts/post', {
-        currentUser: req.user
+        currentUser: req.user,
+        csrfToken: req.csrfToken()
       });
     }
   },

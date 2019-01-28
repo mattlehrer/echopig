@@ -12,4 +12,6 @@ block main-content
           label.control-label(for="password") Password
           input(id="password" class="form-control" type="password" name="password" placeholder="Password")
         .form-group
+          input(type="hidden" name="_csrf" value=csrfToken)
+        .form-group
           button(type="submit" class="btn btn-primary") Login

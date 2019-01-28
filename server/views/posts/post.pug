@@ -12,5 +12,7 @@ block main-content
           label.control-label(for="comment") Comment
           input(id="comment" class="form-control" type="text" name="comment" placeholder="Comment on the episode")
         .form-group
+          input(type="hidden" name="_csrf" value=csrfToken)
+        .form-group
           button(type="reset" class="btn btn-default") Cancel
           button(type="submit" class="btn btn-primary") Submit
