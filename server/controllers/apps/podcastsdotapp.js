@@ -39,10 +39,10 @@ module.exports = (data, cb) => {
   }
 
   // find Podcast iTunesID
-  regex = new RegExp(/(?:\/itunes)(\d*)(?:\/)/m);
+  regex = new RegExp(/(?:podcast-id=")(\d*)(?:")/m);
   resultArray = regex.exec(html);
   if (resultArray === null) {
-    throw new Error('no podcast title found');
+    throw new Error('no podcast iTunesID found');
   }
   [, episodeData.podcastiTunesID] = resultArray;
 
