@@ -7,10 +7,11 @@ const PostModel = require('../data/models/Post');
 
 module.exports = config => {
   mongoose.Promise = global.Promise;
-  mongoose.connect(
-    config.db,
-    { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false }
-  );
+  mongoose.connect(config.db, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+  });
   const db = mongoose.connection;
 
   db.once('open', err => {
