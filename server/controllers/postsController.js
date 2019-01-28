@@ -179,25 +179,30 @@ module.exports = {
   deletePost(req, res, next) {
     // req.query.p === post.id
     const postId = req.query.p;
-    postsData.deletePost({ _id: postId, byUser: req.user.id }, err => {
-      if (err) next(err);
-      res.status(200).redirect(`/u/${req.user.username}`);
-      // pull from episode posts array
-      episodesController.removePostOfEpisode(postId, (err, episode) => {
-        if (err) {
-          console.log(
-            `failed to delete post ${postId} from episode ${episode}'s posts array`
-          );
-        }
+    if (typeof postId !== 'string' || !validator.isHexadecimal(postId)) {
+      // invalid post ID
+      res.redirect(req.get('Referrer') || '/');
+    } else {
+      postsData.deletePost({ _id: postId, byUser: req.user.id }, err => {
+        if (err) next(err);
+        res.status(200).redirect(`/u/${req.user.username}`);
+        // pull from episode posts array
+        episodesController.removePostOfEpisode(postId, (err, episode) => {
+          if (err) {
+            console.log(
+              `failed to delete post ${postId} from episode ${episode}'s posts array`
+            );
+          }
+        });
+        // pull from user's posts array
+        usersController.removePostByUser(postId, req.user, (err, user) => {
+          if (err) {
+            console.log(
+              `failed to delete post ${postId} from user ${user}'s posts array`
+            );
+          }
+        });
       });
-      // pull from user's posts array
-      usersController.removePostByUser(postId, req.user, (err, user) => {
-        if (err) {
-          console.log(
-            `failed to delete post ${postId} from user ${user}'s posts array`
-          );
-        }
-      });
-    });
+    }
   }
 };
