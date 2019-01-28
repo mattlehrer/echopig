@@ -18,7 +18,7 @@ module.exports = {
   },
 
   findUserByUsername(username, callback) {
-    User.findOne({ username })
+    User.findOne({ normalizedUsername: username })
       .populate({ path: 'posts', options: { sort: { updatedAt: -1 } } })
       .exec(callback);
   },
