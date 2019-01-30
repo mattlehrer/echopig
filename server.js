@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('./server/config/logging');
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -13,4 +14,4 @@ require('./server/config/passport')();
 require('./server/config/routes')(app);
 
 app.listen(config.port);
-console.log(`Server running on port: ${config.port}`);
+logger.info(`Server running on port: ${config.port}`);

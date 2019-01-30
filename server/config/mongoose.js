@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const logger = require('./logging');
 
 const UserModel = require('../data/models/User');
 const EpisodeModel = require('../data/models/Episode');
@@ -16,15 +17,15 @@ module.exports = config => {
 
   db.once('open', err => {
     if (err) {
-      console.log(`Database could not be opened: ${err}`);
+      logger.error(`Database could not be opened: ${err}`);
       return;
     }
 
-    console.log('Database up and running...');
+    logger.info('Database up and running...');
   });
 
   db.on('error', err => {
-    console.log(`Database error: ${err}`);
+    logger.error(`Database error: ${err}`);
   });
 
   UserModel.init();

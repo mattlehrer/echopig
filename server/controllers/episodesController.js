@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 const validator = require('validator');
 
+const logger = require('../config/logging');
 const episodesData = require('../data/episodesData');
 const podcastsController = require('./podcastsController');
 const shareURLHandler = require('./apps');
@@ -44,7 +45,7 @@ module.exports = {
                       existingEpisode,
                       (err, ep) => {
                         if (err)
-                          console.log(
+                          logger.error(
                             `Error on share URL add to episode ${ep}`
                           );
                       }

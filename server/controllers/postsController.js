@@ -3,6 +3,7 @@
 const validator = require('validator');
 const uuid = require('uuid/v4');
 
+const logger = require('../config/logging');
 const postsData = require('../data/postsData');
 const usersController = require('./usersController');
 const episodesController = require('./episodesController');
@@ -49,7 +50,7 @@ function createPost(postData, cb) {
           // but also add post reference to User
           usersController.addPostByUser(post, newPost.byUser, (err, user) => {
             if (err) {
-              console.log(
+              logger.error(
                 `failed to add post ${post} to user ${user}'s posts array`
               );
             }
@@ -57,7 +58,7 @@ function createPost(postData, cb) {
           // and add post reference to Episode
           episodesController.addPostOfEpisode(post, episode, (err, ep) => {
             if (err) {
-              console.log(
+              logger.error(
                 `failed to add post ${post} to episode ${episode}'s posts array`
               );
             }
@@ -193,7 +194,7 @@ module.exports = {
           // pull from episode posts array
           episodesController.removePostOfEpisode(postId, (err, episode) => {
             if (err) {
-              console.log(
+              logger.error(
                 `failed to delete post ${postId} from episode ${episode}'s posts array`
               );
             }
@@ -201,7 +202,7 @@ module.exports = {
           // pull from user's posts array
           usersController.removePostByUser(postId, req.user, (err, user) => {
             if (err) {
-              console.log(
+              logger.error(
                 `failed to delete post ${postId} from user ${user}'s posts array`
               );
             }

@@ -1,5 +1,6 @@
 const searchitunes = require('searchitunes');
 
+const logger = require('../config/logging');
 const podcastsData = require('../data/podcastsData');
 
 module.exports = {
@@ -19,13 +20,13 @@ module.exports = {
                 data,
                 // eslint-disable-next-line no-shadow
                 (err, updatedPodcast) => {
-                  if (err) console.log(err);
-                  console.log(updatedPodcast);
+                  if (err) logger.error(err);
+                  else logger.debug(updatedPodcast);
                 }
               );
             })
             .catch(error => {
-              console.log(error);
+              logger.error(error);
             });
           return callback(null, podcast);
         });
@@ -45,16 +46,15 @@ module.exports = {
                 data.results[0],
                 // eslint-disable-next-line no-shadow
                 (err, updatedPodcast) => {
-                  if (err) console.log(err);
-                  console.log(updatedPodcast);
+                  if (err) logger.error(err);
+                  else logger.debug(updatedPodcast);
                 }
               );
             })
             .catch(error => {
-              console.log(error);
+              logger.error(error);
             });
           return callback(null, podcast);
-          // TODO: start a worker to find other podcast info?
         });
       });
     } else {
