@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 const validator = require('validator');
-const nanoid = require('nanoid');
+const shortid = require('shortid');
 const vCard = require('vcards-js');
 
 const logger = require('../utilities/logger')(__filename);
@@ -41,7 +41,7 @@ module.exports = {
       newUserData.normalizedEmail = validator.normalizeEmail(newUserData.email);
       newUserData.normalizedUsername = newUserData.username.toLowerCase();
       // create secret email tag for posting
-      newUserData.postTag = nanoid(15);
+      newUserData.postTag = shortid.generate();
       usersData.createUser(newUserData, (err, user) => {
         if (err) {
           logger.error(`${err.name}: ${err.errmsg}`);
