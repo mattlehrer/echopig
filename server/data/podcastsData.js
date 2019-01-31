@@ -13,11 +13,11 @@ module.exports = {
     Podcast.deleteOne(query, podcast, callback);
   },
 
-  findPodcastByITunesID(podcastData, callback) {
-    Podcast.findOne({ iTunesID: podcastData.iTunesID }, callback);
+  findPodcastByITunesID(iTunesID, callback) {
+    Podcast.findOne({ iTunesID }, callback);
   },
 
-  findPodcastByTitle(podcastData, callback) {
-    Podcast.findOne({ title: podcastData.title }, callback);
+  findPodcastByTitle(title, callback) {
+    Podcast.findOne({ title }, callback);
   }
 };

@@ -6,33 +6,36 @@ const podcastsData = require('../data/podcastsData');
 module.exports = {
   findOrCreatePodcast(podcastData, callback) {
     if (podcastData.iTunesID) {
-      podcastsData.findPodcastByITunesID(podcastData, (err, podcast) => {
-        if (podcast !== null) {
-          return callback(null, podcast);
+      podcastsData.findPodcastByITunesID(
+        podcastData.iTunesID,
+        (err, podcast) => {
+          if (podcast !== null) {
+            return callback(null, podcast);
+          }
+          // eslint-disable-next-line no-shadow
+          return podcastsData.addNewPodcast(podcastData, (err, podcast) => {
+            if (err) return callback(err, null);
+            searchitunes({ id: podcastData.iTunesID })
+              .then(data => {
+                podcastsData.updatePodcast(
+                  podcast.id,
+                  data,
+                  // eslint-disable-next-line no-shadow
+                  (err, updatedPodcast) => {
+                    if (err) logger.error(err);
+                    else logger.debug(updatedPodcast);
+                  }
+                );
+              })
+              .catch(error => {
+                logger.error(error);
+              });
+            return callback(null, podcast);
+          });
         }
-        // eslint-disable-next-line no-shadow
-        return podcastsData.addNewPodcast(podcastData, (err, podcast) => {
-          if (err) return callback(err, null);
-          searchitunes({ id: podcastData.iTunesID })
-            .then(data => {
-              podcastsData.updatePodcast(
-                podcast.id,
-                data,
-                // eslint-disable-next-line no-shadow
-                (err, updatedPodcast) => {
-                  if (err) logger.error(err);
-                  else logger.debug(updatedPodcast);
-                }
-              );
-            })
-            .catch(error => {
-              logger.error(error);
-            });
-          return callback(null, podcast);
-        });
-      });
+      );
     } else if (podcastData.title) {
-      podcastsData.findPodcastByTitle(podcastData, (err, podcast) => {
+      podcastsData.findPodcastByTitle(podcastData.title, (err, podcast) => {
         if (podcast !== null) {
           return callback(null, podcast);
         }
@@ -62,6 +65,7 @@ module.exports = {
       callback(error, null);
     }
   },
+  getPodcast(req, res, next) {},
   updatePodcast() {},
   deletePodcast() {}
 };
