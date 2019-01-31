@@ -53,7 +53,6 @@ module.exports = {
   },
 
   findAllEpisodesOfPodcast(podcast, callback) {
-    Episode.find({ podcast }, callback);
-    // Episode.find({ podcast: mongoose.Types.ObjectId(podcast) }, callback);
+    Episode.find({ podcast: mongoose.Types.ObjectId(podcast.id) }, callback);
   }
 };

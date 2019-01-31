@@ -1,0 +1,28 @@
+extends ../shared/layout
+
+block main-content
+  h3 #{podcast.title}
+  if podcast.author
+    p By #{podcast.author}
+  p Episodes Posted: #{episodes.length}
+  p
+    a(href=podcast.feedUrl) RSS feed
+  
+  if episodes.length > 0
+    .table-responsive
+      table.table
+        thead
+          tr.no-gutters
+            th.border-top-0.col-10.lead Episode
+            th.border-top-0.col-2.lead Published
+        tbody
+          each episode in episodes
+            tr.no-gutters
+              td.col-10.border-0
+                strong
+                  a(href=`/e/${episode.shortId}`) !{episode.title}
+                span.px-4 #{episode.posts.length} 🐽
+              td.col-2.border-0
+                =relativeTime(episode.releaseDate)
+            tr.border-bottom.pb-3
+              td.col-10.border-0.pt-0.pl-0.pr-5 !{episode.description}

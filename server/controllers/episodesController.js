@@ -75,9 +75,6 @@ module.exports = {
   removePostOfEpisode(postId, callback) {
     episodesData.removePostOfEpisode(postId, callback);
   },
-  findAllEpisodesOfPodcast(podcast, callback) {
-    episodesData.findAllEpisodesOfPodcast(podcast, callback);
-  },
   getEpisode(req, res, next) {
     episodesData.findEpisodeByShortId(req.params.episode, (err, episode) => {
       if (err) {
@@ -89,6 +86,9 @@ module.exports = {
         episode
       });
     });
+  },
+  findAllEpisodesOfPodcast(podcast, callback) {
+    episodesData.findAllEpisodesOfPodcast(podcast, callback);
   },
   updateEpisode() {},
   deleteEpisode() {}

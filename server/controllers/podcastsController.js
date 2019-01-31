@@ -2,6 +2,10 @@ const searchitunes = require('searchitunes');
 
 const logger = require('../utilities/logger')(__filename);
 const podcastsData = require('../data/podcastsData');
+// getting TypeError: episodesController.findAllEpisodesOfPodcast is not a function
+// and don't know why
+// const episodesController = require('./episodesController');
+const episodesData = require('../data/episodesData');
 
 module.exports = {
   findOrCreatePodcast(podcastData, callback) {
@@ -65,7 +69,34 @@ module.exports = {
       callback(error, null);
     }
   },
-  getPodcast(req, res, next) {},
+  getPodcastByITunesID(req, res, next) {
+    podcastsData.findPodcastByITunesID(req.params.iTunesID, (err, podcast) => {
+      if (err) {
+        logger.error(err);
+        return next(err);
+      }
+      if (podcast === null) {
+        const error = new Error('Podcast Not Found');
+        error.status = 404;
+        return next(error);
+      }
+      return episodesData.findAllEpisodesOfPodcast(
+        podcast,
+        // eslint-disable-next-line no-shadow
+        (err, episodes) => {
+          if (err) {
+            logger.error(err);
+            return next(err);
+          }
+          return res.render('podcasts/podcast', {
+            currentUser: req.user,
+            podcast,
+            episodes
+          });
+        }
+      );
+    });
+  },
   updatePodcast() {},
   deletePodcast() {}
 };
