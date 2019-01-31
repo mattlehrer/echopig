@@ -16,17 +16,18 @@ block main-content
         tbody
           each post in profiledUser.posts
             tr.no-gutters
-              td.col-10.border-0
+              td.col-10.border-0.pb-0
                 strong
                   a(href=`/e/${post.episode.shortId}`) !{post.episode.title}
-                strong: span  - 
-                strong
-                  a(href=`/p/itunes${post.episode.podcast.iTunesID}`) !{post.episode.podcast.title}
-              td.col-2.border-0
+                span.px-3 #{post.episode.posts.length} 🐽
+              td.col-2.border-0.pb-0
                 =relativeTime(post.updatedAt)
                 if (currentUser && profiledUser.id === currentUser.id)
                   span.px-2
                   a.btn.btn-outline-danger.btn-sm(href=`/deletePost?p=${post.id}` title='Delete post') x
+            tr.no-gutters
+              td.col-10.border-0.pt-0
+                a(href=`/p/itunes${post.episode.podcast.iTunesID}`) !{post.episode.podcast.title}
             tr.border-bottom.pb-3
               td.col-10.border-0.pt-0.pl-0.pr-5 !{post.episode.description}
               td.col-10.border-0.pt-0 
