@@ -6,11 +6,18 @@ const env = process.env.NODE_ENV || 'development';
 
 // instantiate a new Winston Logger with the settings defined above
 const logger = (caller = '') => {
+  const relativeCaller = `.${path
+    .dirname(caller)
+    .slice(appRoot.path.length, path.dirname(caller).length)}/${path.basename(
+    caller
+  )}`;
   return createLogger({
     level: env === 'production' ? 'info' : 'debug',
     format: format.combine(
       format.timestamp(),
-      format.label({ label: path.basename(caller) })
+      format.label({
+        label: relativeCaller
+      })
     ),
     transports: [
       new transports.File({
