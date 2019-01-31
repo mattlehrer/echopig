@@ -3,7 +3,7 @@
 const validator = require('validator');
 const uuid = require('uuid/v4');
 
-const logger = require('../config/logging');
+const logger = require('../utilities/logger')(__filename);
 const postsData = require('../data/postsData');
 const usersController = require('./usersController');
 const episodesController = require('./episodesController');
@@ -87,7 +87,8 @@ module.exports = {
     const postData = req.body;
 
     if (!validator.isURL(postData.shareURL)) {
-      return res.status(400).send('No share URL in post');
+      req.session.error = 'No share URL in post';
+      return res.status(400).redirect(req.get('Referrer') || '/post');
     }
 
     return usersController.findUserByIdWithPosts(
@@ -138,8 +139,7 @@ module.exports = {
             return next(err);
           }
           if (postingUser === null) {
-            const error = 'No such user';
-            return next(error, null);
+            return res.status(400).send('No such user');
           }
           let inputURL;
           const strippedText = postJson['stripped-text'];

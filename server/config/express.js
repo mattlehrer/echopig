@@ -6,8 +6,7 @@ const cookieParser = require('cookie-parser');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const mongoose = require('mongoose');
-const morgan = require('morgan');
-const logger = require('./logging');
+// const logger = require('../utilities/logger')(__filename);
 const relativeTime = require('../utilities/relativeTime');
 const auth = require('./auth');
 
@@ -42,24 +41,6 @@ module.exports = (app, config) => {
   app.use(passport.session());
   app.use(express.static(`${config.rootPath}/public`));
   app.locals.relativeTime = relativeTime;
-
-  app.use(
-    morgan('short', {
-      skip(req, res) {
-        return res.statusCode < 400;
-      },
-      stream: logger.errorStream
-    })
-  );
-
-  app.use(
-    morgan('short', {
-      skip(req, res) {
-        return res.statusCode >= 400;
-      },
-      stream: logger.infoStream
-    })
-  );
 
   app.use('/admin', (req, res, next) => {
     if (!auth.isInRole('admin')(req, res, next)) {

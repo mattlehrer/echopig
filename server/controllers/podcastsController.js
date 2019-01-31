@@ -1,6 +1,6 @@
 const searchitunes = require('searchitunes');
 
-const logger = require('../config/logging');
+const logger = require('../utilities/logger')(__filename);
 const podcastsData = require('../data/podcastsData');
 
 module.exports = {

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const logger = require('./logging');
+const logger = require('../utilities/logger')(__filename);
 
 const UserModel = require('../data/models/User');
 const EpisodeModel = require('../data/models/Episode');

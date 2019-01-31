@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 const validator = require('validator');
 
-const logger = require('../config/logging');
+const logger = require('../utilities/logger')(__filename);
 const episodesData = require('../data/episodesData');
 const podcastsController = require('./podcastsController');
 const shareURLHandler = require('./apps');

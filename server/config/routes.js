@@ -1,4 +1,6 @@
 const csrf = require('csurf');
+const expressWinston = require('express-winston');
+const logger = require('../utilities/logger')(__filename);
 const auth = require('./auth');
 const controllers = require('../controllers');
 
@@ -13,6 +15,16 @@ function ensureAuthenticated(req, res, next) {
 const csrfProtection = csrf({ cookie: true });
 
 module.exports = app => {
+  app.use(
+    expressWinston.logger({
+      winstonInstance: logger,
+      expressFormat: true,
+      skip: (req, res) => {
+        return res.statusCode >= 400;
+      }
+    })
+  );
+
   app
     .route('/register')
     .get(csrfProtection, controllers.users.getRegister)
@@ -54,6 +66,13 @@ module.exports = app => {
     err.status = 404;
     next(err);
   });
+
+  app.use(
+    expressWinston.errorLogger({
+      winstonInstance: logger,
+      msg: '{{req.method}} {{req.url}} {{err.status}} {{err.message}}'
+    })
+  );
 
   // error handler
   // eslint-disable-next-line no-unused-vars

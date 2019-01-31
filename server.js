@@ -1,5 +1,5 @@
 const express = require('express');
-const logger = require('./server/config/logging');
+const logger = require('./server/utilities/logger')(__filename);
 
 const env = process.env.NODE_ENV || 'development';
 

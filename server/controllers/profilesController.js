@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
 const usersData = require('../data/usersData');
-const episodesData = require('../data/episodesData');
+// const logger = require('../utilities/logger')(__filename);
 
 module.exports = {
   getProfile(req, res, next) {

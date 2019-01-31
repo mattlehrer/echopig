@@ -4,7 +4,7 @@ const validator = require('validator');
 const nanoid = require('nanoid');
 const vCard = require('vcards-js');
 
-const logger = require('../config/logging');
+const logger = require('../utilities/logger')(__filename);
 const encryption = require('../utilities/cripto');
 const usersData = require('../data/usersData');
 const reservedNames = require('../utilities/reservedNames').reserved;
@@ -44,7 +44,7 @@ module.exports = {
       newUserData.postTag = nanoid(15);
       usersData.createUser(newUserData, (err, user) => {
         if (err) {
-          logger.error(err);
+          logger.error(`${err.name}: ${err.errmsg}`);
           req.session.error = 'That username is taken. Please try again.';
           res.redirect('/register');
           return;

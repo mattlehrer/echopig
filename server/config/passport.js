@@ -2,13 +2,14 @@
 const passport = require('passport');
 const LocalPassport = require('passport-local');
 const User = require('mongoose').model('User');
+const logger = require('../utilities/logger')(__filename);
 
 module.exports = () => {
   passport.use(
     new LocalPassport((username, password, done) => {
       User.findOne({ username }).exec((err, user) => {
         if (err) {
-          console.log(`Error loading user: ${err}`);
+          logger.error(`Error loading user: ${err}`);
           return;
         }
 
@@ -31,7 +32,7 @@ module.exports = () => {
   passport.deserializeUser((id, done) => {
     User.findOne({ _id: id }).exec((err, user) => {
       if (err) {
-        console.log(`Error loading user: ${err}`);
+        logger.error(`Error loading user: ${err}`);
         return;
       }
 
