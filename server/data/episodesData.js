@@ -15,6 +15,10 @@ module.exports = {
     Episode.deleteOne(query, episode, callback);
   },
 
+  findEpisodeByShortId(shortId, callback) {
+    Episode.findOne({ shortId }, callback);
+  },
+
   findEpisodeByShareURL(shareURL, callback) {
     Episode.findOne({ shareURLs: shareURL }, callback);
   },
@@ -48,7 +52,8 @@ module.exports = {
     );
   },
 
-  findAllEpisodesByPodcast(podcast, callback) {
+  findAllEpisodesOfPodcast(podcast, callback) {
     Episode.find({ podcast }, callback);
+    // Episode.find({ podcast: mongoose.Types.ObjectId(podcast) }, callback);
   }
 };

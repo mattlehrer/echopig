@@ -8,6 +8,7 @@ module.exports.init = () => {
       ref: 'Podcast',
       autopopulate: true
     },
+    shortId: String,
     title: String,
     description: String,
     image: String,

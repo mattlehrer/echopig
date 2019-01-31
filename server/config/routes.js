@@ -39,7 +39,9 @@ module.exports = app => {
 
   app.get('/u/:username', controllers.profiles.getProfile);
   app.get('/rss/:username', controllers.rss.getRSSFeed);
-  // app.get('/p/:podcast', controllers.
+  // app.get('/p/:podcast/:episode', controllers.episodes.getEpisode);
+  app.get('/e/:episode', controllers.episodes.getEpisode);
+  app.get('/p/itunes:iTunesID', controllers.podcasts.getPodcastByITunesID);
 
   app.get('/', (req, res) => {
     res.render('index', { currentUser: req.user });

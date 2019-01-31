@@ -17,9 +17,11 @@ block main-content
           each post in profiledUser.posts
             tr.no-gutters
               td.col-10.border-0
-                strong: a(href=post.episode.mp3URL) !{post.episode.title}
+                strong
+                  a(href=`/e/${post.episode.shortId}`) !{post.episode.title}
                 strong: span  - 
-                strong: span !{post.episode.podcast.title}
+                strong
+                  a(href=`/p/itunes${post.episode.podcast.iTunesID}`) !{post.episode.podcast.title}
               td.col-2.border-0
                 =relativeTime(post.updatedAt)
                 if (currentUser && profiledUser.id === currentUser.id)

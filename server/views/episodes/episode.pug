@@ -1,0 +1,16 @@
+extends ../shared/layout
+
+block main-content
+  h3 !{episode.title}
+  if episode.podcast.title
+    p From !{episode.podcast.title}
+  if episode.releaseDate
+    p Published 
+      =relativeTime(episode.releaseDate)
+  p Posted by #{episode.posts.length} 
+    if episode.posts.length === 1
+      span user
+    else
+      span users
+  audio(controls src=episode.mp3URL)
+  
