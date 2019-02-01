@@ -91,6 +91,8 @@ module.exports = {
         return next(error);
       }
       return episodesData.findAllEpisodesOfPodcast(
+        // can't figure out this error
+        // return episodesController.findAllEpisodesOfPodcast(
         podcast,
         // eslint-disable-next-line no-shadow
         (err, episodes) => {
