@@ -28,7 +28,10 @@ module.exports = {
                   (err, updatedPodcast) => {
                     if (err) logger.error(err);
                     else {
-                      logger.debug(`updated podcast: ${updatedPodcast}`);
+                      logger.debug(
+                        `updated podcast id: ${updatedPodcast.id} 
+                        - title: ${updatedPodcast.title}`
+                      );
                     }
                   }
                 );
@@ -56,7 +59,12 @@ module.exports = {
                 // eslint-disable-next-line no-shadow
                 (err, updatedPodcast) => {
                   if (err) logger.error(err);
-                  else logger.debug(updatedPodcast);
+                  else {
+                    logger.debug(
+                      `updated podcast id: ${updatedPodcast.id} 
+                      - title: ${updatedPodcast.title}`
+                    );
+                  }
                 }
               );
             })

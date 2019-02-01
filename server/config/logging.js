@@ -1,6 +1,6 @@
 const appRoot = require('app-root-path');
 const path = require('path');
-const { createLogger, format, transports } = require('winston');
+const { config, createLogger, format, transports } = require('winston');
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -12,6 +12,7 @@ const logger = (caller = '') => {
     caller
   )}`;
   return createLogger({
+    levels: config.syslog.levels,
     level: env === 'production' ? 'info' : 'debug',
     format: format.combine(
       format.timestamp(),
