@@ -52,7 +52,18 @@ module.exports = {
     );
   },
 
+  // findAllEpisodesOfPodcast(podcast, callback) {
+  //   Episode.find({ podcast: mongoose.Types.ObjectId(podcast.id) }, callback);
+  // },
+
   findAllEpisodesOfPodcast(podcast, callback) {
-    Episode.find({ podcast: mongoose.Types.ObjectId(podcast.id) }, callback);
+    Episode.aggregate([
+      // match by podcast id
+      { $match: { podcast: mongoose.Types.ObjectId(podcast.id) } },
+      // in order to sort by number of posts in the posts array,
+      // we have to add a field for its length
+      { $addFields: { numberOfPosts: { $size: '$posts' } } },
+      { $sort: { numberOfPosts: -1 } }
+    ]).exec(callback);
   }
 };
