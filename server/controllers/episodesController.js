@@ -1,7 +1,6 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-unused-vars */
 const validator = require('validator');
-const shortid = require('shortid');
 
 const logger = require('../utilities/logger')(__filename);
 const episodesData = require('../data/episodesData');
@@ -53,7 +52,6 @@ module.exports = {
                     );
                     return callback(null, existingEpisode);
                   }
-                  newEpisodeData.shortId = shortid.generate();
                   return episodesData.addNewEpisode(
                     newEpisodeData,
                     (err, newEpisode) => {
@@ -76,7 +74,7 @@ module.exports = {
     episodesData.removePostOfEpisode(postId, callback);
   },
   getEpisode(req, res, next) {
-    episodesData.findEpisodeByShortId(req.params.episode, (err, episode) => {
+    episodesData.findEpisodeById(req.params.episode, (err, episode) => {
       if (err) {
         logger.error(err);
         return next(err);

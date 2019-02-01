@@ -1,14 +1,18 @@
 const mongoose = require('mongoose');
 const autopopulate = require('mongoose-autopopulate');
+const shortid = require('shortid');
 
 module.exports.init = () => {
   const episodeSchema = new mongoose.Schema({
+    _id: {
+      type: String,
+      default: shortid.generate
+    },
     podcast: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Podcast',
       autopopulate: true
     },
-    shortId: String,
     title: String,
     description: String,
     image: String,

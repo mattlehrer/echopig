@@ -15,8 +15,8 @@ module.exports = {
     Episode.deleteOne(query, episode, callback);
   },
 
-  findEpisodeByShortId(shortId, callback) {
-    Episode.findOne({ shortId }, callback);
+  findEpisodeById(id, callback) {
+    Episode.findById(id, callback);
   },
 
   findEpisodeByShareURL(shareURL, callback) {

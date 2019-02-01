@@ -18,7 +18,7 @@ block main-content
             tr.no-gutters
               td.col-10.border-0.pb-0
                 strong
-                  a(href=`/e/${post.episode.shortId}`) !{post.episode.title}
+                  a(href=`/e/${post.episode.id}`) !{post.episode.title}
                 span.px-3 #{post.episode.posts.length} 🐽
               td.col-2.border-0.pb-0
                 =relativeTime(post.updatedAt)
