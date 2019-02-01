@@ -21,30 +21,6 @@ module.exports = (url, callback) => {
     error.status = 501;
     callback(error, null);
   }
-
-  // get.concat(url, (err, resp, data) => {
-  //   if (err) {
-  //     callback(err, null);
-  //   } else if (url.search('overcast.fm') !== -1) {
-  //     overcast(data, (error, epData) => {
-  //       if (error) callback(error, null);
-  //       const newEpData = epData;
-  //       newEpData.shareURLs = [url];
-  //       callback(null, newEpData);
-  //     });
-  //   } else if (url.search('itunes.apple.com') !== -1) {
-  //     podcastsApp(data, (error, epData) => {
-  //       if (error) callback(error, null);
-  //       const newEpData = epData;
-  //       newEpData.shareURLs = [url];
-  //       callback(null, newEpData);
-  //     });
-  //   } else {
-  //     const error = new Error('Podcast app not yet implemented');
-  //     error.status = 501;
-  //     callback(error, null);
-  //   }
-  // });
 };
 
 /*
