@@ -27,7 +27,7 @@ block main-content
                   a.btn.btn-outline-danger.btn-sm(href=`/deletePost?p=${post.id}` title='Delete post') x
             tr.no-gutters
               td.col-10.border-0.pt-0
-                a(href=`/p/itunes${post.episode.podcast.iTunesID}`) !{post.episode.podcast.title}
+                a(href=`/p/i${post.episode.podcast.iTunesID}`) !{post.episode.podcast.title}
             tr.border-bottom.pb-3
               td.col-10.border-0.pt-0.pl-0.pr-5 !{post.episode.description}
               td.col-10.border-0.pt-0 
