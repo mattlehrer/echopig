@@ -20,7 +20,7 @@
     "express-session": "^1.12.1",
     "express-winston": "^3.0.1",
     "moment": "^2.24.0",
-    "mongoose": "^5.4.7",
+    "mongoose": "^5.4.8",
     "mongoose-autopopulate": "^0.9.1",
     "passport": "^0.4",
     "passport-local": "^1.0.0",
@@ -36,13 +36,13 @@
     "winston": "^3.2.0"
   },
   "devDependencies": {
-    "acorn": "^6.0.5",
+    "acorn": "^6.0.6",
     "eslint": "^5.12.1",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.0.0",
-    "eslint-plugin-import": "^2.15.0",
+    "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-prettier": "^3.0.1",
     "nodemon": "^1.18.9",
-    "prettier": "^1.16.1"
+    "prettier": "^1.16.3"
   }
 }
