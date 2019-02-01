@@ -27,7 +27,9 @@ module.exports = {
                   // eslint-disable-next-line no-shadow
                   (err, updatedPodcast) => {
                     if (err) logger.error(err);
-                    else logger.debug(updatedPodcast);
+                    else {
+                      logger.debug(`updated podcast: ${updatedPodcast}`);
+                    }
                   }
                 );
               })
