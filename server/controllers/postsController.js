@@ -2,6 +2,7 @@
 /* eslint-disable no-shadow */
 const validator = require('validator');
 const uuid = require('uuid/v4');
+const shortid = require('shortid');
 
 const logger = require('../utilities/logger')(__filename);
 const postsData = require('../data/postsData');
@@ -134,6 +135,7 @@ module.exports = {
 
         // lookup user by tag
         const tag = postJson.recipient.split('@')[0].split('+')[1];
+        if (!shortid.isValid(tag)) return res.status(400).send('No such user');
         return usersController.findUserByTag(tag, (err, postingUser) => {
           if (err) {
             return next(err);
