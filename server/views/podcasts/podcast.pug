@@ -20,9 +20,10 @@ block main-content
             tr.no-gutters
               td.col-10.border-0
                 strong
-                  a(href=`/e/${episode.shortId}`) !{episode.title}
+                  a(href=`/e/${episode._id}`) !{episode.title}
                 span.px-3 #{episode.posts.length} 🐽
               td.col-2.border-0
-                =relativeTime(episode.releaseDate)
+                if episode.releaseDate
+                  =relativeTime(episode.releaseDate)
             tr.border-bottom.pb-3
               td.col-10.border-0.pt-0.pl-0.pr-5 !{episode.description}
