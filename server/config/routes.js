@@ -58,6 +58,7 @@ module.exports = app => {
       controllers.posts.addNewPostViaWeb
     );
   app.post('/mailpost', controllers.posts.addNewPostViaMailgun);
+  app.get('/top', controllers.posts.findMostPostedEpisodesByTimeframe);
 
   app.get('/deletePost', ensureAuthenticated, controllers.posts.deletePost);
 

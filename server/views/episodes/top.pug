@@ -1,0 +1,33 @@
+extends ../shared/layout
+
+block main-content
+  //- h3 #{podcast.title}
+  //- if podcast.author
+  //-   p By #{podcast.author}
+  //- p Episodes Posted: #{episodes.length}
+  //- p
+  //-   a(href=podcast.feedUrl) RSS feed
+  
+  if episodes.length > 0
+    .table-responsive
+      table.table
+        thead
+          tr.no-gutters
+            th.border-top-0.col-10.lead Episode
+            th.border-top-0.col-2.lead Published
+        tbody
+          each episode in episodes
+            - let ep = episode.data[0]
+            tr.no-gutters
+              td.col-10.border-0
+                strong
+                  a(href=`/e/${ep.id}`) !{ep.title}
+                span.px-3 #{episode.numberOfPosts} 🐽
+              td.col-2.border-0
+                if (ep.releaseDate)
+                  =relativeTime(ep.releaseDate)
+            //- tr.no-gutters
+            //-   td.col-10.border-0.pt-0
+            //-     a(href=`/p/i${ep.podcast.iTunesID}`) !{ep.podcast.title}
+            tr.border-bottom.pb-3
+              td.col-10.border-0.pt-0.pl-0.pr-5 !{ep.description}

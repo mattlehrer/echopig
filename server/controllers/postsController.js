@@ -212,5 +212,20 @@ module.exports = {
         }
       });
     }
+  },
+  findMostPostedEpisodesByTimeframe(req, res, next) {
+    const hours = req.query.t || 24;
+    const timeframe = hours * 60 * 60 * 1000;
+    const since = new Date(Date.now() - timeframe);
+    postsData.findMostPostedEpisodesInTimeframe(since, (err, episodes) => {
+      if (err) {
+        logger.error(err);
+        return next(err);
+      }
+      return res.render('episodes/top', {
+        currentUser: req.user,
+        episodes
+      });
+    });
   }
 };
