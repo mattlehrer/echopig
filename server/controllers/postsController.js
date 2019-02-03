@@ -224,6 +224,7 @@ module.exports = {
       }
       return episodesController.findEpisodesInArray(
         // find() on array of episode _id instead of objects returned
+        // eslint-disable-next-line no-underscore-dangle
         episodeArray.map(e => e._id),
         (err, episodes) => {
           if (err) {
