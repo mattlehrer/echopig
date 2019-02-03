@@ -65,5 +65,9 @@ module.exports = {
       { $addFields: { numberOfPosts: { $size: '$posts' } } },
       { $sort: { numberOfPosts: -1 } }
     ]).exec(callback);
+  },
+
+  findEpisodesInArray(episodes, callback) {
+    Episode.find({ _id: { $in: episodes } }, callback);
   }
 };

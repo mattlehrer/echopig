@@ -89,5 +89,8 @@ module.exports = {
     episodesData.findAllEpisodesOfPodcast(podcast, callback);
   },
   updateEpisode() {},
-  deleteEpisode() {}
+  deleteEpisode() {},
+  findEpisodesInArray(episodes, callback) {
+    episodesData.findEpisodesInArray(episodes, callback);
+  }
 };

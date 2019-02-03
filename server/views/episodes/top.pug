@@ -16,18 +16,17 @@ block main-content
             th.border-top-0.col-10.lead Episode
             th.border-top-0.col-2.lead Published
         tbody
-          each episode in episodes
-            - let ep = episode.data[0]
+          each ep in episodes
             tr.no-gutters
-              td.col-10.border-0
+              td.col-10.border-0.pb-0
                 strong
                   a(href=`/e/${ep.id}`) !{ep.title}
-                span.px-3 #{episode.numberOfPosts} 🐽
-              td.col-2.border-0
+                span.px-3 #{ep.posts.length} 🐽
+              td.col-2.border-0.pb-0
                 if (ep.releaseDate)
                   =relativeTime(ep.releaseDate)
-            //- tr.no-gutters
-            //-   td.col-10.border-0.pt-0
-            //-     a(href=`/p/i${ep.podcast.iTunesID}`) !{ep.podcast.title}
+            tr.no-gutters
+              td.col-10.border-0.pt-0
+                a(href=`/p/i${ep.podcast.iTunesID}`) !{ep.podcast.title}
             tr.border-bottom.pb-3
               td.col-10.border-0.pt-0.pl-0.pr-5 !{ep.description}
