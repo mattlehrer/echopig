@@ -5,59 +5,69 @@ const logger = require('../utilities/logger')(__filename);
 
 module.exports = {
   getRSSFeed(req, res, next) {
-    const usernameForFeed = req.params.username.toLowerCase();
-    usersData.findUserByUsername(usernameForFeed, (err, user) => {
+    const usernameForFeed = req.params.username;
+    usersData.findUserByUsername(usernameForFeed.toLowerCase(), (err, user) => {
       if (err) {
         logger.error(`${err.name}: ${err.errmsg}`);
         next(err);
       } else {
         const { posts } = user;
-        const mostRecent = posts.length > 0 ? posts[0].updatedAt : new Date();
         // create an rss feed
+        // documentation: https://www.npmjs.com/package/podcast
         const feed = new Podcast({
           title: `${usernameForFeed}'s Favorites`,
           description: `${usernameForFeed}'s feed of favorite podcast episodes powered by Echopig`,
           feedUrl: `http://echopig.com/rss/${usernameForFeed}`,
           siteUrl: `http://echopig.com/u/${usernameForFeed}`,
           generator: 'Echopig.com',
-          // imageUrl: 'http://example.com/icon.png',
-          // docs: 'http://example.com/rss/docs.html',
+          // imageUrl: TODO: add avatar,
+          // itunesImage: TODO: add avatar,
+          // docs: TODO: 'https://www.echopig.com/rssDocs.html',
           author: usernameForFeed,
           language: 'en',
           categories: ['Personal'],
-          pubDate: mostRecent,
+          itunesCategory: ['Personal'],
+          pubDate: posts.length > 0 ? posts[0].updatedAt : user.updatedAt,
           ttl: '120',
           itunesAuthor: usernameForFeed,
           itunesSubtitle: `${usernameForFeed}'s feed of favorite podcast episodes powered by Echopig`,
           itunesSummary: 'Create your own feed at http://www.echopig.com',
           itunesOwner: {
             name: usernameForFeed,
-            email: 'owner@echopig.com'
+            email: 'rss@echopig.com'
           },
           itunesExplicit: false
-          // itunesImage: 'http://link.to/image.png'
         });
         posts.forEach(post => {
           feed.addItem({
             title: post.episode.title,
             description: post.episode.description,
-            url: post.shareURL, // link to the post
+            url: `https://www.echopig.com/e/${post.episode.id}`,
             guid: post.guid,
-            // categories: ['Personal'], // optional - array of item categories
-            // author: 'Guest Author', // optional - defaults to feed author property
-            // author: post.episode.podcast.author
+            categories:
+              post.episode.podcast.genres !== null
+                ? post.episode.podcast.genres
+                : [],
+            author:
+              post.episode.podcast.author !== null
+                ? post.episode.podcast.author
+                : '',
             enclosure: { url: post.episode.mp3URL },
             date: post.updatedAt,
-            itunesAuthor: usernameForFeed,
-            itunesExplicit: false
-            // itunesSubtitle: post.comment,
-            // itunesSummary: post.comment,
-            // itunesDuration: 1234,
-            // itunesKeywords: ['javascript', 'podcast']
+            itunesAuthor:
+              post.episode.podcast.author !== null
+                ? post.episode.podcast.author
+                : '',
+            itunesExplicit:
+              post.episode.podcast.collectionExplicitness !== null
+                ? post.episode.podcast.collectionExplicitness
+                : false,
+            itunesSubtitle: post.comment !== null ? post.comment : '',
+            itunesDuration:
+              post.episode.duration !== null ? post.episode.duration : null
           });
         });
 
-        // TODO: cache the xml to send to clients
         const xml = feed.buildXml();
 
         res.set('Content-Type', 'application/rss+xml');
