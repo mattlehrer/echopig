@@ -138,11 +138,13 @@ module.exports = {
   addPostByUser(post, user, callback) {
     if (
       !user.explicit &&
-      post.episode.podcast.contentAdvisoryRating === 'explicit'
+      String(post.episode.podcast.contentAdvisoryRating).toLowerCase() ===
+        'explicit'
     ) {
       user.set({ explicit: true });
       user.save((err, updatedUser) => {
         if (err) logger.error(err);
+        else logger.debug(`set explicit to true for user ${updatedUser}`);
       });
     }
     usersData.addPostByUser(post, user, callback);
