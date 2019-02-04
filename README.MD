@@ -1,18 +1,15 @@
-# echopig
-personalized podcast rss feed web app
+# Echopig
+## Personalized podcast rss feed web app
 
-First run a mongo db with:
+Use docker-compose.debug.yml for dev and docker-compose.yml for production
 
-`docker run --name echopig-mongo -p 27017:27017 -d mongo`
+**TODO**
 
-(TODO: setup docker compose)
-
-To run locally:
-
-`npm start`
-
-To run in docker:
-
-`docker build -t mattlehrer/echopigweb .`
-
-`docker run -d -p 9001:9001 --rm --link echopig-mongo:echopig-mongo --name echopigweb mattlehrer/echopigweb`
+* Update RSS feed
+* Update profile, podcast, and top episode page design
+* Copy
+  * About
+  * Homepage
+* Intro email
+* Nginx
+* Secure mongodb
