@@ -18,6 +18,7 @@ module.exports.init = () => {
           default: []
         }
       ],
+      explicit: { type: Boolean, default: false },
       roles: [String]
     },
     {

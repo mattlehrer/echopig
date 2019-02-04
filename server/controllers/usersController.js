@@ -136,6 +136,15 @@ module.exports = {
     usersData.findUserByIdWithPosts(id, callback);
   },
   addPostByUser(post, user, callback) {
+    if (
+      !user.explicit &&
+      post.episode.podcast.contentAdvisoryRating === 'explicit'
+    ) {
+      user.set({ explicit: true });
+      user.save((err, updatedUser) => {
+        if (err) logger.error(err);
+      });
+    }
     usersData.addPostByUser(post, user, callback);
   },
   removePostByUser(post, user, callback) {

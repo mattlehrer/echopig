@@ -36,7 +36,7 @@ module.exports = {
             name: usernameForFeed,
             email: 'rss@echopig.com'
           },
-          itunesExplicit: false
+          itunesExplicit: user.explicit
         });
         posts.forEach(post => {
           feed.addItem({
