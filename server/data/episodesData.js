@@ -52,10 +52,6 @@ module.exports = {
     );
   },
 
-  // findAllEpisodesOfPodcast(podcast, callback) {
-  //   Episode.find({ podcast: mongoose.Types.ObjectId(podcast.id) }, callback);
-  // },
-
   findAllEpisodesOfPodcast(podcast, callback) {
     Episode.aggregate([
       // match by podcast id
