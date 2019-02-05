@@ -144,7 +144,8 @@ module.exports = {
       user.set({ explicit: true });
       user.save((err, updatedUser) => {
         if (err) logger.error(err);
-        else logger.debug(`set explicit to true for user ${updatedUser}`);
+        else
+          logger.debug(`set explicit to true for user ${updatedUser.username}`);
       });
     }
     usersData.addPostByUser(post, user, callback);
