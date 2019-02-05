@@ -31,11 +31,13 @@ function createPost(postData, cb) {
             cb(error, null);
           } else {
             // update post time to now
+            logger.debug(`updating post ${post.id}`);
             postsData.updatePost(
-              { $currentDate: { updatedAt: true } },
               post,
+              { $currentDate: { updatedAt: true } },
               (err, post) => {
                 if (err) cb(err, null);
+                else cb(null, post);
               }
             );
           }
