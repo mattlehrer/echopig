@@ -7,7 +7,7 @@ block main-content
         src=podcast.artworkUrl600
       )
     div.col.px-0.pt-3
-      .h3 #{podcast.title}
+      .h3 !{podcast.title}
       if podcast.author
         div.small By #{podcast.author}
       div.pt-2 Episodes Posted: #{episodes.length}
