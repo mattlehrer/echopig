@@ -60,7 +60,10 @@ module.exports = {
       // we have to add a field for its length
       { $addFields: { numberOfPosts: { $size: '$posts' } } },
       { $sort: { numberOfPosts: -1 } }
-    ]).exec(callback);
+    ]).exec((err, episodes) => {
+      if (err) return err;
+      return Episode.find({ _id: { $in: episodes } }, callback);
+    });
   },
 
   findEpisodesInArray(episodes, callback) {
