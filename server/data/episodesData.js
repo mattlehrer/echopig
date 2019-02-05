@@ -60,6 +60,18 @@ module.exports = {
       // we have to add a field for its length
       { $addFields: { numberOfPosts: { $size: '$posts' } } },
       { $sort: { numberOfPosts: -1 } }
-    ]).exec(callback);
+    ]).exec((err, episodes) => {
+      if (err) callback(err, null);
+      else
+        callback(
+          null,
+          episodes.map(e => {
+            // add id property because this is returning an array of objects, not mongoose documents
+            // eslint-disable-next-line no-underscore-dangle
+            e.id = e._id;
+            return e;
+          })
+        );
+    });
   }
 };
