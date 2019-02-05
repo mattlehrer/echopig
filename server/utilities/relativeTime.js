@@ -58,5 +58,5 @@ module.exports = (date, format = 'long') => {
   if (format === 'long' && num > 1) {
     unitStr += 's';
   }
-  return num + unitStr;
+  return `${num + unitStr} ago`;
 };
