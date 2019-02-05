@@ -1,29 +1,30 @@
 extends ../shared/layout
 
 block main-content
-  h3 #{podcast.title}
-  if podcast.author
-    p By #{podcast.author}
-  p Episodes Posted: #{episodes.length}
-  p
-    a(href=podcast.feedUrl) RSS feed
-  
+  div.row.pt-4
+    div.col
+      img.float-right.rounded.w-100.h100(
+        src=podcast.artworkUrl600
+      )
+    div.col.px-0.pt-3
+      .h3 #{podcast.title}
+      if podcast.author
+        div.small By #{podcast.author}
+      div.pt-2 Episodes Posted: #{episodes.length}
+      div
+        a(href=podcast.feedUrl) RSS feed
   if episodes.length > 0
-    .table-responsive
-      table.table
-        thead
-          tr.no-gutters
-            th.border-top-0.col-10.lead Episode
-            th.border-top-0.col-2.lead Published
-        tbody
-          each episode in episodes
-            tr.no-gutters
-              td.col-10.border-0
-                strong
-                  a(href=`/e/${episode._id}`) !{episode.title}
-                span.px-3 #{episode.posts.length} 🐽
-              td.col-2.border-0
-                if episode.releaseDate
-                  =relativeTime(episode.releaseDate)
-            tr.border-bottom.pb-3
-              td.col-10.border-0.pt-0.pl-0.pr-5 !{episode.description}
+    ul
+    each episode in episodes
+      li.media.border-top.py-3
+        if (episode.image !== undefined)
+          img.rounded.w-25(
+            src=episode.image
+            height="auto"
+          )
+        div.media-body 
+          div.h5.mb-0
+            a(href=`/e/${episode.id}`) !{episode.title}
+          div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(episode.releaseDate)}
+          div.small !{episode.description}
+          div.small.font-weight-light.pt-2 🐽 #{episode.posts.length}
