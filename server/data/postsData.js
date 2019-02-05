@@ -40,7 +40,16 @@ module.exports = {
       { $unwind: '$episode.podcast' }
     ]).exec((err, episodes) => {
       if (err) callback(err, null);
-      else callback(null, episodes.map(e => e.episode));
+      else
+        callback(
+          null,
+          episodes.map(e => {
+            // add id property because this is returning an array of objects, not mongoose documents
+            // eslint-disable-next-line no-underscore-dangle
+            e.episode.id = e.episode._id;
+            return e.episode;
+          })
+        );
     });
   }
 };
