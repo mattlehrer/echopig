@@ -184,8 +184,13 @@ module.exports = {
   deletePost(req, res, next) {
     // req.query.p === post.id
     const postId = req.query.p;
-    if (typeof postId !== 'string' || !validator.isHexadecimal(postId)) {
+    if (
+      typeof postId !== 'string' ||
+      postId.length !== 24 ||
+      !validator.isHexadecimal(postId)
+    ) {
       // invalid post ID
+      req.session.error = 'Invalid post ID';
       res.redirect(req.get('Referrer') || '/');
     } else {
       postsData.deletePost({ _id: postId, byUser: req.user.id }, err => {
