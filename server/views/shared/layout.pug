@@ -44,7 +44,8 @@ html
     .container
       if (errorMessage)
         .alert.alert-dismissible.alert-danger
-          button.close(type='button', class='close' data-dismiss='alert') x
+          button.close(type='button', class='close' data-dismiss='alert')
+            span(aria-hidden="true") &times;
           .text-center #{errorMessage}
     .container
       block main-content
