@@ -2,11 +2,11 @@ extends ../shared/layout
 
 block main-content
   div.row.pt-4
-    div.col
+    div.col-md
       img.float-right.rounded.w-100.h100(
         src=podcast.artworkUrl600
       )
-    div.col.px-0.pt-3
+    div.col-md.px-0.pt-3
       .h3 !{podcast.title}
       if podcast.author
         div.small By #{podcast.author}
