@@ -43,7 +43,11 @@ module.exports = app => {
   app.get('/p/i:iTunesID', controllers.podcasts.getPodcastByITunesID);
 
   app.get('/', (req, res) => {
-    res.render('index', { currentUser: req.user });
+    if (req.isAuthenticated()) {
+      res.render('loggedInIndex', { currentUser: req.user });
+    } else {
+      res.render('loggedOutIndex');
+    }
   });
 
   app.get('/settings', ensureAuthenticated, controllers.users.getSettings);
