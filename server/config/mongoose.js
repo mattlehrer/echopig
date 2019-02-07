@@ -9,6 +9,7 @@ const PostModel = require('../data/models/Post');
 module.exports = config => {
   mongoose.Promise = global.Promise;
   mongoose.connect(config.db, {
+    dbName: 'echopig',
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false

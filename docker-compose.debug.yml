@@ -3,6 +3,7 @@ services:
   nginx: 
     image: nginx:latest
     container_name: nginx
+    restart: always
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./public:/usr/share/nginx/www
@@ -19,21 +20,39 @@ services:
      - "27017:27017"
     volumes:
      - mongo:/data/db
+     - ./mongo-setup.sh:/docker-entrypoint-initdb.d/mongo-setup.sh:ro
+    restart: always
+    env_file:
+    - .env
+    environment:
+      MONGO_INITDB_DATABASE: echopig
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_EPDB_USERNAME: ${MONGO_EPDB_USERNAME}
+      MONGO_EPDB_PASSWORD: ${MONGO_EPDB_PASSWORD}
   mongo-express:
     image: mongo-express
     ports:
      - "8081:8081"
     links:
      - mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: MONGO_ROOT_USERNAME
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
   web:
     build: .
     image: epweb:latest
+    restart: always
     ports:
      - "9001:9001"
      - "9229:9229"
     volumes:
      - .:/usr/src/app
      - /usr/src/app/node_modules
+    environment:
+      MONGO_EPDB_USERNAME: ${MONGO_EPDB_USERNAME}
+      MONGO_EPDB_PASSWORD: ${MONGO_EPDB_PASSWORD}
     depends_on:
       - mongo
     command:
