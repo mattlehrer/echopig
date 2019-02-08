@@ -53,7 +53,7 @@ function createPost(postData, cb) {
           // but also add post reference to User
           usersController.addPostByUser(post, newPost.byUser, (err, user) => {
             if (err) {
-              logger.error(
+              logger.alert(
                 `failed to add post ${post} to user ${user}'s posts array`
               );
             }
@@ -61,7 +61,7 @@ function createPost(postData, cb) {
           // and add post reference to Episode
           episodesController.addPostOfEpisode(post, episode, (err, ep) => {
             if (err) {
-              logger.error(
+              logger.alert(
                 `failed to add post ${post} to episode ${episode}'s posts array`
               );
             }
