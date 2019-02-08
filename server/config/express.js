@@ -11,6 +11,7 @@ const relativeTime = require('../utilities/relativeTime');
 const auth = require('./auth');
 
 module.exports = (app, config) => {
+  app.set('trust proxy');
   app.set('view engine', 'pug');
   app.use(favicon(`${config.rootPath}/public/favicon.ico`));
   app.set('views', `${config.rootPath}/server/views`);
