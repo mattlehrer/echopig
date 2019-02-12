@@ -47,7 +47,7 @@ function createPost(postData, cb) {
         newPost.episode = episode;
         postsData.addNewPost(newPost, (err, post) => {
           if (err) cb(err, null);
-          logger.info(`added post: ${post}`);
+          logger.debug(`added post: ${post}`);
           // get back to the user quickly with cb first
           cb(null, post);
           // but also add post reference to User
