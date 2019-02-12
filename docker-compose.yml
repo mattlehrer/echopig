@@ -22,13 +22,7 @@ services:
      - ./mongo-setup.sh:/docker-entrypoint-initdb.d/mongo-setup.sh:ro
     restart: always
     env_file:
-    - .env
-    environment:
-      MONGO_INITDB_DATABASE: echopig
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
-      MONGO_EPDB_USERNAME: ${MONGO_EPDB_USERNAME}
-      MONGO_EPDB_PASSWORD: ${MONGO_EPDB_PASSWORD}
+    - .env.prod
   web:
     build: .
     image: epweb:latest
@@ -40,8 +34,6 @@ services:
     environment:
       ENV: production
       NODE_ENV: production
-      MONGO_EPDB_USERNAME: ${MONGO_EPDB_USERNAME}
-      MONGO_EPDB_PASSWORD: ${MONGO_EPDB_PASSWORD}
     depends_on:
       - mongo
 
