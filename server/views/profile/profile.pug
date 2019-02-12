@@ -1,7 +1,7 @@
 extends ../shared/layout
 
 block main-content
-  .h3 #{profiledUser.username}
+  .h2 #{profiledUser.username}
   div User since: #{relativeTime(profiledUser.createdAt)}
   div Posts: #{profiledUser.posts.length}
   div
