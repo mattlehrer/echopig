@@ -6,11 +6,11 @@ module.exports.init = () => {
     {
       username: { type: String, require: '{PATH} is required' },
       normalizedUsername: { type: String, unique: true },
-      salt: String,
-      hashPass: String,
+      name: String,
       email: String,
       normalizedEmail: String,
       postTag: { type: String, unique: true },
+      avatar: String,
       posts: [
         {
           type: mongoose.Schema.Types.ObjectId,
@@ -19,7 +19,14 @@ module.exports.init = () => {
         }
       ],
       explicit: { type: Boolean, default: false },
-      roles: [String]
+      roles: [String],
+
+      salt: String,
+      hashPass: String,
+
+      facebook: String,
+      twitter: String,
+      tokens: Array
     },
     {
       timestamps: true

@@ -9,6 +9,26 @@ const encryption = require('../utilities/cripto');
 const usersData = require('../data/usersData');
 const reservedNames = require('../utilities/reservedNames').reserved;
 
+function createNewUser(userData, callback) {
+  const newUserData = userData;
+  newUserData.normalizedEmail = validator.normalizeEmail(newUserData.email);
+  newUserData.normalizedUsername = newUserData.username.toLowerCase();
+  // create secret email tag for posting
+  newUserData.postTag = shortid.generate();
+  usersData.createUser(newUserData, (err, user) => {
+    if (err) {
+      logger.error(err);
+      callback(err);
+      return;
+    }
+
+    // TODO add new user to mailgun mailing list
+    // TODO send welcome email
+
+    callback(null, user);
+  });
+}
+
 module.exports = {
   getRegister(req, res, next) {
     if (req.user) {
@@ -17,7 +37,17 @@ module.exports = {
       res.render('users/register', { csrfToken: req.csrfToken() });
     }
   },
-  createUser(req, res, next) {
+  getRegisterLocal(req, res, next) {
+    if (req.user) {
+      res.redirect('/');
+    } else {
+      res.render('users/registerLocal', { csrfToken: req.csrfToken() });
+    }
+  },
+  createUser(userData, callback) {
+    createNewUser(userData, callback);
+  },
+  createLocalUser(req, res, next) {
     const newUserData = req.body;
     if (!validator.isAlphanumeric(newUserData.username)) {
       req.session.error =
@@ -38,28 +68,36 @@ module.exports = {
         newUserData.salt,
         newUserData.password
       );
-      newUserData.normalizedEmail = validator.normalizeEmail(newUserData.email);
-      newUserData.normalizedUsername = newUserData.username.toLowerCase();
-      // create secret email tag for posting
-      newUserData.postTag = shortid.generate();
-      usersData.createUser(newUserData, (err, user) => {
+      usersData.findUserByUsername(newUserData.username, (err, user) => {
         if (err) {
-          logger.error(`${err.name}: ${err.errmsg}`);
+          logger.error(err);
+          next(err);
+          return;
+        }
+        if (user) {
           req.session.error = 'That username is taken. Please try again.';
           res.redirect('/register');
           return;
         }
 
-        // TODO add new user to mailgun mailing list
-        // TODO send welcome email
-
-        // eslint-disable-next-line consistent-return, no-shadow
-        req.logIn(user, err => {
+        // eslint-disable-next-line no-shadow
+        createNewUser(newUserData, (err, user) => {
           if (err) {
-            res.status(400);
-            return res.send({ reason: err.toString() });
+            logger.error(err);
+            next(err);
+            return;
           }
-          res.render('users/settings', { currentUser: user });
+          logger.debug(`Created user: ${user}`);
+
+          // eslint-disable-next-line no-shadow
+          req.logIn(user, err => {
+            if (err) {
+              res.status(400);
+              res.send({ reason: err.toString() });
+              return;
+            }
+            res.render('users/settings', { currentUser: user });
+          });
         });
       });
     }

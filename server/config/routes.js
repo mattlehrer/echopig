@@ -28,12 +28,19 @@ module.exports = app => {
   app
     .route('/register')
     .get(csrfProtection, controllers.users.getRegister)
-    .post(csrfProtection, controllers.users.createUser);
+    .post(csrfProtection, controllers.users.createLocalUser);
 
   app
     .route('/login')
     .get(csrfProtection, controllers.users.getLogin)
-    .post(csrfProtection, auth.login);
+    .post(csrfProtection, auth.localLogin);
+
+  app.get('/auth/twitter', auth.twitterLogin);
+  app.get('/auth/twitter/callback', auth.twitterCallback);
+  // app.get('/auth/twitter/callback', auth.twitterCallback, (req, res) => {
+  //   // Successful authentication, redirect home.
+  //   res.redirect('/');
+  // });
 
   app.get('/logout', auth.logout);
 

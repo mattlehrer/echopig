@@ -1,19 +1,25 @@
-/* eslint-disable consistent-return */
 /* eslint-disable no-unused-vars */
-/* eslint-disable no-shadow */
 const passport = require('passport');
+const logger = require('../utilities/logger')(__filename);
 
 module.exports = {
-  login(req, res, next) {
+  localLogin(req, res, next) {
     const auth = passport.authenticate('local', (err, user) => {
-      if (err) return next(err);
+      if (err) {
+        next(err);
+        return;
+      }
       if (!user) {
         req.session.error = 'Invalid Username or Password!';
         res.redirect('/login');
       }
 
+      // eslint-disable-next-line no-shadow
       req.logIn(user, err => {
-        if (err) return next(err);
+        if (err) {
+          next(err);
+          return;
+        }
         // TODO make the homepage more interesting
         // until then redirect to user profile on login
         // res.redirect('/');
@@ -42,5 +48,12 @@ module.exports = {
 
       return false;
     };
-  }
+  },
+  twitterLogin: passport.authenticate('twitter', {
+    scope: ['include_email=true']
+  }),
+  twitterCallback: passport.authenticate('twitter', {
+    successRedirect: '/settings',
+    failureRedirect: '/login'
+  })
 };

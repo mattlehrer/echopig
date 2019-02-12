@@ -24,6 +24,7 @@
     "mongoose-autopopulate": "^0.9.1",
     "passport": "^0.4",
     "passport-local": "^1.0.0",
+    "passport-twitter": "^1.0.4",
     "podcast": "^1.1.0",
     "pug": "^2.0.3",
     "searchitunes": "^2.4.0",
