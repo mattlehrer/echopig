@@ -7,8 +7,8 @@ module.exports = {
     User.create(user, callback);
   },
 
-  updateUser(query, user, callback) {
-    User.update(query, user, callback);
+  updateUser(user, query, callback) {
+    User.updateOne(user, query, callback);
   },
 
   findUserByTag(tag, callback) {

@@ -37,10 +37,8 @@ module.exports = app => {
 
   app.get('/auth/twitter', auth.twitterLogin);
   app.get('/auth/twitter/callback', auth.twitterCallback);
-  // app.get('/auth/twitter/callback', auth.twitterCallback, (req, res) => {
-  //   // Successful authentication, redirect home.
-  //   res.redirect('/');
-  // });
+  app.get('/auth/facebook', auth.facebookLogin);
+  app.get('/auth/facebook/callback', auth.facebookCallback);
 
   app.get('/logout', auth.logout);
 
@@ -57,7 +55,11 @@ module.exports = app => {
     }
   });
 
-  app.get('/settings', ensureAuthenticated, controllers.users.getSettings);
+  app
+    .route('/settings')
+    .get(ensureAuthenticated, csrfProtection, controllers.users.getSettings)
+    .post(ensureAuthenticated, csrfProtection, controllers.users.postSettings);
+
   app.get('/vcard', ensureAuthenticated, controllers.users.getVcard);
 
   app

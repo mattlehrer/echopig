@@ -55,5 +55,10 @@ module.exports = {
   twitterCallback: passport.authenticate('twitter', {
     successRedirect: '/settings',
     failureRedirect: '/login'
+  }),
+  facebookLogin: passport.authenticate('facebook'),
+  facebookCallback: passport.authenticate('facebook', {
+    successRedirect: '/settings',
+    failureRedirect: '/login'
   })
 };

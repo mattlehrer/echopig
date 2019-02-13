@@ -12,7 +12,9 @@ const reservedNames = require('../utilities/reservedNames').reserved;
 function createNewUser(userData, callback) {
   const newUserData = userData;
   newUserData.normalizedEmail = validator.normalizeEmail(newUserData.email);
-  newUserData.normalizedUsername = newUserData.username.toLowerCase();
+  // skip username if social login signup
+  if (newUserData.username !== undefined)
+    newUserData.normalizedUsername = newUserData.username.toLowerCase();
   // create secret email tag for posting
   newUserData.postTag = shortid.generate();
   usersData.createUser(newUserData, (err, user) => {
@@ -115,13 +117,13 @@ module.exports = {
 
       if (updatedUserData.password !== updatedUserData.confirmPassword) {
         req.session.error = 'Passwords do not match!';
-        res.redirect('/profile');
+        res.redirect('/settings');
       } else {
         usersData.updateUser(
           { _id: req.body._id },
           updatedUserData,
           (err, user) => {
-            res.redirect('/profile');
+            res.redirect('/settings');
           }
         );
       }
@@ -141,9 +143,54 @@ module.exports = {
       res.redirect('/');
     } else {
       res.render('users/settings', {
-        currentUser: req.user
+        currentUser: req.user,
+        csrfToken: req.csrfToken()
       });
     }
+  },
+  postSettings(req, res, next) {
+    const settingsData = req.body;
+    if (!validator.isAlphanumeric(settingsData.username)) {
+      req.session.error =
+        'Please enter a username using only letters and numbers.';
+      res.redirect('/settings');
+    } else if (validator.isIn(settingsData.username, reservedNames)) {
+      req.session.error = 'That username is unavailable. Please try again.';
+      res.redirect('/settings');
+    }
+    usersData.findUserByUsername(settingsData.username, (err, existingUser) => {
+      if (err) {
+        logger.error(err);
+        next(err);
+        return;
+      }
+      if (existingUser) {
+        req.session.error = 'That username is taken. Please try again.';
+        res.redirect('/register');
+        return;
+      }
+      usersData.updateUser(
+        req.user,
+        { username: settingsData.username },
+        // eslint-disable-next-line no-shadow
+        err => {
+          if (err) {
+            logger.error(err);
+            next(err);
+          }
+          // logger.debug(updatedUser.username);
+          res.redirect('/settings');
+        }
+      );
+      // user.set('username', settingsData.username);
+      // // eslint-disable-next-line no-shadow
+      // user.save(err => {
+      //   if (err) {
+      //     req.session.error = 'Something went wrong. Please try again.';
+      //     res.redirect('/register');
+      //   }
+      // });
+    });
   },
   getVcard(req, res, next) {
     if (!req.user) {

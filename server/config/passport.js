@@ -2,6 +2,7 @@
 const passport = require('passport');
 const LocalPassport = require('passport-local');
 const TwitterStrategy = require('passport-twitter').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('mongoose').model('User');
 const { createUser } = require('../controllers/usersController');
 const logger = require('../utilities/logger')(__filename);
@@ -31,7 +32,7 @@ module.exports = () => {
         consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
         callbackURL: '/auth/twitter/callback',
         passReqToCallback: true,
-        // proxy: true,
+        proxy: true,
         includeEmail: true
       },
       (req, accessToken, tokenSecret, profile, done) => {
@@ -64,7 +65,6 @@ module.exports = () => {
                   if (err) {
                     return done(err);
                   }
-                  logger.debug(``);
                   req.session.error = 'Twitter account has been linked.';
                   done(err, user);
                 });
@@ -79,8 +79,105 @@ module.exports = () => {
             if (existingUser) {
               return done(null, existingUser);
             }
+            // put profile in our User format
+            const newUser = {
+              email: profile.email,
+              twitter: profile.id,
+              tokens: [{ kind: 'twitter', accessToken, tokenSecret }],
+              name: profile.displayName,
+              // eslint-disable-next-line no-underscore-dangle
+              avatar: profile._json.profile_image_url_https
+            };
             // eslint-disable-next-line no-shadow
-            createUser(profile, (err, user) => {
+            createUser(newUser, (err, user) => {
+              if (err) {
+                return done(err);
+              }
+              return done(null, user);
+            });
+          });
+        }
+      }
+    )
+  );
+
+  passport.use(
+    new FacebookStrategy(
+      {
+        clientID: process.env.FACEBOOK_APP_ID,
+        clientSecret: process.env.FACEBOOK_APP_SECRET,
+        callbackURL: '/auth/facebook/callback',
+        profileFields: ['id', 'displayName', 'emails'],
+        passReqToCallback: true
+      },
+      (req, accessToken, refreshToken, profile, done) => {
+        logger.debug('received callback');
+        if (req.user) {
+          User.findOne({ facebook: profile.id }, (err, existingUser) => {
+            if (err) {
+              return done(err);
+            }
+            if (existingUser) {
+              req.session.error =
+                'There is already a Facebook account that belongs to you. Sign in with that account or delete it, then link it with your current account.';
+              done(err);
+            } else {
+              // eslint-disable-next-line no-shadow
+              User.findById(req.user.id, (err, user) => {
+                if (err) {
+                  return done(err);
+                }
+                user.set('facebook', profile.id);
+                user.tokens.push({
+                  kind: 'facebook',
+                  accessToken,
+                  refreshToken
+                });
+                user.set(
+                  'name',
+                  user.name || profile.displayName || profile.name
+                );
+                user.set(
+                  'avatar',
+                  // eslint-disable-next-line no-underscore-dangle
+                  user.avatar ||
+                    `https://graph.facebook.com/${
+                      profile.id
+                    }/picture?type=large`
+                );
+                // eslint-disable-next-line no-shadow
+                user.save(err => {
+                  if (err) {
+                    return done(err);
+                  }
+                  req.session.error = 'Facebook account has been linked.';
+                  done(err, user);
+                });
+              });
+            }
+          });
+        } else {
+          User.findOne({ facebook: profile.id }, (err, existingUser) => {
+            if (err) {
+              return done(err);
+            }
+            if (existingUser) {
+              return done(null, existingUser);
+            }
+            // put profile in our User format
+            const newUser = {
+              // eslint-disable-next-line no-underscore-dangle
+              email: profile.email || profile._json.email,
+              facebook: profile.id,
+              tokens: [{ kind: 'facebook', accessToken, refreshToken }],
+              name: profile.displayName || profile.name,
+              // eslint-disable-next-line no-underscore-dangle
+              avatar: `https://graph.facebook.com/${
+                profile.id
+              }/picture?type=large`
+            };
+            // eslint-disable-next-line no-shadow
+            createUser(newUser, (err, user) => {
               if (err) {
                 return done(err);
               }
