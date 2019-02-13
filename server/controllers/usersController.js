@@ -171,25 +171,19 @@ module.exports = {
       }
       usersData.updateUser(
         req.user,
-        { username: settingsData.username },
+        {
+          username: settingsData.username,
+          normalizedUsername: settingsData.username.toLowerCase()
+        },
         // eslint-disable-next-line no-shadow
         err => {
           if (err) {
             logger.error(err);
             next(err);
           }
-          // logger.debug(updatedUser.username);
           res.redirect('/settings');
         }
       );
-      // user.set('username', settingsData.username);
-      // // eslint-disable-next-line no-shadow
-      // user.save(err => {
-      //   if (err) {
-      //     req.session.error = 'Something went wrong. Please try again.';
-      //     res.redirect('/register');
-      //   }
-      // });
     });
   },
   getVcard(req, res, next) {
