@@ -1,17 +1,30 @@
 extends ../shared/layout
 
 block main-content
-  h2 Settings
-  div  Username: #{currentUser.username}
-  div  Email: #{currentUser.email}
-  div  Send episode recommendations to 
-    - mailto = 'mailto:post+'+currentUser.postTag+'@echopig.com'
-    a(href=mailto) post+#{currentUser.postTag}@echopig.com
-    span 
-    a(href='/vcard') (add to contacts)
-  div
-    - profile = '/u/'+currentUser.username
-    a(href=profile) See your posts
-  if (!currentUser.twitter)
+  .h2 Settings
+  if (currentUser.username === undefined)
+    .col-md-6.col-md-offset-3
+    form(method="post", action="", class='form-horizontal')
+      fieldset
+        legend Please pick a username to complete registration
+        .form-group
+          label.control-label(for="username") Username
+          input(id="username" class="form-control" type="text" name="username" placeholder="Username")
+        .form-group
+          input(type="hidden" name="_csrf" value=csrfToken)
+        .form-group
+          button(type="submit" class="btn btn-primary") Submit
+  else
+    div  Username: #{currentUser.username}
+    div  Email: #{currentUser.email}
+    div  Send episode recommendations to 
+      - mailto = 'mailto:post+'+currentUser.postTag+'@echopig.com'
+      a(href=mailto) post+#{currentUser.postTag}@echopig.com
+      span 
+      a(href='/vcard') (add to contacts)
     div
-      a.btn.btn-twitter.btn-social(href='/auth/twitter') Sign in with Twitter
+      - profile = '/u/'+currentUser.username
+      a(href=profile) See your posts
+    if (!currentUser.twitter)
+      div
+        a.btn.btn-twitter.btn-social(href='/auth/twitter') Link your Twitter account
