@@ -103,6 +103,7 @@ module.exports = {
           comment: postData.comment,
           guid: uuid()
         };
+        if (err) return next(err);
         return createPost(newPostData, (err, post) => {
           if (err) {
             if (err.status === 400) {
