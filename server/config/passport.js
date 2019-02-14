@@ -36,7 +36,6 @@ module.exports = () => {
         includeEmail: true
       },
       (req, accessToken, tokenSecret, profile, done) => {
-        logger.debug('received callback');
         if (req.user) {
           User.findOne({ twitter: profile.id }, (err, existingUser) => {
             if (err) {
