@@ -15,16 +15,22 @@ block main-content
         .form-group
           button(type="submit" class="btn btn-primary") Submit
   else
-    div  Username: #{currentUser.username}
-    div  Email: #{currentUser.email}
-    div  Send episode recommendations to 
-      - mailto = 'mailto:post+'+currentUser.postTag+'@echopig.com'
-      a(href=mailto) post+#{currentUser.postTag}@echopig.com
-      span 
+    div Username: #{currentUser.username}
+    div Email: #{currentUser.email}
+    div Send episode recommendations to 
+      - address = `post+${currentUser.postTag}@echopig.com`
+      a(href=`mailto:${address}`)= address
+      | 
       a(href='/vcard') (add to contacts)
     div
       - profile = '/u/'+currentUser.username
       a(href=profile) See your posts
-    if (!currentUser.twitter)
-      div
-        a.btn.btn-twitter.btn-social(href='/auth/twitter') Link your Twitter account
+    .col-md-4.py-3
+      if (!currentUser.twitter)
+        a.btn.btn-block.btn-twitter.btn-social(href="/auth/twitter")
+          span.fab.fa-twitter.fa-sm
+          span Link your Twitter account
+      if (!currentUser.facebook)
+        a.btn.btn-block.btn-facebook.btn-social(href='/auth/facebook')
+            span.fab.fa-facebook-f.fa-sm
+            span Link your Facebook account
