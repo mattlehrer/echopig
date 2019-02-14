@@ -12,7 +12,7 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
-const csrfProtection = csrf({ cookie: true });
+const csrfProtection = csrf({ cookie: false });
 
 module.exports = app => {
   app.use(
