@@ -2,19 +2,25 @@
 const express = require('express');
 const favicon = require('serve-favicon');
 const session = require('express-session');
-const cookieParser = require('cookie-parser');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const mongoose = require('mongoose');
+const sass = require('node-sass-middleware');
 // const logger = require('../utilities/logger')(__filename);
 const relativeTime = require('../utilities/relativeTime');
 const auth = require('./auth');
 
 module.exports = (app, config) => {
-  app.set('trust proxy');
+  app.set('trust proxy', 1);
   app.set('view engine', 'pug');
   app.use(favicon(`${config.rootPath}/public/favicon.ico`));
   app.set('views', `${config.rootPath}/server/views`);
+  app.use(
+    sass({
+      src: `${config.rootPath}/public`,
+      dest: `${config.rootPath}/public`
+    })
+  );
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(
@@ -25,22 +31,28 @@ module.exports = (app, config) => {
       }),
       cookie: {
         httpOnly: true,
-        secure: false,
+        secure: true,
         signed: true,
         maxAge: 1000 * 60 * 60 * 24 * 30 // 30 days
       },
       secret: '124 10003',
-      key: 'epCookie',
+      name: 'epCookie',
       // domain: 'echopig.com',
       resave: false,
-      saveUninitialized: true
+      saveUninitialized: false
     })
   );
-  app.use(cookieParser());
 
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(express.static(`${config.rootPath}/public`));
+  app.use(
+    '/webfonts',
+    express.static(
+      `${config.rootPath}/node_modules/@fortawesome/fontawesome-free/webfonts`,
+      { maxAge: 31557600000 }
+    )
+  );
   app.locals.relativeTime = relativeTime;
 
   app.use('/admin', (req, res, next) => {
