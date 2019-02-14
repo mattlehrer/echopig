@@ -4,7 +4,7 @@ const encryption = require('../../utilities/cripto');
 module.exports.init = () => {
   const userSchema = new mongoose.Schema(
     {
-      username: String,
+      username: { type: String, unique: true },
       normalizedUsername: { type: String, unique: true },
       name: String,
       email: String,
