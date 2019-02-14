@@ -39,13 +39,6 @@ module.exports = {
       res.render('users/register', { csrfToken: req.csrfToken() });
     }
   },
-  getRegisterLocal(req, res, next) {
-    if (req.user) {
-      res.redirect('/');
-    } else {
-      res.render('users/registerLocal', { csrfToken: req.csrfToken() });
-    }
-  },
   createUser(userData, callback) {
     createNewUser(userData, callback);
   },
