@@ -30,14 +30,14 @@ module.exports = (app, config) => {
         collection: 'epSessions'
       }),
       cookie: {
+        // domain: 'echopig.com',
         httpOnly: true,
         secure: true,
         signed: true,
         maxAge: 1000 * 60 * 60 * 24 * 30 // 30 days
       },
-      secret: '124 10003',
+      secret: process.env.COOKIE_SECRET,
       name: 'epCookie',
-      // domain: 'echopig.com',
       resave: false,
       saveUninitialized: false
     })
