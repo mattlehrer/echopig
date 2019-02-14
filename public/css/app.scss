@@ -1,0 +1,38 @@
+@import "./variables";
+
+@import "node_modules/bootstrap/scss/bootstrap";
+@import "node_modules/@ladjs/bootstrap-social/bootstrap-social.scss";
+@import "node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
+@import "node_modules/@fortawesome/fontawesome-free/scss/brands";
+
+// a {
+// 	color: #0077FF;
+//   text-decoration: none;
+// }
+
+.navbar-brand {
+	font-family: "Indie Flower", sans-serif;
+	font-size: 3rem;
+	text-decoration: none;
+	color: black !important;
+  padding-left: 0px;
+	margin-left: 0px;
+}
+
+
+// Font icons
+.fa {
+  margin-right: 6px;
+}
+
+.fab {
+  margin-right: 6px;
+}
+
+.fas {
+  margin-right: 6px;
+}
+
+.far {
+  margin-right: 6px;
+}
