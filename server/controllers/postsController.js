@@ -8,7 +8,7 @@ const logger = require('../utilities/logger')(__filename);
 const postsData = require('../data/postsData');
 const usersController = require('./usersController');
 const episodesController = require('./episodesController');
-const mailgun = require('../utilities/mailgun');
+const mail = require('../utilities/email');
 
 function createPost(postData, cb) {
   const newPost = postData;
@@ -123,63 +123,69 @@ module.exports = {
     // 500 on internal failure or 501 for podcast app not implemented
     const postJson = req.body;
     // ensure post from mailgun
-    mailgun.confirmSignature(
-      postJson.token,
-      postJson.timestamp,
-      postJson.signature,
-      (err, confirmed) => {
-        if (err) {
-          return next(err);
-        }
-        if (!confirmed) {
-          // Unauthorized
-          return res.status(401).send('Unauthorized access');
-        }
+    if (
+      !mail.confirmSignature(
+        postJson.token,
+        postJson.timestamp,
+        postJson.signature
+      )
+    ) {
+      // Unauthorized
+      logger.info('Received request, but not from Mailgun');
+      res.status(401).send('Unauthorized access');
+      return;
+    }
 
-        // lookup user by tag
-        const tag = postJson.recipient.split('@')[0].split('+')[1];
-        if (!shortid.isValid(tag)) return res.status(400).send('No such user');
-        return usersController.findUserByTag(tag, (err, postingUser) => {
-          if (err) {
-            return next(err);
-          }
-          if (postingUser === null) {
-            return res.status(400).send('No such user');
-          }
-          let inputURL;
-          const strippedText = postJson['stripped-text'];
-          try {
-            inputURL = strippedText
-              .slice(strippedText.indexOf('http'))
-              .split(/\s/)[0]
-              .trim();
-            if (!validator.isURL(inputURL)) {
-              return res.status(400).send('No share URL');
-            }
-          } catch (error) {
-            return res.status(400).send('No share URL');
-          }
-
-          const newPostData = {
-            byUser: postingUser,
-            shareURL: inputURL,
-            comment: strippedText.split(inputURL).join('\n'),
-            guid: uuid(),
-            email: {
-              fromAddress: postJson.sender,
-              subject: postJson.subject,
-              bodyHTML: postJson['body-html'],
-              bodyPlainText: postJson['body-plain']
-            }
-          };
-          // eslint-disable-next-line no-shadow
-          return createPost(newPostData, (err, post) => {
-            if (err) next(err);
-            res.status(201).send();
-          });
-        });
+    // lookup user by tag
+    const tag = postJson.recipient.split('@')[0].split('+')[1];
+    if (!shortid.isValid(tag)) {
+      logger.info('received post from mailgun, but not with a valid tag');
+      res.status(400).send('No such user');
+      return;
+    }
+    usersController.findUserByTag(tag, (err, postingUser) => {
+      if (err) {
+        next(err);
+        return;
       }
-    );
+      if (postingUser === null) {
+        res.status(400).send('No such user');
+        return;
+      }
+      let inputURL;
+      const strippedText = postJson['stripped-text'];
+      try {
+        inputURL = strippedText
+          .slice(strippedText.indexOf('http'))
+          .split(/\s/)[0]
+          .trim();
+        if (!validator.isURL(inputURL)) {
+          res.status(400).send('No share URL');
+          return;
+        }
+      } catch (error) {
+        res.status(400).send('No share URL');
+        return;
+      }
+
+      const newPostData = {
+        byUser: postingUser,
+        shareURL: inputURL,
+        comment: strippedText.split(inputURL).join('\n'),
+        guid: uuid(),
+        email: {
+          fromAddress: postJson.sender,
+          subject: postJson.subject,
+          bodyHTML: postJson['body-html'],
+          bodyPlainText: postJson['body-plain']
+        }
+      };
+      // eslint-disable-next-line no-shadow
+      createPost(newPostData, (err, post) => {
+        if (err) next(err);
+        res.status(201).send();
+      });
+    });
   },
   updatePost(req, res, next) {},
   deletePost(req, res, next) {
