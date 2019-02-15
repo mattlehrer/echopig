@@ -28,8 +28,8 @@ module.exports = {
       callback(null);
     });
   },
-  addToList(user, callback) {
-    const list = mailgun.lists(`users@${domain}`);
+  addToList(user, listName, callback) {
+    const list = mailgun.lists(`${listName}@${domain}`);
 
     const member = {
       subscribed: true,

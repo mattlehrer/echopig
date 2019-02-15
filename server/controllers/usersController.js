@@ -27,7 +27,7 @@ function createNewUser(userData, callback) {
 
     // add new user to mailing list
     // eslint-disable-next-line no-shadow
-    mail.addToList(user, err => {
+    mail.addToList(user, 'users', err => {
       if (err) logger.error(err);
     });
 
