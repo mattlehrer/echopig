@@ -116,14 +116,6 @@ module.exports = {
   updateUser(req, res, next) {
     if (req.user._id === req.body._id || req.user.roles.indexOf('admin') > -1) {
       const updatedUserData = req.body;
-      if (updatedUserData.password && updatedUserData.password.length > 0) {
-        updatedUserData.salt = encryption.generateSalt();
-        updatedUserData.hashPass = encryption.generateHashedPassword(
-          updatedUserData.salt,
-          updatedUserData.password
-        );
-      }
-
       if (updatedUserData.password !== updatedUserData.confirmPassword) {
         req.session.error = 'Passwords do not match!';
         res.redirect('/settings');
