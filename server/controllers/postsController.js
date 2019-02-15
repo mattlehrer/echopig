@@ -183,6 +183,24 @@ module.exports = {
       // eslint-disable-next-line no-shadow
       createPost(newPostData, (err, post) => {
         if (err) next(err);
+        let toAddress;
+        if (postingUser.name)
+          toAddress = `${postingUser.name} <${postingUser.email}>`;
+        else toAddress = postingUser.email;
+        const msg = {
+          from: 'Echopig <post@echopig.com>',
+          to: toAddress,
+          subject: `${post.episode.title} post confirmed`,
+          text: `We added your post of ${post.episode.podcast.title}: ${
+            post.episode.title
+          }. Check it out on your profile at ${process.env.BASE_URL}/u/${
+            postingUser.username
+          }`
+        };
+        // eslint-disable-next-line no-shadow
+        mail.send(msg, err => {
+          if (err) logger.error(err);
+        });
         res.status(201).send();
       });
     });
