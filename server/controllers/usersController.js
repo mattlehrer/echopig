@@ -6,7 +6,6 @@ const vCard = require('vcards-js');
 
 const logger = require('../utilities/logger')(__filename);
 const mail = require('../utilities/email');
-const encryption = require('../utilities/cripto');
 const usersData = require('../data/usersData');
 const reservedNames = require('../utilities/reservedNames').reserved;
 
