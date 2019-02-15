@@ -5,6 +5,7 @@ const shortid = require('shortid');
 const vCard = require('vcards-js');
 
 const logger = require('../utilities/logger')(__filename);
+const mail = require('../utilities/email');
 const encryption = require('../utilities/cripto');
 const usersData = require('../data/usersData');
 const reservedNames = require('../utilities/reservedNames').reserved;
@@ -24,8 +25,28 @@ function createNewUser(userData, callback) {
       return;
     }
 
-    // TODO add new user to mailgun mailing list
-    // TODO send welcome email
+    // add new user to mailing list
+    // eslint-disable-next-line no-shadow
+    mail.addToList(user, err => {
+      if (err) logger.error(err);
+    });
+
+    // send welcome message
+    let toAddress;
+    if (user.name) toAddress = `${user.name} <${user.email}>`;
+    else toAddress = user.email;
+    const msg = {
+      from: 'Echopig <welcome@echopig.com>',
+      to: toAddress,
+      subject: 'Welcome to Echopig',
+      text: `Welcome to Echopig. We're happy to have you. Please add post+${
+        user.postTag
+      }@echopig.com to your contacts so that you can add your favorite podcast episodes from the share sheet in your podcast app.`
+    };
+    // eslint-disable-next-line no-shadow
+    mail.send(msg, err => {
+      if (err) logger.error(err);
+    });
 
     callback(null, user);
   });
