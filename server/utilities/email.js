@@ -1,6 +1,6 @@
 const apiKey = process.env.MAILGUN_API_KEY;
 const domain = process.env.MAILGUN_DOMAIN;
-const testMode = !process.env.NODE_ENV === 'production';
+const testMode = !(process.env.NODE_ENV === 'production');
 const mailgun = require('mailgun-js')({ apiKey, domain, testMode });
 const logger = require('../utilities/logger')(__filename);
 
