@@ -79,11 +79,6 @@ module.exports = {
       req.session.error = 'Please enter a valid email address.';
       res.redirect('/register');
     } else {
-      newUserData.salt = encryption.generateSalt();
-      newUserData.hashPass = encryption.generateHashedPassword(
-        newUserData.salt,
-        newUserData.password
-      );
       usersData.findUserByUsername(newUserData.username, (err, user) => {
         if (err) {
           logger.error(err);

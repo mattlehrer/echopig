@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 const passport = require('passport');
-const LocalPassport = require('passport-local');
+const LocalStrategy = require('passport-local');
 const TwitterStrategy = require('passport-twitter').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('mongoose').model('User');
@@ -9,20 +9,39 @@ const logger = require('../utilities/logger')(__filename);
 
 module.exports = () => {
   passport.use(
-    new LocalPassport((username, password, done) => {
-      User.findOne({ username }).exec((err, user) => {
-        if (err) {
-          logger.error(`Error loading user: ${err}`);
-          return;
-        }
-
-        if (user && user.authenticate(password)) {
-          return done(null, user);
-        }
-
-        return done(null, false);
-      });
-    })
+    new LocalStrategy(
+      {
+        usernameField: 'username',
+        passwordField: 'password',
+        passReqToCallback: true
+      },
+      (req, username, password, done) => {
+        User.findOne(
+          { normalizedUsername: username.toLowerCase() },
+          (err, user) => {
+            if (err) {
+              return done(err);
+            }
+            if (!user) {
+              // return done(null, false, { msg: `Username ${username} not found.` });
+              return done(null, false);
+            }
+            // eslint-disable-next-line no-shadow
+            user.comparePassword(password, (err, isMatch) => {
+              if (err) {
+                return done(err);
+              }
+              if (isMatch) {
+                return done(null, user);
+              }
+              // return done(null, false, { msg: 'Invalid username or password.' });
+              req.session.error = 'Invalid username or password.';
+              return done(null, false);
+            });
+          }
+        );
+      }
+    )
   );
 
   passport.use(
