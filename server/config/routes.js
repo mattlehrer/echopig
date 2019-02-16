@@ -3,6 +3,7 @@ const expressWinston = require('express-winston');
 const logger = require('../utilities/logger')(__filename);
 const auth = require('./auth');
 const controllers = require('../controllers');
+const importOldPosts = require('../utilities/import');
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) next();
@@ -12,6 +13,7 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
+const env = process.env.NODE_ENV || 'development';
 const csrfProtection = csrf({ cookie: false });
 
 module.exports = app => {
@@ -24,7 +26,10 @@ module.exports = app => {
       }
     })
   );
-
+  app.get('/import', (req, res, next) => {
+    if (env === 'development') importOldPosts();
+    else next();
+  });
   app
     .route('/register')
     .get(csrfProtection, controllers.users.getRegister)
