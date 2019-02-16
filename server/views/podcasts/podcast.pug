@@ -9,7 +9,8 @@ block main-content
         )
       else
         div.w-100
-          a.float-right.h1(href=`/p/i${podcast.iTunesID}/update`) 🔃
+          if (currentUser !== undefined)
+            a.float-right.h1(href=`/p/i${podcast.iTunesID}/update`) 🔃
     div.col-md.px-0.pt-3
       .h3 !{podcast.title}
       if podcast.author
