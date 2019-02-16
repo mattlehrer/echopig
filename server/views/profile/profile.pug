@@ -22,6 +22,8 @@ block main-content
               src=post.episode.podcast.artworkUrl600
               height="auto"
             )
+          else
+            div.w-25 
           div.pl-3.media-body 
             if (currentUser && profiledUser.id === currentUser.id)
               div
@@ -34,7 +36,7 @@ block main-content
                 a(href=`/e/${post.episode.id}`) !{post.episode.title}
               div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(post.episode.releaseDate)}
             div.lead !{post.comment}
-            if (post.episode !== null && post.episode.podcast !== null)
+            if (post.episode !== null && post.episode.description !== null)
               div.small !{post.episode.description}
             div.small.font-weight-light.pt-2 🐽 #{relativeTime(post.updatedAt)} 
               //- if post.episode.posts.length > 1
