@@ -13,34 +13,25 @@ module.exports = {
       podcastsData.findPodcastByITunesID(
         podcastData.iTunesID,
         (err, podcast) => {
-          if (podcast !== null) {
-            return callback(null, podcast);
+          if (err) {
+            callback(err, null);
+            return;
           }
-          // eslint-disable-next-line no-shadow
-          return podcastsData.addNewPodcast(podcastData, (err, podcast) => {
-            if (err) return callback(err, null);
-            searchitunes({ id: podcastData.iTunesID })
-              .then(data => {
-                podcastsData.updatePodcast(
-                  podcast.id,
-                  data,
-                  // eslint-disable-next-line no-shadow
-                  (err, updatedPodcast) => {
-                    if (err) logger.error(err);
-                    else {
-                      logger.debug(
-                        `updated podcast id: ${updatedPodcast.id} 
-                        - title: ${updatedPodcast.title}`
-                      );
-                    }
-                  }
-                );
-              })
-              .catch(error => {
-                logger.error(error);
+          if (podcast !== null) {
+            callback(null, podcast);
+            return;
+          }
+          searchitunes({ id: podcastData.iTunesID })
+            .then(data => {
+              // eslint-disable-next-line no-shadow
+              return podcastsData.addNewPodcast(data, (err, podcast) => {
+                if (err) return callback(err, null);
+                return callback(null, podcast);
               });
-            return callback(null, podcast);
-          });
+            })
+            .catch(error => {
+              logger.error(error);
+            });
         }
       );
     } else if (podcastData.title) {
