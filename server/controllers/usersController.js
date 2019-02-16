@@ -30,21 +30,8 @@ function createNewUser(userData, callback) {
       if (err) logger.error(err);
     });
 
-    // send welcome message
-    let toAddress;
-    if (user.name) toAddress = `${user.name} <${user.email}>`;
-    else toAddress = user.email;
-    const msg = {
-      from: 'Echopig <welcome@echopig.com>',
-      to: toAddress,
-      subject: 'Welcome to Echopig',
-      text: `Welcome to Echopig. We're happy to have you. Please add post+${
-        user.postTag
-      }@echopig.com to your contacts so that you can add your favorite podcast episodes from the share sheet in your podcast app.`
-    };
-    // eslint-disable-next-line no-shadow
-    mail.send(msg, err => {
-      if (err) logger.error(err);
+    mail.sendWithTemplate('welcome', 'Echopig <welcome@echopig.com>', user, {
+      user
     });
 
     callback(null, user);
@@ -106,7 +93,7 @@ module.exports = {
               res.send({ reason: err.toString() });
               return;
             }
-            res.render('users/settings', { currentUser: user });
+            res.redirect('/settings');
           });
         });
       });

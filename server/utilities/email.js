@@ -2,22 +2,28 @@ const apiKey = process.env.MAILGUN_API_KEY;
 const domain = process.env.MAILGUN_DOMAIN;
 const testMode = !(process.env.NODE_ENV === 'production');
 const mailgun = require('mailgun-js')({ apiKey, domain, testMode });
+const appRoot = require('app-root-path');
+const nodemailer = require('nodemailer');
+const Email = require('email-templates');
+const mg = require('nodemailer-mailgun-transport');
+
 const logger = require('../utilities/logger')(__filename);
 
-// const data = {
-//   from: 'Excited User <me@samples.mailgun.org>',
-//   to: 'serobnic@mail.ru',
-//   subject: 'Hello',
-//   text: 'Testing some Mailgun awesomeness!'
-// };
-
-// mail.messages().send(data, (err, body) => {
-//   if (err) logger.error(err);
-//   logger.debug(body);
-// });
+const auth = {
+  auth: {
+    api_key: apiKey,
+    domain
+  }
+};
 
 module.exports = {
   send(data, callback) {
+    // const data = {
+    //   from: 'Excited User <me@samples.mailgun.org>',
+    //   to: 'serobnic@mail.ru',
+    //   subject: 'Hello',
+    //   text: 'Testing some Mailgun awesomeness!'
+    // };
     mailgun.messages().send(data, (err, body) => {
       if (err) {
         logger.error(err);
@@ -34,7 +40,8 @@ module.exports = {
     const member = {
       subscribed: true,
       address: user.email,
-      name: user.name || ''
+      name: user.name || '',
+      upsert: 'yes'
     };
 
     list.members().create(member, (err, data) => {
@@ -43,11 +50,33 @@ module.exports = {
         callback(err);
         return;
       }
-      logger.debug(data);
+      logger.debug(`added to list: ${data}`);
       callback(null);
     });
   },
   confirmSignature(token = '', timestamp = '', signature = '') {
     return mailgun.validateWebhook(timestamp, token, signature);
+  },
+  transport: nodemailer.createTransport(mg(auth)),
+  sendWithTemplate(template, from = `info@${domain}`, to, locals = {}) {
+    const email = new Email({
+      message: {
+        from
+      },
+      // uncomment below to send emails in development/test env:
+      // send: true
+      transport: this.transport
+    });
+
+    email
+      .send({
+        template: `${appRoot}/server/views/emails/${template}`,
+        message: {
+          to: to.email
+        },
+        locals
+      })
+      .then(logger.debug)
+      .catch(logger.error);
   }
 };
