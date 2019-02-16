@@ -12,12 +12,12 @@ block main-content
       ul
       each post in profiledUser.posts
         li.media.border-top.py-3
-          if (post.episode.image !== undefined)
+          if (post.episode !== null && post.episode.image !== undefined)
             img.rounded.w-25(
               src=post.episode.image
               height="auto"
             )
-          else
+          else if (post.episode !== null && post.episode.podcast !== null && post.episode.podcast.artworkUrl600)
             img.rounded.w-25.h100(
               src=post.episode.podcast.artworkUrl600
               height="auto"
@@ -27,13 +27,15 @@ block main-content
               div
                 a.float-right.btn.btn-outline-danger.btn-sm(href=`/deletePost?p=${post.id}` title='Delete post')
                   span(aria-hidden="true") &times;
-            div
-              a(href=`/p/i${post.episode.podcast.iTunesID}`) !{post.episode.podcast.title}
-            div.h5.mb-0
-              a(href=`/e/${post.episode.id}`) !{post.episode.title}
-            div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(post.episode.releaseDate)}
+            if (post.episode !== null && post.episode.podcast !== null)
+              div
+                a(href=`/p/i${post.episode.podcast.iTunesID}`) !{post.episode.podcast.title}
+              div.h5.mb-0
+                a(href=`/e/${post.episode.id}`) !{post.episode.title}
+              div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(post.episode.releaseDate)}
             div.lead !{post.comment}
-            div.small !{post.episode.description}
+            if (post.episode !== null && post.episode.podcast !== null)
+              div.small !{post.episode.description}
             div.small.font-weight-light.pt-2 🐽 #{relativeTime(post.updatedAt)} 
               //- if post.episode.posts.length > 1
               //-   | along with #{post.episode.posts.length-1} other
