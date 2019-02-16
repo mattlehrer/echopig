@@ -51,6 +51,7 @@ module.exports = app => {
   app.get('/rss/:username', controllers.rss.getRSSFeed);
   app.get('/e/:episode', controllers.episodes.getEpisode);
   app.get('/p/i:iTunesID', controllers.podcasts.getPodcastByITunesID);
+  app.get('/p/i:iTunesID/update', controllers.podcasts.updatePodcast);
 
   app.get('/', (req, res) => {
     if (req.isAuthenticated()) {

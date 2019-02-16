@@ -100,6 +100,24 @@ module.exports = {
       );
     });
   },
-  updatePodcast() {},
+  updatePodcast(req, res, next) {
+    const { iTunesID } = req.params;
+    searchitunes({ id: iTunesID })
+      .then(data => {
+        // eslint-disable-next-line no-shadow
+        podcastsData.updatePodcastByITunesID(iTunesID, data, (err, podcast) => {
+          if (err) {
+            next(err);
+            return;
+          }
+          logger.debug(podcast);
+          res.redirect(req.get('Referrer') || '/');
+        });
+      })
+      .catch(error => {
+        logger.error(error);
+        next(error);
+      });
+  },
   deletePodcast() {}
 };

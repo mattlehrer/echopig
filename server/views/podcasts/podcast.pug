@@ -3,9 +3,13 @@ extends ../shared/layout
 block main-content
   div.row.pt-4
     div.col-md
-      img.float-right.rounded.w-100.h-100(
-        src=podcast.artworkUrl600
-      )
+      if (podcast.artworkUrl600 !== undefined)
+        img.float-right.rounded.w-100.h-100(
+          src=podcast.artworkUrl600
+        )
+      else
+        div.w-100
+          a.float-right.h1(href=`/p/i${podcast.iTunesID}/update`) 🔃
     div.col-md.px-0.pt-3
       .h3 !{podcast.title}
       if podcast.author
@@ -22,6 +26,8 @@ block main-content
             src=episode.image
             height="auto"
           )
+        else
+          div.w-25
         div.media-body 
           div.h5.mb-0
             a(href=`/e/${episode.id}`) !{episode.title}

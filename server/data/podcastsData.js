@@ -9,6 +9,10 @@ module.exports = {
     Podcast.findByIdAndUpdate(id, podcastData, callback);
   },
 
+  updatePodcastByITunesID(iTunesID, podcastData, callback) {
+    Podcast.findOneAndUpdate({ iTunesID }, podcastData, callback);
+  },
+
   deletePodcast(query, podcast, callback) {
     Podcast.deleteOne(query, podcast, callback);
   },
