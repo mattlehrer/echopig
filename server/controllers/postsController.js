@@ -15,7 +15,11 @@ function createPost(postData, cb) {
   episodesController.findOrCreateEpisodeWithShareURL(
     newPost.shareURL,
     (err, episode) => {
-      if (err) cb(err, null);
+      if (err) {
+        logger.error(err);
+        cb(err, null);
+        return;
+      }
       // check if user has already posted this episode
       let alreadyPosted = false;
       newPost.byUser.posts.forEach(post => {
@@ -48,9 +52,7 @@ function createPost(postData, cb) {
         postsData.addNewPost(newPost, (err, post) => {
           if (err) cb(err, null);
           logger.debug(`added post: ${post}`);
-          // get back to the user quickly with cb first
-          cb(null, post);
-          // but also add post reference to User
+          // add post reference to User
           usersController.addPostByUser(post, newPost.byUser, (err, user) => {
             if (err) {
               logger.alert(
@@ -58,7 +60,7 @@ function createPost(postData, cb) {
               );
             }
           });
-          // and add post reference to Episode
+          // add post reference to Episode
           episodesController.addPostOfEpisode(post, episode, (err, ep) => {
             if (err) {
               logger.alert(
@@ -66,6 +68,7 @@ function createPost(postData, cb) {
               );
             }
           });
+          cb(null, post);
         });
       }
     }
@@ -73,6 +76,7 @@ function createPost(postData, cb) {
 }
 
 module.exports = {
+  cp: createPost,
   getNewPost(req, res, next) {
     if (!req.user) {
       res.redirect('/');

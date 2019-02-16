@@ -202,11 +202,13 @@ module.exports = {
     usersData.findUserByIdWithPosts(id, callback);
   },
   addPostByUser(post, user, callback) {
-    if (
-      !user.explicit &&
-      String(post.episode.podcast.contentAdvisoryRating).toLowerCase() ===
-        'explicit'
-    ) {
+    let rating;
+    try {
+      rating = post.episode.podcast.contentAdvisoryRating;
+    } catch (err) {
+      rating = '';
+    }
+    if (!user.explicit && String(rating).toLowerCase() === 'explicit') {
       user.set({ explicit: true });
       user.save((err, updatedUser) => {
         if (err) logger.error(err);

@@ -26,24 +26,28 @@ module.exports = (url, callback) => {
       app: 'overcast',
       url
     };
-
-    // find Podcast title
-    let regex = new RegExp(/(?: &mdash; )(.*)(?: &mdash; )/gm);
-    let resultArray = regex.exec(html);
-    if (resultArray !== null) {
-      [, episodeData.podcastTitle] = resultArray;
+    if (html.length < 500) {
+      const error = new Error(`Bad share URL or episode removed at ${url}`);
+      return callback(error, null);
     }
 
     // find Podcast iTunesID
-    regex = new RegExp(/(?:\/itunes)(\d*)(?:\/)/gm);
-    resultArray = regex.exec(html);
+    let regex = new RegExp(/(?:\/itunes)(\d*)(?:\/)/gm);
+    let resultArray = regex.exec(html);
     if (resultArray === null) {
       errLog.podcastiTunesID = null;
       logger.alert(errLog);
-      const error = new Error('no podcast iTunesID found');
+      const error = new Error(`no podcast iTunesID found for ${url}`);
       return callback(error, null);
     }
     [, episodeData.podcastiTunesID] = resultArray;
+
+    // find Podcast title
+    // regex = new RegExp(/(?: &mdash; )(.*)(?: &mdash; )/gm);
+    // resultArray = regex.exec(html);
+    // if (resultArray !== null) {
+    //   [, episodeData.podcastTitle] = resultArray;
+    // }
 
     // find Podcast artwork
     // regex = new RegExp(/(?:fullart" src=".*)(http.*)(?:"\/)/gm);
