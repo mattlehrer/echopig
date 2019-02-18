@@ -3,25 +3,36 @@ extends ../shared/layout
 block main-content
   if episodes.length > 0
     .w-100.py-4
-      .h4 Top Posts
-      ul
-      each episode in episodes
-        li.media.border-top.py-3
-          if (episode.image !== undefined)
-            img.rounded.w-25(
-              src=episode.image
-              height="auto"
-            )
-          else
-            img.rounded.w-25.h100(
-              src=episode.podcast.artworkUrl600
-              height="auto"
-            )
-          div.pl-3.media-body 
-            div
-              a(href=`/p/i${episode.podcast.iTunesID}`) !{episode.podcast.title}
-            div.h5.mb-0
-              a(href=`/e/${episode.id}`) !{episode.title}
-            div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(episode.releaseDate)}
-            div.small !{episode.description}
-            div.small.font-weight-light.pt-2 🐽 #{episode.posts.length} 
+      //- .h4 Top Posts
+      //- div.btn-group.btn-group-lg.pb-3(role="group" aria-label="kind of top posts")
+      //-   button.btn.btn-secondary(type="button") Hot
+      //-   div.btn-group.btn-group-lg(role="group")
+      //-     button.btn.btn-secondary.dropdown-toggle(id="topDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Top
+      //-       div.dropdown-menu(aria-labelledby="topDropdown")
+      //-         a.dropdown-item(href="#") Past 24 Hours
+      //-         a.dropdown-item(href="#") Past Week
+      //-         a.dropdown-item(href="#") Past Month
+      //-         a.dropdown-item(href="#") Past Year
+      //-         a.dropdown-item(href="#") All Time
+      //-   button.btn.btn-secondary(type="button") New
+      ul.pl-0
+        each episode in episodes
+          li.media.border-top.py-3
+            if (episode.image !== undefined)
+              img.rounded.w-25(
+                src=episode.image
+                height="auto"
+              )
+            else
+              img.rounded.w-25.h100(
+                src=episode.podcast.artworkUrl600
+                height="auto"
+              )
+            div.pl-3.media-body 
+              div
+                a(href=`/p/i${episode.podcast.iTunesID}`) !{episode.podcast.title}
+              div.h5.mb-0
+                a(href=`/e/${episode.id}`) !{episode.title}
+              div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(episode.releaseDate)}
+              div.small !{episode.description}
+              div.small.font-weight-light.pt-2 🐽 #{episode.posts.length} 
