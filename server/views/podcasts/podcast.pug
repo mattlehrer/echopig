@@ -1,8 +1,8 @@
 extends ../shared/layout
 
 block main-content
-  div.row.pt-4
-    div.col-md
+  div.row.justify-content-md-center.py-4
+    div.col-md-3
       if (podcast.artworkUrl600 !== undefined)
         img.float-right.rounded.w-100.h-100(
           src=podcast.artworkUrl600
@@ -11,27 +11,29 @@ block main-content
         div.w-100
           if (currentUser !== undefined)
             a.float-right.h1(href=`/p/i${podcast.iTunesID}/update`) 🔃
-    div.col-md.px-0.pt-3
+    div.col-md-3.px-3.pt-3
       .h3 !{podcast.title}
       if podcast.author
-        div.small By #{podcast.author}
-      div.pt-2 Episodes Posted: #{episodes.length}
-      div
+        div By #{podcast.author}
+      div.pt-2.pb-1 Episodes Posted: #{episodes.length}
+      div.small
         a(href=podcast.feedUrl) RSS feed
+      div.small.pt-2
+        each genre in podcast.genres
+          if (genre !== 'Podcasts')
+            a(href=`/g/${genre.toLowerCase()}`)= `#${genre.toLowerCase()} `
   if episodes.length > 0
-    ul
-    each episode in episodes
-      li.media.border-top.py-3
-        if (episode.image !== undefined)
-          img.rounded.w-25(
-            src=episode.image
-            height="auto"
-          )
-        else
-          div.w-25
-        div.media-body 
-          div.h5.mb-0
-            a(href=`/e/${episode.id}`) !{episode.title}
-          div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(episode.releaseDate)}
-          div.small !{episode.description}
-          div.small.font-weight-light.pt-2 🐽 #{episode.posts.length}
+    ul.pl-0
+      each episode in episodes
+        li.media.border-top.py-3
+          if (episode.image !== undefined)
+            img.rounded.w-25(
+              src=episode.image
+              height="auto"
+            )
+          div.media-body
+            div.h5.mb-0
+              a(href=`/e/${episode.id}`) !{episode.title}
+            div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(episode.releaseDate)}
+            div.small !{episode.description}
+            div.small.font-weight-light.pt-2 🐽 #{episode.posts.length}
