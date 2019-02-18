@@ -1,5 +1,5 @@
-const postsController = require('../controllers/postsController');
-const usersController = require('../controllers/usersController');
+const { createPost } = require('../controllers/postsController');
+const { findUserByUsername } = require('../data/usersData');
 const logger = require('./logger')(__filename);
 
 const oldPosts = [
@@ -143,27 +143,24 @@ const oldPosts = [
 ];
 
 module.exports = () => {
-  usersController.findUserByIdWithPosts(
-    '5c6724be0a359401401db415',
-    (err, matt) => {
-      if (err) {
-        logger.debug(err);
-        return;
-      }
-      oldPosts.forEach(p => {
-        const oldPost = {
-          byUser: matt,
-          shareURL: p.shareURL
-        };
-        // eslint-disable-next-line no-shadow
-        postsController.cp(oldPost, err => {
-          if (err) {
-            logger.debug(err);
-          } else {
-            // logger.debug(post.episode.title);
-          }
-        });
-      });
+  findUserByUsername('matt', (err, matt) => {
+    if (err) {
+      logger.debug(err);
+      return;
     }
-  );
+    oldPosts.forEach(p => {
+      const oldPost = {
+        byUser: matt,
+        shareURL: p.shareURL
+      };
+      // eslint-disable-next-line no-shadow
+      createPost(oldPost, err => {
+        if (err) {
+          logger.debug(err);
+        } else {
+          // logger.debug(post.episode.title);
+        }
+      });
+    });
+  });
 };
