@@ -75,6 +75,13 @@ function createPost(postData, cb) {
   );
 }
 
+function cleanTimeframeQuery(query = '') {
+  if (validator.isInt(query, { min: 1 })) {
+    return query;
+  }
+  return 24 * 7; // this week
+}
+
 module.exports = {
   cp: createPost,
   getNewPost(req, res, next) {
@@ -240,8 +247,8 @@ module.exports = {
       });
     }
   },
-  findMostPostedEpisodesByTimeframe(req, res, next) {
-    const hours = req.query.t || 24;
+  mostPostedEpisodesInTimeframe(req, res, next) {
+    const hours = cleanTimeframeQuery(req.query.t);
     const timeframe = hours * 60 * 60 * 1000;
     const since = new Date(Date.now() - timeframe);
     postsData.findMostPostedEpisodesInTimeframe(since, (err, episodes) => {
@@ -256,5 +263,32 @@ module.exports = {
       //   }
       // );
     });
+  },
+  mostPostedEpisodesInGenreInTimeframe(req, res, next) {
+    const { genre } = req.params;
+    // itunes genres only contain letters, numbers, the space and &
+    if (!genre.match(/^[a-z0-9 &]*$/i)) {
+      // no such genre
+      next();
+      return;
+    }
+    const hours = cleanTimeframeQuery(req.query.t);
+    const timeframe = hours * 60 * 60 * 1000;
+    const since = new Date(Date.now() - timeframe);
+    postsData.findMostPostedEpisodesInGenreInTimeframe(
+      genre,
+      since,
+      (err, episodes) => {
+        if (err) {
+          logger.error(err);
+          next(err);
+          return;
+        }
+        res.render('episodes/topByGenre', {
+          currentUser: req.user,
+          episodes
+        });
+      }
+    );
   }
 };

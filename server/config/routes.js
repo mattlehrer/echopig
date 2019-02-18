@@ -56,6 +56,8 @@ module.exports = app => {
     ensureAuthenticated,
     controllers.podcasts.updatePodcast
   );
+  app.get('/g/:genre', controllers.posts.mostPostedEpisodesInGenreInTimeframe);
+  app.get('/top', controllers.posts.mostPostedEpisodesInTimeframe);
 
   app.get('/', (req, res) => {
     if (req.isAuthenticated()) {
@@ -81,7 +83,6 @@ module.exports = app => {
       controllers.posts.addNewPostViaWeb
     );
   app.post('/mailpost', controllers.posts.addNewPostViaMailgun);
-  app.get('/top', controllers.posts.findMostPostedEpisodesByTimeframe);
 
   app.get('/deletePost', ensureAuthenticated, controllers.posts.deletePost);
 
