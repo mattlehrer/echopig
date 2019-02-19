@@ -1,5 +1,8 @@
 FROM node:lts-jessie
 
+# Install PM2
+RUN npm install -g pm2
+
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -7,15 +10,13 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # For production:
-# RUN npm install --only=production
-RUN npm install
+RUN npm install --only=production
 
 # Bundle app source
 COPY . .
 
 EXPOSE 9001
-EXPOSE 9229
 
 USER node
 
-CMD [ "npm", "start" ]
+CMD [ "pm2-runtime", "npm", "--", "start" ]
