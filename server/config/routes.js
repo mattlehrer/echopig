@@ -1,14 +1,16 @@
 const csrf = require('csurf');
 const expressWinston = require('express-winston');
+const { check } = require('express-validator/check');
 const logger = require('../utilities/logger')(__filename);
 const auth = require('./auth');
 const controllers = require('../controllers');
 const importOldPosts = require('../utilities/import');
+const reservedNames = require('../utilities/reservedNames').reserved;
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) next();
   else {
-    req.session.error = 'Please log in or register for an account.';
+    req.flash('errors', 'Please log in or register for an account.');
     res.redirect(req.get('Referrer') || '/');
   }
 }
@@ -33,12 +35,56 @@ module.exports = app => {
   app
     .route('/register')
     .get(csrfProtection, controllers.users.getRegister)
-    .post(csrfProtection, controllers.users.createLocalUser);
+    .post(
+      csrfProtection,
+      check(
+        'username',
+        'Please choose a username of only letters and numbers.'
+      ).isAlphanumeric(),
+      check(
+        'username',
+        'Please choose a username longer than 3 characters.'
+      ).isLength({ min: 3 }),
+      check('username', 'That username is unavailable. Please try again.')
+        .not()
+        .isIn(reservedNames),
+      check('email', 'Please enter a valid email address.').isEmail(),
+      check(
+        'password',
+        'Please choose a password longer than 4 characters'
+      ).isLength({ min: 4 }),
+      check('confirmPassword', `Passwords didn't match. Please try again`)
+        .exists()
+        .custom((value, { req }) => value === req.body.password),
+      controllers.users.createLocalUser
+    );
 
   app
     .route('/login')
     .get(csrfProtection, controllers.users.getLogin)
     .post(csrfProtection, auth.localLogin);
+
+  app.get('/forgot', csrfProtection, controllers.users.getForgot);
+  app.post(
+    '/forgot',
+    csrfProtection,
+    check('email', 'Please enter a valid email address.').isEmail(),
+    controllers.users.postForgot
+  );
+  app
+    .route('/reset/:token')
+    .get(csrfProtection, controllers.users.getReset)
+    .post(
+      csrfProtection,
+      check(
+        'password',
+        'Please use a password longer than 4 characters'
+      ).isLength({ min: 4 }),
+      check('confirmPassword', `Passwords didn't match. Please try again`)
+        .exists()
+        .custom((value, { req }) => value === req.body.password),
+      controllers.users.postReset
+    );
 
   app.get('/auth/twitter', auth.twitterLogin);
   app.get('/auth/twitter/callback', auth.twitterCallback);
@@ -70,7 +116,29 @@ module.exports = app => {
   app
     .route('/settings')
     .get(ensureAuthenticated, csrfProtection, controllers.users.getSettings)
-    .post(ensureAuthenticated, csrfProtection, controllers.users.postSettings);
+    .post(
+      ensureAuthenticated,
+      csrfProtection,
+      check(
+        'username',
+        'Please choose a username of only letters and numbers.'
+      ).isAlphanumeric(),
+      check(
+        'username',
+        'Please choose a username longer than 3 characters.'
+      ).isLength({ min: 3 }),
+      check('username', 'That username is unavailable. Please try again.')
+        .not()
+        .isIn(reservedNames),
+      check(
+        'password',
+        'Please choose a password longer than 4 characters'
+      ).isLength({ min: 4 }),
+      check('confirmPassword', `Passwords didn't match. Please try again`)
+        .exists()
+        .custom((value, { req }) => value === req.body.password),
+      controllers.users.postSettings
+    );
 
   app.get('/vcard', ensureAuthenticated, controllers.users.getVcard);
 
@@ -80,11 +148,27 @@ module.exports = app => {
     .post(
       ensureAuthenticated,
       csrfProtection,
+      check(
+        'shareURL',
+        `We currently only work with episode share URLs from Apple's Podcasts.app and Overcast`
+      ).isURL(),
+      check('comment')
+        .trim()
+        .escape()
+        .stripLow({ keep_new_lines: true }),
       controllers.posts.addNewPostViaWeb
     );
   app.post('/mailpost', controllers.posts.addNewPostViaMailgun);
 
-  app.get('/deletePost', ensureAuthenticated, controllers.posts.deletePost);
+  app.get(
+    '/deletePost',
+    ensureAuthenticated,
+    check('p')
+      .isLength({ min: 24, max: 24 })
+      .isHexadecimal()
+      .withMessage('Invalid post ID'),
+    controllers.posts.deletePost
+  );
 
   // catch 404 and forward to error handler
   app.use((req, res, next) => {
