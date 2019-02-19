@@ -58,13 +58,19 @@ module.exports = {
     return mailgun.validateWebhook(timestamp, token, signature);
   },
   transport: nodemailer.createTransport(mg(auth)),
-  sendWithTemplate(template, from = `info@${domain}`, to, locals = {}) {
+  sendWithTemplate(
+    template,
+    from = `info@${domain}`,
+    to,
+    locals = {},
+    callback
+  ) {
     const email = new Email({
       message: {
         from
       },
       // uncomment below to send emails in development/test env:
-      // send: true
+      send: true,
       transport: this.transport
     });
 
@@ -76,7 +82,13 @@ module.exports = {
         },
         locals
       })
-      .then(logger.debug)
-      .catch(logger.error);
+      .then(res => {
+        logger.debug(res);
+        callback(null, res);
+      })
+      .catch(err => {
+        logger.error(err);
+        callback(err);
+      });
   }
 };
