@@ -3,11 +3,13 @@
 const validator = require('validator');
 const shortid = require('shortid');
 const vCard = require('vcards-js');
+const crypto = require('crypto');
+const { validationResult } = require('express-validator/check');
 
 const logger = require('../utilities/logger')(__filename);
 const mail = require('../utilities/email');
 const usersData = require('../data/usersData');
-const reservedNames = require('../utilities/reservedNames').reserved;
+// const reservedNames = require('../utilities/reservedNames').reserved;
 
 function createNewUser(userData, callback) {
   const newUserData = userData;
@@ -30,9 +32,17 @@ function createNewUser(userData, callback) {
       if (err) logger.error(err);
     });
 
-    mail.sendWithTemplate('welcome', 'Echopig <welcome@echopig.com>', user, {
-      user
-    });
+    mail.sendWithTemplate(
+      'welcome', // template
+      'Echopig <welcome@echopig.com>', // from
+      user, // to
+      { user }, // variables for mail template
+      // eslint-disable-next-line no-shadow
+      err => {
+        logger.error(err);
+        callback(err);
+      }
+    );
 
     callback(null, user);
   });
@@ -50,60 +60,55 @@ module.exports = {
     createNewUser(userData, callback);
   },
   createLocalUser(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(e => {
+        req.flash('errors', e.msg);
+      });
+      res.redirect('back');
+      return;
+    }
     const newUserData = req.body;
-    if (!validator.isAlphanumeric(newUserData.username)) {
-      req.session.error =
-        'Please enter a username using only letters and numbers.';
-      res.redirect('/register');
-    } else if (validator.isIn(newUserData.username, reservedNames)) {
-      req.session.error = 'That username is unavailable. Please try again.';
-      res.redirect('/register');
-    } else if (newUserData.password !== newUserData.confirmPassword) {
-      req.session.error = 'Passwords do not match. Please try again.';
-      res.redirect('/register');
-    } else if (!validator.isEmail(newUserData.email)) {
-      req.session.error = 'Please enter a valid email address.';
-      res.redirect('/register');
-    } else {
-      usersData.findUserByUsername(newUserData.username, (err, user) => {
+    usersData.findUserByUsername(newUserData.username, (err, user) => {
+      if (err) {
+        logger.error(err);
+        next(err);
+        return;
+      }
+      if (user) {
+        req.flash('errors', 'That username is taken. Please try again.');
+        res.redirect('/register');
+        return;
+      }
+      // TODO: ensure email is unique
+
+      // eslint-disable-next-line no-shadow
+      createNewUser(newUserData, (err, user) => {
         if (err) {
           logger.error(err);
           next(err);
           return;
         }
-        if (user) {
-          req.session.error = 'That username is taken. Please try again.';
-          res.redirect('/register');
-          return;
-        }
+        logger.debug(`Created user: ${user}`);
 
         // eslint-disable-next-line no-shadow
-        createNewUser(newUserData, (err, user) => {
+        req.logIn(user, err => {
           if (err) {
-            logger.error(err);
-            next(err);
+            res.status(400);
+            res.send({ reason: err.toString() });
             return;
           }
-          logger.debug(`Created user: ${user}`);
-
-          // eslint-disable-next-line no-shadow
-          req.logIn(user, err => {
-            if (err) {
-              res.status(400);
-              res.send({ reason: err.toString() });
-              return;
-            }
-            res.redirect('/settings');
-          });
+          res.redirect('/settings');
         });
       });
-    }
+    });
+    // }
   },
   updateUser(req, res, next) {
     if (req.user._id === req.body._id || req.user.roles.indexOf('admin') > -1) {
       const updatedUserData = req.body;
       if (updatedUserData.password !== updatedUserData.confirmPassword) {
-        req.session.error = 'Passwords do not match!';
+        req.flash('errors', 'Passwords do not match!');
         res.redirect('/settings');
       } else {
         usersData.updateUser(
@@ -125,6 +130,171 @@ module.exports = {
       res.render('users/login', { csrfToken: req.csrfToken() });
     }
   },
+  getForgot(req, res, next) {
+    if (req.isAuthenticated()) {
+      res.redirect('/settings');
+      return;
+    }
+    res.render('users/forgot', {
+      title: 'Forgot Password',
+      csrfToken: req.csrfToken()
+    });
+  },
+  postForgot(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(e => {
+        req.flash('errors', e.msg);
+      });
+      res.redirect('back');
+      return;
+    }
+    // create token
+    crypto.randomBytes(20, (err, buf) => {
+      if (err) {
+        next(err);
+        return;
+      }
+      const token = buf.toString('hex');
+      // set token
+      usersData.findUserByEmail(
+        validator.normalizeEmail(req.body.email),
+        // eslint-disable-next-line no-shadow
+        (err, user) => {
+          if (err) {
+            next(err);
+            return;
+          }
+          if (!user) {
+            req.flash(
+              'errors',
+              'An account with that email address does not exist.'
+            );
+            res.redirect('/forgot');
+            return;
+          }
+          user.set('passwordResetToken', token);
+          user.set('passwordResetExpires', Date.now() + 3600000); // 1 hour
+          // eslint-disable-next-line no-shadow
+          user.save((err, updatedUser) => {
+            if (err) {
+              logger.error(err);
+              next(err);
+              return;
+            }
+            if (!updatedUser) {
+              req.flash(
+                'errors',
+                'Account with that email address does not exist.'
+              );
+              res.redirect('/forgot');
+              return;
+            }
+            // send email
+            mail.sendWithTemplate(
+              'forgotPassword', // template
+              'Echopig <passwordreset@echopig.com>', // from
+              user, // to
+              { token, BASE_URL: process.env.BASE_URL }, // variables for mail template
+              // eslint-disable-next-line no-shadow
+              (err, response) => {
+                if (err) {
+                  logger.error(err);
+                  next(err);
+                  return;
+                }
+                req.flash(
+                  'info',
+                  `An e-mail has been sent to ${
+                    updatedUser.email
+                  } with further instructions.`
+                );
+                res.redirect('/login');
+              }
+            );
+          });
+        }
+      );
+    });
+  },
+  getReset(req, res, next) {
+    if (req.isAuthenticated()) {
+      res.redirect('/');
+      return;
+    }
+    const { token } = req.params;
+    usersData.findResetToken(token, (err, user) => {
+      if (err) {
+        next(err);
+        return;
+      }
+      if (!user) {
+        req.flash('errors', 'Password reset token is invalid or has expired.');
+        res.redirect('/forgot');
+        return;
+      }
+      res.render('users/reset', { csrfToken: req.csrfToken() });
+    });
+  },
+  postReset(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(e => {
+        req.flash('errors', e.msg);
+      });
+      res.redirect('back');
+      return;
+    }
+    const { token } = req.params;
+    usersData.findResetToken(token, (err, user) => {
+      if (err) {
+        next(err);
+        return;
+      }
+      if (!user) {
+        req.flash('errors', 'Password reset token is invalid or has expired.');
+        res.redirect('/forgot');
+        return;
+      }
+      user.set('password', req.body.password);
+      user.set('passwordResetToken', undefined);
+      user.set('passwordResetExpires', undefined);
+      // eslint-disable-next-line no-shadow
+      user.save((err, updatedUser) => {
+        if (err) {
+          logger.error(err);
+          next(err);
+          return;
+        }
+        if (!updatedUser) {
+          req.flash(
+            'errors',
+            'Account with that email address does not exist.'
+          );
+          res.redirect('/forgot');
+          return;
+        }
+        // send email
+        mail.sendWithTemplate(
+          'passwordHasBeenReset', // template
+          'Echopig <passwordreset@echopig.com>', // from
+          user, // to
+          { user }, // variables for mail template
+          // eslint-disable-next-line no-shadow
+          (err, response) => {
+            if (err) {
+              logger.error(err);
+              next(err);
+              return;
+            }
+            logger.debug(response);
+            req.flash('info', 'Your password has been changed.');
+            res.redirect('/login');
+          }
+        );
+      });
+    });
+  },
   getSettings(req, res, next) {
     if (!req.user) {
       res.redirect('/');
@@ -136,15 +306,15 @@ module.exports = {
     }
   },
   postSettings(req, res, next) {
-    const settingsData = req.body;
-    if (!validator.isAlphanumeric(settingsData.username)) {
-      req.session.error =
-        'Please enter a username using only letters and numbers.';
-      res.redirect('/settings');
-    } else if (validator.isIn(settingsData.username, reservedNames)) {
-      req.session.error = 'That username is unavailable. Please try again.';
-      res.redirect('/settings');
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(e => {
+        req.flash('errors', e.msg);
+      });
+      res.redirect('back');
+      return;
     }
+    const settingsData = req.body;
     usersData.findUserByUsername(settingsData.username, (err, existingUser) => {
       if (err) {
         logger.error(err);
@@ -152,7 +322,7 @@ module.exports = {
         return;
       }
       if (existingUser) {
-        req.session.error = 'That username is taken. Please try again.';
+        req.flash('error', 'That username is taken. Please try again.');
         res.redirect('/register');
         return;
       }

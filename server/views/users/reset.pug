@@ -1,0 +1,17 @@
+extends ../shared/layout
+
+block main-content
+  .col-md-6.col-md-offset-3
+    form(method="post", action="", class='form-horizontal')
+      fieldset
+        legend Reset Password
+        .form-group
+          label.control-label(for="password") New Password
+          input.form-control(id="password" type="password" name="password" placeholder="New Password" autofocus required autocomplete='new-password')
+        .form-group
+          label.control-label(for="confirmPassword") Confirm Password
+          input.form-control(id="confirmPassword" type="password" name="confirmPassword" placeholder="Confirm Password" required autocomplete='new-password')
+        .form-group
+          input(type="hidden" name="_csrf" value=csrfToken)
+        .form-group
+          button.btn.btn-primary(type="submit") Change Password

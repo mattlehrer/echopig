@@ -1,0 +1,8 @@
+div
+  p You are receiving this email because you (or someone else) have requested the reset of the password for your Echopig account.
+  p You can 
+    a(href=`${BASE_URL}/reset/${token}`) reset your password with this link
+    | , or paste this into your browser to complete the process:
+  p= `${BASE_URL}/reset/${token}`
+    
+  p If you did not request this, please ignore this email and your password will remain unchanged.

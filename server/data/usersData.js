@@ -11,6 +11,17 @@ module.exports = {
     User.updateOne(user, query, callback);
   },
 
+  findUserByEmail(email, callback) {
+    User.findOne({ normalizedEmail: email }).exec(callback);
+  },
+
+  findResetToken(token, callback) {
+    User.findOne({
+      passwordResetToken: token,
+      passwordResetExpires: { $gt: Date.now() }
+    }).exec(callback);
+  },
+
   findUserByTag(tag, callback) {
     User.findOne({ postTag: tag })
       .populate({ path: 'posts', options: { sort: { updatedAt: -1 } } })

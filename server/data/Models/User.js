@@ -8,8 +8,11 @@ module.exports.init = () => {
       username: { type: String, unique: true },
       normalizedUsername: { type: String, unique: true },
       password: String,
+      passwordResetToken: String,
+      passwordResetExpires: Date,
+
       name: String,
-      email: String,
+      email: { type: String, unique: true },
       normalizedEmail: String,
       postTag: { type: String, unique: true },
       avatar: String,
