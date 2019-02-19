@@ -12,8 +12,8 @@ module.exports.init = () => {
       passwordResetExpires: Date,
 
       name: String,
-      email: { type: String, unique: true },
-      normalizedEmail: String,
+      email: String,
+      normalizedEmail: { type: String, unique: true },
       postTag: { type: String, unique: true },
       avatar: String,
       posts: [

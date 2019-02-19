@@ -81,26 +81,44 @@ module.exports = {
         return;
       }
       // TODO: ensure email is unique
-
-      // eslint-disable-next-line no-shadow
-      createNewUser(newUserData, (err, user) => {
-        if (err) {
-          logger.error(err);
-          next(err);
-          return;
-        }
-        logger.debug(`Created user: ${user}`);
-
+      usersData.findUserByEmail(
+        validator.normalizeEmail(newUserData.email),
         // eslint-disable-next-line no-shadow
-        req.logIn(user, err => {
+        (err, existingEmailUser) => {
           if (err) {
-            res.status(400);
-            res.send({ reason: err.toString() });
+            logger.error(err);
+            next(err);
             return;
           }
-          res.redirect('/settings');
-        });
-      });
+          if (existingEmailUser) {
+            req.flash(
+              'errors',
+              'There is already an account with that email address. Please login or use a new email.'
+            );
+            res.redirect('/login');
+            return;
+          }
+          // eslint-disable-next-line no-shadow
+          createNewUser(newUserData, (err, user) => {
+            if (err) {
+              logger.error(err);
+              next(err);
+              return;
+            }
+            logger.debug(`Created user: ${user}`);
+
+            // eslint-disable-next-line no-shadow
+            req.logIn(user, err => {
+              if (err) {
+                res.status(400);
+                res.send({ reason: err.toString() });
+                return;
+              }
+              res.redirect('/settings');
+            });
+          });
+        }
+      );
     });
     // }
   },
