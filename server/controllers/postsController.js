@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-shadow */
 const validator = require('validator');
+const { validationResult } = require('express-validator/check');
 const uuid = require('uuid/v4');
 const shortid = require('shortid');
 
@@ -51,7 +52,7 @@ function createPost(postData, cb) {
         newPost.episode = episode;
         postsData.addNewPost(newPost, (err, post) => {
           if (err) cb(err, null);
-          logger.debug(`added post: ${post}`);
+          // logger.debug(`added post: ${post}`);
           // add post reference to User
           usersController.addPostByUser(post, newPost.byUser, (err, user) => {
             if (err) {
@@ -98,35 +99,41 @@ module.exports = {
     // should send HTTP 201 on success
     // 401 for unauthorized
     // 500 on internal failure or 501 for podcast app not implemented
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(e => {
+        req.flash('errors', e.msg);
+      });
+      res.redirect('back');
+      return;
+    }
     const postData = req.body;
 
-    if (!validator.isURL(postData.shareURL)) {
-      req.session.error = 'No share URL in post';
-      return res.status(400).redirect(req.get('Referrer') || '/post');
-    }
-
-    return usersController.findUserByIdWithPosts(
-      req.user.id,
-      (err, userWithPosts) => {
-        const newPostData = {
-          byUser: userWithPosts,
-          shareURL: postData.shareURL,
-          comment: postData.comment,
-          guid: uuid()
-        };
-        if (err) return next(err);
-        return createPost(newPostData, (err, post) => {
-          if (err) {
-            if (err.status === 400) {
-              req.session.error = err.message;
-              return res.status(400).redirect(`/u/${req.user.username}`);
-            }
-            return next(err);
-          }
-          return res.status(201).redirect(`/u/${req.user.username}`);
-        });
+    usersController.findUserByIdWithPosts(req.user.id, (err, userWithPosts) => {
+      const newPostData = {
+        byUser: userWithPosts,
+        shareURL: postData.shareURL,
+        comment: postData.comment,
+        guid: uuid()
+      };
+      if (err) {
+        next(err);
+        return;
       }
-    );
+      createPost(newPostData, (err, post) => {
+        if (err) {
+          if (err.status === 400) {
+            req.flash('errors', err.message);
+            res.status(400).redirect(`/u/${req.user.username}`);
+            return;
+          }
+          next(err);
+          return;
+        }
+        req.flash('info', `${post.episode.title} posted`);
+        res.redirect(`/u/${req.user.username}`);
+      });
+    });
   },
   addNewPostViaMailgun(req, res, next) {
     // should send HTTP 201 on success
@@ -210,42 +217,39 @@ module.exports = {
   updatePost(req, res, next) {},
   deletePost(req, res, next) {
     // req.query.p === post.id
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(e => {
+        req.flash('errors', e.msg);
+      });
+      res.redirect('back');
+      return;
+    }
     const postId = req.query.p;
-    if (
-      typeof postId !== 'string' ||
-      postId.length !== 24 ||
-      !validator.isHexadecimal(postId)
-    ) {
-      // invalid post ID
-      req.session.error = 'Invalid post ID';
-      res.redirect(req.get('Referrer') || '/');
-    } else {
-      postsData.deletePost({ _id: postId, byUser: req.user.id }, err => {
+    postsData.deletePost({ _id: postId, byUser: req.user.id }, err => {
+      if (err) {
+        // this is almost definitely a user error, changing the postId in the URL
+        next(err);
+        return;
+      }
+      res.status(200).redirect(`/u/${req.user.username}`);
+      // pull from episode posts array
+      episodesController.removePostOfEpisode(postId, (err, episode) => {
         if (err) {
-          // this is almost definitely a user error, changing the postId in the URL
-          // log error
-          next(err);
-        } else {
-          res.status(200).redirect(`/u/${req.user.username}`);
-          // pull from episode posts array
-          episodesController.removePostOfEpisode(postId, (err, episode) => {
-            if (err) {
-              logger.error(
-                `failed to delete post ${postId} from episode ${episode}'s posts array`
-              );
-            }
-          });
-          // pull from user's posts array
-          usersController.removePostByUser(postId, req.user, (err, user) => {
-            if (err) {
-              logger.error(
-                `failed to delete post ${postId} from user ${user}'s posts array`
-              );
-            }
-          });
+          logger.error(
+            `failed to delete post ${postId} from episode ${episode}'s posts array`
+          );
         }
       });
-    }
+      // pull from user's posts array
+      usersController.removePostByUser(postId, req.user, (err, user) => {
+        if (err) {
+          logger.error(
+            `failed to delete post ${postId} from user ${user}'s posts array`
+          );
+        }
+      });
+    });
   },
   mostPostedEpisodesInTimeframe(req, res, next) {
     const hours = cleanTimeframeQuery(req.query.t);
@@ -254,14 +258,13 @@ module.exports = {
     postsData.findMostPostedEpisodesInTimeframe(since, (err, episodes) => {
       if (err) {
         logger.error(err);
-        return next(err);
+        next(err);
+        return;
       }
-      return res.render('episodes/top', {
+      res.render('episodes/top', {
         currentUser: req.user,
         episodes
       });
-      //   }
-      // );
     });
   },
   mostPostedEpisodesInGenreInTimeframe(req, res, next) {
@@ -286,7 +289,8 @@ module.exports = {
         }
         res.render('episodes/topByGenre', {
           currentUser: req.user,
-          episodes
+          episodes,
+          genre
         });
       }
     );
