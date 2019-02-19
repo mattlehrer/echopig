@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const express = require('express');
+const helmet = require('helmet');
 const favicon = require('serve-favicon');
 const session = require('express-session');
 const flash = require('express-flash');
@@ -13,6 +14,7 @@ const auth = require('./auth');
 
 module.exports = (app, config) => {
   app.set('trust proxy', 1);
+  app.use(helmet());
   app.set('view engine', 'pug');
   app.use(favicon(`${config.rootPath}/public/favicon.ico`));
   app.set('views', `${config.rootPath}/server/views`);
