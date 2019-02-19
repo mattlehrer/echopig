@@ -7,10 +7,10 @@ block main-content
         legend Post Episode
         .form-group
           label.control-label(for="shareURL") Share URL
-          input(id="shareURL" class="form-control" type="text" name="shareURL" placeholder="Share URL")
+          input(id="shareURL" class="form-control" type="text" name="shareURL" placeholder="Share URL" autofocus required)
         .form-group
           label.control-label(for="comment") Comment
-          input(id="comment" class="form-control" type="text" name="comment" placeholder="Comment on the episode")
+          input(id="comment" class="form-control" type="text" name="comment" placeholder="Comment on the episode (optional)")
         .form-group
           input(type="hidden" name="_csrf" value=csrfToken)
         .form-group
