@@ -10,7 +10,7 @@ module.exports = {
         return;
       }
       if (!user) {
-        req.session.error = 'Invalid Username or Password!';
+        req.flash('errors', 'Invalid Username or Password!');
         res.redirect('/login');
       }
 

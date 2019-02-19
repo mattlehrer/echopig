@@ -2,6 +2,7 @@
 const express = require('express');
 const favicon = require('serve-favicon');
 const session = require('express-session');
+const flash = require('express-flash');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const mongoose = require('mongoose');
@@ -42,6 +43,7 @@ module.exports = (app, config) => {
       saveUninitialized: false
     })
   );
+  app.use(flash());
 
   app.use(passport.initialize());
   app.use(passport.session());
@@ -57,21 +59,9 @@ module.exports = (app, config) => {
 
   app.use('/admin', (req, res, next) => {
     if (!auth.isInRole('admin')(req, res, next)) {
-      req.session.error = 'You are not authorized!';
+      req.flash('errors', 'You are not authorized!');
       res.redirect('/');
       return;
-    }
-
-    next();
-  });
-
-  app.use((req, res, next) => {
-    if (req.session.error) {
-      const msg = req.session.error;
-      req.session.error = undefined;
-      app.locals.errorMessage = msg;
-    } else {
-      app.locals.errorMessage = undefined;
     }
 
     next();

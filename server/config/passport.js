@@ -23,7 +23,7 @@ module.exports = () => {
               return done(err);
             }
             if (!user) {
-              // return done(null, false, { msg: `Username ${username} not found.` });
+              req.flash('errors', `Username ${username} not found.`);
               return done(null, false);
             }
             // eslint-disable-next-line no-shadow
@@ -34,8 +34,7 @@ module.exports = () => {
               if (isMatch) {
                 return done(null, user);
               }
-              // return done(null, false, { msg: 'Invalid username or password.' });
-              req.session.error = 'Invalid username or password.';
+              req.flash('errors', 'Invalid username or password.');
               return done(null, false);
             });
           }
@@ -83,7 +82,7 @@ module.exports = () => {
                   if (err) {
                     return done(err);
                   }
-                  req.session.error = 'Twitter account has been linked.';
+                  req.flash('info', 'Twitter account has been linked.');
                   done(err, user);
                 });
               });
@@ -168,7 +167,7 @@ module.exports = () => {
                   if (err) {
                     return done(err);
                   }
-                  req.session.error = 'Facebook account has been linked.';
+                  req.flash('info', 'Facebook account has been linked.');
                   done(err, user);
                 });
               });

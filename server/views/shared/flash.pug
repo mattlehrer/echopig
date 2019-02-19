@@ -1,0 +1,19 @@
+.container
+  if messages.errors
+    .alert.alert-dismissible.alert-danger.fade.show
+      button.close(type='button', class='close' data-dismiss='alert')
+        span(aria-hidden="true") &times;
+      for error in messages.errors
+        div !{error}
+  if messages.info
+    .alert.alert-dismissible.alert-info.fade.show
+      button.close(type='button', class='close' data-dismiss='alert')
+        span(aria-hidden="true") &times;
+      for info in messages.info
+        div !{info}
+  if messages.success
+    .alert.alert-dismissible.alert-success.fade.show
+      button.close(type='button', class='close' data-dismiss='alert')
+        span(aria-hidden="true") &times;
+      for success in messages.success
+        div !{success}
