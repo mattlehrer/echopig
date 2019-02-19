@@ -23,7 +23,7 @@ module.exports = () => {
               return done(err);
             }
             if (!user) {
-              req.flash('errors', `Username ${username} not found.`);
+              // req.flash('errors', `Username ${username} not found.`);
               return done(null, false);
             }
             // eslint-disable-next-line no-shadow

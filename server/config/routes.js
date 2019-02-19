@@ -39,12 +39,10 @@ module.exports = app => {
       csrfProtection,
       check(
         'username',
-        'Please choose a username of only letters and numbers.'
-      ).isAlphanumeric(),
-      check(
-        'username',
-        'Please choose a username longer than 3 characters.'
-      ).isLength({ min: 3 }),
+        'Please choose a username of only letters and numbers longer than 3 characters.'
+      )
+        .isAlphanumeric()
+        .isLength({ min: 3 }),
       check('username', 'That username is unavailable. Please try again.')
         .not()
         .isIn(reservedNames),
@@ -121,12 +119,10 @@ module.exports = app => {
       csrfProtection,
       check(
         'username',
-        'Please choose a username of only letters and numbers.'
-      ).isAlphanumeric(),
-      check(
-        'username',
-        'Please choose a username longer than 3 characters.'
-      ).isLength({ min: 3 }),
+        'Please choose a username of only letters and numbers longer than 3 characters.'
+      )
+        .isAlphanumeric()
+        .isLength({ min: 3 }),
       check('username', 'That username is unavailable. Please try again.')
         .not()
         .isIn(reservedNames),

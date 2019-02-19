@@ -6,12 +6,21 @@ module.exports = {
   localLogin(req, res, next) {
     const auth = passport.authenticate('local', (err, user) => {
       if (err) {
+        if (err.message === 'data and hash arguments required') {
+          req.flash(
+            'errors',
+            'Please login with a social login previously used.'
+          );
+          res.redirect('/login');
+          return;
+        }
         next(err);
         return;
       }
       if (!user) {
-        req.flash('errors', 'Invalid Username or Password!');
+        req.flash('errors', 'Invalid username or password. Please try again.');
         res.redirect('/login');
+        return;
       }
 
       // eslint-disable-next-line no-shadow
