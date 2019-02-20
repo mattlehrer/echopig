@@ -62,7 +62,7 @@ module.exports = {
     template,
     from = `info@${domain}`,
     to,
-    locals = {},
+    variables = {},
     callback
   ) {
     const email = new Email({
@@ -70,9 +70,11 @@ module.exports = {
         from
       },
       // uncomment below to send emails in development/test env:
-      send: true,
+      // send: true,
       transport: this.transport
     });
+    const locals = variables;
+    locals.BASE_URL = process.env.BASE_URL;
 
     email
       .send({
