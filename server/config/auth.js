@@ -22,6 +22,12 @@ module.exports = {
         res.redirect('/login');
         return;
       }
+      // make sure email is verified
+      if (!user.isVerified) {
+        req.flash('errors', 'Please verify your email address.');
+        res.redirect('/resend');
+        return;
+      }
 
       // eslint-disable-next-line no-shadow
       req.logIn(user, err => {

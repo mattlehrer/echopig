@@ -9,7 +9,7 @@ const { validationResult } = require('express-validator/check');
 const logger = require('../utilities/logger')(__filename);
 const mail = require('../utilities/email');
 const usersData = require('../data/usersData');
-// const reservedNames = require('../utilities/reservedNames').reserved;
+const tokenData = require('../data/tokenData');
 
 function createNewUser(userData, callback) {
   const newUserData = userData;
@@ -26,25 +26,36 @@ function createNewUser(userData, callback) {
       return;
     }
 
-    // add new user to mailing list
-    // eslint-disable-next-line no-shadow
-    mail.addToList(user, 'users', err => {
-      if (err) logger.error(err);
-    });
-
-    mail.sendWithTemplate(
-      'welcome', // template
-      'Echopig <welcome@echopig.com>', // from
-      user, // to
-      { user }, // variables for mail template
+    // Create a verification token for this user
+    tokenData.createToken(
+      {
+        _userId: user._id,
+        token: crypto.randomBytes(16).toString('hex')
+      },
       // eslint-disable-next-line no-shadow
-      err => {
-        logger.error(err);
-        callback(err);
+      (err, token) => {
+        if (err) {
+          logger.error(err);
+          callback(err);
+          return;
+        }
+        // send the email
+        mail.sendWithTemplate(
+          'signupToken', // template
+          'Echopig <welcome@echopig.com>', // from
+          user, // to
+          { user, token: token.token }, // variables for mail template
+          // eslint-disable-next-line no-shadow
+          err => {
+            if (err) {
+              logger.error(err);
+              callback(err);
+            }
+            callback(null, user);
+          }
+        );
       }
     );
-
-    callback(null, user);
   });
 }
 
@@ -69,58 +80,217 @@ module.exports = {
       return;
     }
     const newUserData = req.body;
-    usersData.findUserByUsername(newUserData.username, (err, user) => {
-      if (err) {
-        logger.error(err);
-        next(err);
-        return;
-      }
-      if (user) {
-        req.flash('errors', 'That username is taken. Please try again.');
-        res.redirect('/register');
-        return;
-      }
-      // TODO: ensure email is unique
-      usersData.findUserByEmail(
-        validator.normalizeEmail(newUserData.email),
-        // eslint-disable-next-line no-shadow
-        (err, existingEmailUser) => {
-          if (err) {
-            logger.error(err);
-            next(err);
-            return;
-          }
-          if (existingEmailUser) {
-            req.flash(
-              'errors',
-              'There is already an account with that email address. Please login or use a new email.'
-            );
-            res.redirect('/login');
-            return;
-          }
+    usersData.findUserByUsername(
+      newUserData.username,
+      (err, existingUsernamelUser) => {
+        if (err) {
+          logger.error(err);
+          next(err);
+          return;
+        }
+        if (existingUsernamelUser) {
+          req.flash('errors', 'That username is taken. Please try again.');
+          res.redirect('/register');
+          return;
+        }
+        usersData.findUserByEmail(
+          validator.normalizeEmail(newUserData.email),
           // eslint-disable-next-line no-shadow
-          createNewUser(newUserData, (err, user) => {
+          (err, existingEmailUser) => {
             if (err) {
               logger.error(err);
               next(err);
               return;
             }
-            logger.debug(`Created user: ${user}`);
-
+            if (existingEmailUser) {
+              req.flash(
+                'errors',
+                'There is already an account with that email address. Please login or use a new email.'
+              );
+              res.redirect('/login');
+              return;
+            }
             // eslint-disable-next-line no-shadow
-            req.logIn(user, err => {
+            createNewUser(newUserData, (err, user) => {
               if (err) {
-                res.status(400);
-                res.send({ reason: err.toString() });
+                logger.error(err);
+                next(err);
                 return;
               }
-              res.redirect('/settings');
+              logger.debug(`Created user: ${user}`);
+              req.flash(
+                'info',
+                `Please verify your account by clicking the link in the email sent to ${
+                  user.email
+                }`
+              );
+              res.redirect('/');
             });
+          }
+        );
+      }
+    );
+  },
+  getConfirmation(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(e => {
+        req.flash('errors', e.msg);
+      });
+      res.redirect('/');
+      return;
+    }
+    // check if token matches
+    tokenData.findToken(req.params.token, (err, token) => {
+      if (err) {
+        logger.error(err);
+        next(err);
+        return;
+      }
+      if (!token) {
+        req.flash(
+          'That token has expired. Please enter your email and we will send another.'
+        );
+        res.redirect('/resend');
+        return;
+      }
+      // eslint-disable-next-line no-shadow
+      usersData.findUserByIdWithPosts(token._userId, (err, user) => {
+        if (err) {
+          logger.error(err);
+          next(err);
+          return;
+        }
+        if (!user) {
+          req.flash('errors', 'We were unable to find a user for this token.');
+          res.redirect('/register');
+          return;
+        }
+        if (user.isVerified) {
+          req.flash('info', 'Your account has been verified.');
+          // eslint-disable-next-line no-shadow
+          req.logIn(user, err => {
+            if (err) {
+              logger.error(err);
+              res.redirect('/login');
+              return;
+            }
+            res.redirect('/settings');
           });
         }
-      );
+        user.set('isVerified', true);
+        // eslint-disable-next-line no-shadow
+        user.save(err => {
+          if (err) {
+            logger.error(err);
+            next(err);
+            return;
+          }
+          // add new user to mailing list
+          // eslint-disable-next-line no-shadow
+          mail.addToList(user, 'users', err => {
+            if (err) logger.error(err);
+          });
+          // send welcome email
+          mail.sendWithTemplate(
+            'welcome', // template
+            'Echopig <welcome@echopig.com>', // from
+            user, // to
+            { user }, // variables for mail template
+            // eslint-disable-next-line no-shadow
+            err => {
+              if (err) logger.error(err);
+            }
+          );
+
+          // eslint-disable-next-line no-shadow
+          req.logIn(user, err => {
+            if (err) {
+              logger.error(err);
+              next(err);
+              return;
+            }
+            req.flash('info', 'Your account has been verified. Thank you.');
+            res.redirect('/settings');
+          });
+        });
+      });
     });
-    // }
+  },
+  getResend(req, res, next) {
+    if (req.isAuthenticated()) {
+      res.redirect('/');
+      return;
+    }
+    res.render('users/resend', { csrfToken: req.csrfToken() });
+  },
+  postResendToken(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(e => {
+        req.flash('errors', e.msg);
+      });
+      res.redirect('/resend');
+    }
+    usersData.findUserByEmail(
+      validator.normalizeEmail(req.body.email),
+      (err, user) => {
+        if (err) {
+          logger.error(err);
+          next(err);
+          return;
+        }
+        if (!user) {
+          req.flash(
+            'errors',
+            'We were unable to find a user with that email address. Please try again or register for an account.'
+          );
+          res.redirect('/resend');
+          return;
+        }
+        // Create a new verification token for this user
+        tokenData.createToken(
+          {
+            _userId: user._id,
+            token: crypto.randomBytes(16).toString('hex')
+          },
+          // eslint-disable-next-line no-shadow
+          (err, token) => {
+            if (err) {
+              logger.error(err);
+              next(err);
+              return;
+            }
+            // send the email
+            mail.sendWithTemplate(
+              'signupToken', // template
+              'Echopig <welcome@echopig.com>', // from
+              user, // to
+              { user, token: token.token }, // variables for mail template
+              // eslint-disable-next-line no-shadow
+              err => {
+                if (err) {
+                  logger.error(err);
+                  req.flash(
+                    'errors',
+                    'We were unable to send the email. Please try again.'
+                  );
+                  res.redirect('/resend');
+                  return;
+                }
+                req.flash(
+                  'info',
+                  `Please verify your account by clicking the link in the email sent to ${
+                    user.email
+                  }`
+                );
+                res.redirect('/');
+              }
+            );
+          }
+        );
+      }
+    );
   },
   updateUser(req, res, next) {
     if (req.user._id === req.body._id || req.user.roles.indexOf('admin') > -1) {
@@ -168,8 +338,9 @@ module.exports = {
       return;
     }
     // create token
-    crypto.randomBytes(20, (err, buf) => {
+    crypto.randomBytes(16, (err, buf) => {
       if (err) {
+        logger.error(err);
         next(err);
         return;
       }
@@ -180,6 +351,7 @@ module.exports = {
         // eslint-disable-next-line no-shadow
         (err, user) => {
           if (err) {
+            logger.error(err);
             next(err);
             return;
           }
@@ -215,7 +387,7 @@ module.exports = {
               user, // to
               { token, BASE_URL: process.env.BASE_URL }, // variables for mail template
               // eslint-disable-next-line no-shadow
-              (err, response) => {
+              err => {
                 if (err) {
                   logger.error(err);
                   next(err);

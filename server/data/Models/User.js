@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-// const encryption = require('../../utilities/cripto');
 
 module.exports.init = () => {
   const userSchema = new mongoose.Schema(
@@ -8,6 +7,7 @@ module.exports.init = () => {
       username: { type: String, unique: true },
       normalizedUsername: { type: String, unique: true },
       password: String,
+      isVerified: { type: Boolean, default: false },
       passwordResetToken: String,
       passwordResetExpires: Date,
 

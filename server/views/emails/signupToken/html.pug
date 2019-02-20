@@ -1,0 +1,9 @@
+div
+  - const name = user.name || user.username;
+  p= `Welcome to Echopig, ${name}.`
+  p Please
+    a(href=`${BASE_URL}/confirmation/${token}`) verify your account with this link
+    | , or paste this into your browser to complete the process:
+  p= `${BASE_URL}/confirmation/${token}`
+    
+  p If you did not request this, please ignore this email and your password will remain unchanged.

@@ -62,6 +62,22 @@ module.exports = app => {
     .get(csrfProtection, controllers.users.getLogin)
     .post(csrfProtection, auth.localLogin);
 
+  app.get(
+    '/confirmation/:token',
+    check('token', 'Invalid token')
+      .isHexadecimal()
+      .isLength({ min: 32, max: 32 }),
+    controllers.users.getConfirmation
+  );
+  app
+    .route('/resend')
+    .get(csrfProtection, controllers.users.getResend)
+    .post(
+      csrfProtection,
+      check('email', 'Please enter a valid email address.').isEmail(),
+      controllers.users.postResendToken
+    );
+
   app.get('/forgot', csrfProtection, controllers.users.getForgot);
   app.post(
     '/forgot',

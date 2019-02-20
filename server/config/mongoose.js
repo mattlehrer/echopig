@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const logger = require('../utilities/logger')(__filename);
 
 const UserModel = require('../data/models/User');
+const TokenModel = require('../data/models/Token');
 const EpisodeModel = require('../data/models/Episode');
 const PodcastModel = require('../data/models/Podcast');
 const PostModel = require('../data/models/Post');
@@ -30,6 +31,7 @@ module.exports = config => {
   });
 
   UserModel.init();
+  TokenModel.init();
   EpisodeModel.init();
   PodcastModel.init();
   PostModel.init();
