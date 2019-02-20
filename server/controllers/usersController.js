@@ -363,6 +363,9 @@ module.exports = {
             res.redirect('/forgot');
             return;
           }
+          logger.info(
+            `Setting passwordResetToken for ${user.id} / ${user.username}`
+          );
           user.set('passwordResetToken', token);
           user.set('passwordResetExpires', Date.now() + 3600000); // 1 hour
           // eslint-disable-next-line no-shadow
@@ -446,6 +449,7 @@ module.exports = {
         res.redirect('/forgot');
         return;
       }
+      logger.info(`Setting new password for ${user.id} / ${user.username}`);
       user.set('password', req.body.password);
       user.set('passwordResetToken', undefined);
       user.set('passwordResetExpires', undefined);
