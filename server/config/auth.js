@@ -18,6 +18,7 @@ module.exports = {
         return;
       }
       if (!user) {
+        logger.error(`login failure on usernaem: ${req.body.username}`);
         req.flash('errors', 'Invalid username or password. Please try again.');
         res.redirect('/login');
         return;
