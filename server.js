@@ -40,7 +40,7 @@ const shutdown = (signal, value) => {
 // Create a listener for each of the signals that we want to handle
 Object.keys(signals).forEach(signal => {
   process.on(signal, () => {
-    logger.notice(`process received a ${signal} signal`);
+    logger.alert(`process received a ${signal} signal`);
     shutdown(signal, signals[signal]);
   });
 });
