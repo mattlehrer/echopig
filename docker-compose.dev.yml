@@ -32,7 +32,7 @@ services:
     links:
      - mongo
     env_file:
-    - .env.dev
+     - .env.dev
   web:
     build: 
       context: .
@@ -47,6 +47,8 @@ services:
      - /usr/src/app/node_modules
     depends_on:
       - mongo
+    env_file:
+     - .env.dev
     command:
       - npm
       - run

@@ -1,13 +1,7 @@
 const express = require('express');
-const dotenv = require('dotenv');
 const logger = require('./server/utilities/logger')(__filename);
 
 const env = process.env.NODE_ENV || 'development';
-if (env === 'production') {
-  dotenv.config({ path: '.env.prod' });
-} else {
-  dotenv.config({ path: '.env.dev' });
-}
 
 const app = express();
 const config = require('./server/config/config')[env];

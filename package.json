@@ -17,7 +17,6 @@
     "bootstrap": "^4.3.1",
     "connect-mongo": "^2.0.3",
     "csurf": "^1.9.0",
-    "dotenv": "^6.2.0",
     "email-templates": "^5.0.3",
     "express": "^4.13.3",
     "express-flash": "0.0.2",
@@ -47,7 +46,8 @@
     "uuid": "^3.3.2",
     "validator": "^10.11.0",
     "vcards-js": "^2.10.0",
-    "winston": "^3.2.0"
+    "winston": "^3.2.0",
+    "winston-transport": "^4.3.0"
   },
   "devDependencies": {
     "acorn": "^6.1.0",
