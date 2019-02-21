@@ -2,6 +2,7 @@ const apiKey = process.env.MAILGUN_API_KEY;
 const domain = process.env.MAILGUN_DOMAIN;
 const testMode = !(process.env.NODE_ENV === 'production');
 const mailgun = require('mailgun-js')({ apiKey, domain, testMode });
+// eslint-disable-next-line no-unused-vars
 const util = require('util');
 const os = require('os');
 const Transport = require('winston-transport');
@@ -34,7 +35,8 @@ module.exports = class Mailgun extends Transport {
       from: this.from,
       to: this.to,
       subject: `[Echopig ${info.level}] ${info.message.split('\n')[0]}`,
-      text: info.message
+      text: info.message,
+      'o:tag': ['alert']
     };
     // Perform the writing to the remote service
     mailgun.messages().send(msgOptions, err => {

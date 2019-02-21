@@ -80,7 +80,9 @@ module.exports = {
       .send({
         template: `${appRoot}/server/views/emails/${template}`,
         message: {
-          to: to.email
+          to: { name: `${to.name || ''}`, address: to.email },
+          // mailgun tag for email analytics
+          'o:tag': [`${template}`]
         },
         locals
       })
