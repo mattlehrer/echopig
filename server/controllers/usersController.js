@@ -162,6 +162,7 @@ module.exports = {
           return;
         }
         if (!user) {
+          logger.error(`no user for token: ${token} with error: ${err}`);
           req.flash('errors', 'We were unable to find a user for this token.');
           res.redirect('/register');
           return;

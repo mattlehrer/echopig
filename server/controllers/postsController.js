@@ -96,9 +96,6 @@ module.exports = {
     }
   },
   addNewPostViaWeb(req, res, next) {
-    // should send HTTP 201 on success
-    // 401 for unauthorized
-    // 500 on internal failure or 501 for podcast app not implemented
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       errors.array().forEach(e => {
@@ -117,11 +114,21 @@ module.exports = {
         guid: uuid()
       };
       if (err) {
+        logger.error(
+          `findUserByIdWithPosts error while adding post via web for user: ${
+            req.user.username
+          } with error: ${err}`
+        );
         next(err);
         return;
       }
       createPost(newPostData, (err, post) => {
         if (err) {
+          logger.error(
+            `Error creating post via web for user: ${
+              req.user.username
+            } with error: ${err}`
+          );
           if (err.status === 400) {
             req.flash('errors', err.message);
             res.status(400).redirect(`/u/${req.user.username}`);
@@ -149,40 +156,52 @@ module.exports = {
       )
     ) {
       // Unauthorized
-      logger.info('Received request, but not from Mailgun');
+      logger.notice('Received request, but not from Mailgun');
       res.status(401).send('Unauthorized access');
+      return;
+    }
+
+    // find the share URL in the email
+    // 'stripped-text' is the email body parsed by Mailgun with signature removed
+    let inputURL;
+    const strippedText = postJson['stripped-text'];
+    try {
+      inputURL = strippedText
+        .slice(strippedText.indexOf('http'))
+        .split(/\s/)[0]
+        .trim();
+      if (!validator.isURL(inputURL)) {
+        logger.notice(
+          `received post from mailgun, but without a share URL: ${strippedText}`
+        );
+        res.status(400).send('No share URL');
+        return;
+      }
+    } catch (error) {
+      logger.notice(
+        `received post from mailgun, but without a share URL: ${strippedText}`
+      );
+      res.status(400).send('No share URL');
       return;
     }
 
     // lookup user by tag
     const tag = postJson.recipient.split('@')[0].split('+')[1];
     if (!shortid.isValid(tag)) {
-      logger.info('received post from mailgun, but not with a valid tag');
+      logger.notice('received post from mailgun, but without a valid tag');
       res.status(400).send('No such user');
       return;
     }
     usersController.findUserByTag(tag, (err, postingUser) => {
       if (err) {
+        logger.error(
+          `findUserByTag error while adding post via mail for tag: ${tag} with error: ${err}`
+        );
         next(err);
         return;
       }
       if (postingUser === null) {
         res.status(400).send('No such user');
-        return;
-      }
-      let inputURL;
-      const strippedText = postJson['stripped-text'];
-      try {
-        inputURL = strippedText
-          .slice(strippedText.indexOf('http'))
-          .split(/\s/)[0]
-          .trim();
-        if (!validator.isURL(inputURL)) {
-          res.status(400).send('No share URL');
-          return;
-        }
-      } catch (error) {
-        res.status(400).send('No share URL');
         return;
       }
 
@@ -201,6 +220,11 @@ module.exports = {
       // eslint-disable-next-line no-shadow
       createPost(newPostData, (err, post) => {
         if (err) {
+          logger.error(
+            `Error creating post via mail for user: ${
+              postingUser.username
+            } with error: ${err}`
+          );
           next(err);
           return;
         }
@@ -229,6 +253,11 @@ module.exports = {
     postsData.deletePost({ _id: postId, byUser: req.user.id }, err => {
       if (err) {
         // this is almost definitely a user error, changing the postId in the URL
+        logger.error(
+          `Error deleting post for user: ${
+            req.user.username
+          } with error: ${err}`
+        );
         next(err);
         return;
       }
