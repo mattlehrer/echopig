@@ -1,6 +1,7 @@
 const appRoot = require('app-root-path');
 const path = require('path');
 const { config, createLogger, format, transports } = require('winston');
+const Mail = require('../utilities/winston-mailgun');
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -38,12 +39,20 @@ const logger = (caller = '') => {
       new transports.Console({
         format: format.combine(
           format.timestamp({ format: 'M/D HH:mm:ss' }),
-          format.cli(),
+          format.colorize(),
+          // format.cli(),
           format.printf(
             info =>
-              `${info.timestamp} ${info.level}: ${info.message} [${info.label}]`
+              `${info.timestamp} ${info.level}: \t${info.message} [${
+                info.label
+              }]`
           )
         )
+      }),
+      new Mail({
+        level: 'alert',
+        to: 'lehrerm@gmail.com',
+        from: 'alert@echopig.com'
       })
     ],
     exitOnError: false // do not exit on handled exceptions
