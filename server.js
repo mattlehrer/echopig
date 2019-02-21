@@ -18,4 +18,4 @@ require('./server/config/passport')();
 require('./server/config/routes')(app);
 
 app.listen(config.port);
-logger.info(`Server running on port: ${config.port}`);
+logger.alert(`Server running on port: ${config.port}`);

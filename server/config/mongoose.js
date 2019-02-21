@@ -19,11 +19,11 @@ module.exports = config => {
 
   db.once('open', err => {
     if (err) {
-      logger.error(`Database could not be opened: ${err}`);
+      logger.alert(`Database could not be opened: ${err}`);
       return;
     }
 
-    logger.info('Database up and running...');
+    logger.alert('Database up and running...');
   });
 
   db.on('error', err => {
