@@ -22,8 +22,9 @@ module.exports = config => {
       logger.alert(`Database could not be opened: ${err}`);
       return;
     }
-
-    logger.alert('Database up and running...');
+    // tell pm2 server is ready to take requests
+    // if (config.waitForDb) process.send('ready');
+    logger.notice('Database up and running...');
   });
 
   db.on('error', err => {
@@ -35,4 +36,6 @@ module.exports = config => {
   EpisodeModel.init();
   PodcastModel.init();
   PostModel.init();
+
+  return db;
 };

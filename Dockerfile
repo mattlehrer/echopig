@@ -19,4 +19,4 @@ EXPOSE 9001
 
 USER node
 
-CMD [ "pm2-runtime", "npm", "--", "start" ]
+CMD [ "pm2-runtime", "start", "./data/pm2/ecosystem.config.js" ]

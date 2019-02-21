@@ -12,6 +12,7 @@ module.exports = {
     db: `mongodb://${process.env.MONGO_EPDB_USERNAME}:${
       process.env.MONGO_EPDB_PASSWORD
     }@${mongoHost}`,
+    waitForDb: false,
     port: process.env.PORT || 9001
   },
   production: {
@@ -19,6 +20,7 @@ module.exports = {
     db: `mongodb://${process.env.MONGO_EPDB_USERNAME}:${
       process.env.MONGO_EPDB_PASSWORD
     }@${mongoHost}`,
+    waitForDb: true,
     port: process.env.PORT || 9001
   }
 };
