@@ -20,6 +20,7 @@ module.exports = () => {
           { normalizedUsername: username.toLowerCase() },
           (err, user) => {
             if (err) {
+              logger.error(`localStrategy find by username error: ${err}`);
               return done(err);
             }
             if (!user) {
@@ -29,11 +30,16 @@ module.exports = () => {
             // eslint-disable-next-line no-shadow
             user.comparePassword(password, (err, isMatch) => {
               if (err) {
+                logger.error(
+                  `localStrategy comparePassword failure for: ${user.username}`
+                );
                 return done(err);
               }
               if (isMatch) {
+                logger.info(`localStrategy login for: ${user.username}`);
                 return done(null, user);
               }
+              logger.info(`localStrategy login failure for: ${user.username}`);
               req.flash('errors', 'Invalid username or password.');
               return done(null, false);
             });
@@ -57,16 +63,31 @@ module.exports = () => {
         if (req.user) {
           User.findOne({ twitter: profile.id }, (err, existingUser) => {
             if (err) {
+              logger.error(
+                `TwitterStrategy find by twitter error for user: ${
+                  req.user.username
+                }: ${err}`
+              );
               return done(err);
             }
             if (existingUser) {
-              req.session.error =
-                'There is already a Twitter account that belongs to you. Sign in with that account or delete it, then link it with your current account.';
+              logger.info(
+                `Logged in: ${
+                  req.user.username
+                } - Twitter account: ${profile} registered to different user: ${
+                  existingUser.username
+                }`
+              );
+              req.flash(
+                'errors',
+                'There is already a Twitter account that belongs to you. Sign in with that account or delete it, then link it with your current account.'
+              );
               done(err);
             } else {
               // eslint-disable-next-line no-shadow
               User.findById(req.user.id, (err, user) => {
                 if (err) {
+                  logger.error(`TwitterStrategy findById error: ${err}`);
                   return done(err);
                 }
                 user.set('twitter', profile.id);
@@ -80,8 +101,14 @@ module.exports = () => {
                 // eslint-disable-next-line no-shadow
                 user.save(err => {
                   if (err) {
+                    logger.error(
+                      `TwitterStrategy user.save error for user: ${
+                        user.username
+                      }: with: ${err}`
+                    );
                     return done(err);
                   }
+                  logger.info(`updated user ${user.username} with twitter id`);
                   req.flash('info', 'Twitter account has been linked.');
                   done(err, user);
                 });
@@ -91,9 +118,13 @@ module.exports = () => {
         } else {
           User.findOne({ twitter: profile.id }, (err, existingUser) => {
             if (err) {
+              logger.error(
+                `TwitterStrategy find by twitter error for new user: ${err}`
+              );
               return done(err);
             }
             if (existingUser) {
+              logger.info(`Twitter login: ${existingUser.username}`);
               return done(null, existingUser);
             }
             // put profile in our User format
@@ -108,8 +139,12 @@ module.exports = () => {
             // eslint-disable-next-line no-shadow
             createUser(newUser, (err, user) => {
               if (err) {
+                logger.error(
+                  `TwitterStrategy createUser error for user: ${newUser} with: ${err}`
+                );
                 return done(err);
               }
+              logger.info(`created user on twitter login: ${user}`);
               return done(null, user);
             });
           });
@@ -128,20 +163,34 @@ module.exports = () => {
         passReqToCallback: true
       },
       (req, accessToken, refreshToken, profile, done) => {
-        logger.debug('received callback');
         if (req.user) {
           User.findOne({ facebook: profile.id }, (err, existingUser) => {
             if (err) {
+              logger.error(
+                `FacebookStrategy find by facebook error for user: ${
+                  req.user.username
+                }: ${err}`
+              );
               return done(err);
             }
             if (existingUser) {
-              req.session.error =
-                'There is already a Facebook account that belongs to you. Sign in with that account or delete it, then link it with your current account.';
+              logger.info(
+                `Logged in: ${
+                  req.user.username
+                } - Facebook account: ${profile} registered to different user: ${
+                  existingUser.username
+                }`
+              );
+              req.flash(
+                'errors',
+                'There is already a Facebook account that belongs to you. Sign in with that account or delete it, then link it with your current account.'
+              );
               done(err);
             } else {
               // eslint-disable-next-line no-shadow
               User.findById(req.user.id, (err, user) => {
                 if (err) {
+                  logger.error(`FacebookStrategy findById error: ${err}`);
                   return done(err);
                 }
                 user.set('facebook', profile.id);
@@ -165,8 +214,14 @@ module.exports = () => {
                 // eslint-disable-next-line no-shadow
                 user.save(err => {
                   if (err) {
+                    logger.error(
+                      `FacebookStrategy user.save error for user: ${
+                        user.username
+                      }: with: ${err}`
+                    );
                     return done(err);
                   }
+                  logger.info(`updated user ${user.username} with facebook id`);
                   req.flash('info', 'Facebook account has been linked.');
                   done(err, user);
                 });
@@ -176,9 +231,13 @@ module.exports = () => {
         } else {
           User.findOne({ facebook: profile.id }, (err, existingUser) => {
             if (err) {
+              logger.error(
+                `FacebookStrategy find by facebook error for new user: ${err}`
+              );
               return done(err);
             }
             if (existingUser) {
+              logger.info(`Facebook login: ${existingUser.username}`);
               return done(null, existingUser);
             }
             // put profile in our User format
@@ -196,8 +255,12 @@ module.exports = () => {
             // eslint-disable-next-line no-shadow
             createUser(newUser, (err, user) => {
               if (err) {
+                logger.error(
+                  `FacebookStrategy createUser error for user: ${newUser} with: ${err}`
+                );
                 return done(err);
               }
+              logger.info(`created user on facebook login: ${user}`);
               return done(null, user);
             });
           });

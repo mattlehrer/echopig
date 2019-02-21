@@ -6,6 +6,7 @@ module.exports = {
   localLogin(req, res, next) {
     const auth = passport.authenticate('local', (err, user) => {
       if (err) {
+        logger.error(`localLogin auth error: ${err}`);
         if (err.message === 'data and hash arguments required') {
           req.flash(
             'errors',
@@ -18,13 +19,14 @@ module.exports = {
         return;
       }
       if (!user) {
-        logger.error(`login failure on usernaem: ${req.body.username}`);
+        logger.error(`login failure on username: ${req.body.username}`);
         req.flash('errors', 'Invalid username or password. Please try again.');
         res.redirect('/login');
         return;
       }
       // make sure email is verified
       if (!user.isVerified) {
+        logger.info(`login but not verified: ${user.username}`);
         req.flash('errors', 'Please verify your email address.');
         res.redirect('/resend');
         return;
@@ -33,9 +35,13 @@ module.exports = {
       // eslint-disable-next-line no-shadow
       req.logIn(user, err => {
         if (err) {
+          logger.error(
+            `req.logIn failure on username: ${user.username} with err: ${err}`
+          );
           next(err);
           return;
         }
+        logger.info(`logIn for username: ${user.username}`);
         // TODO make the homepage more interesting
         // until then redirect to user profile on login
         // res.redirect('/');
