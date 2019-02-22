@@ -73,6 +73,5 @@ module.exports.init = () => {
     });
   };
 
-  // eslint-disable-next-line no-unused-vars
-  const User = mongoose.model('User', userSchema);
+  mongoose.model('User', userSchema);
 };

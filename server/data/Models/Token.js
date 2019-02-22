@@ -11,6 +11,5 @@ module.exports.init = () => {
     createdAt: { type: Date, required: true, default: Date.now, expires: '1d' }
   });
 
-  // eslint-disable-next-line no-unused-vars
-  const Token = mongoose.model('Token', tokenSchema);
+  mongoose.model('Token', tokenSchema);
 };

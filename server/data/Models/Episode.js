@@ -32,6 +32,5 @@ module.exports.init = () => {
 
   episodeSchema.plugin(autopopulate);
 
-  // eslint-disable-next-line no-unused-vars
-  const Episode = mongoose.model('Episode', episodeSchema);
+  mongoose.model('Episode', episodeSchema);
 };

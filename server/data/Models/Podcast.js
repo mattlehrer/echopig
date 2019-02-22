@@ -20,6 +20,5 @@ module.exports.init = () => {
     genres: [String]
   });
 
-  // eslint-disable-next-line no-unused-vars
-  const Podcast = mongoose.model('Podcast', podcastSchema);
+  mongoose.model('Podcast', podcastSchema);
 };

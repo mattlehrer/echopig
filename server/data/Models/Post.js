@@ -27,6 +27,5 @@ module.exports.init = () => {
 
   postSchema.plugin(autopopulate);
 
-  // eslint-disable-next-line no-unused-vars
-  const Post = mongoose.model('Post', postSchema);
+  mongoose.model('Post', postSchema);
 };
