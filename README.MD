@@ -5,7 +5,10 @@ Use docker-compose.debug.yml for dev and docker-compose.yml for production
 
 **TODO**
 
-* Avatar
+* Avatar + default
+* MongoDB Atlas signup and integration
+* CloudWatch logging
+  * Disable file and mail logging transports
 * Update top episodes page design
 * Copy
   * About
