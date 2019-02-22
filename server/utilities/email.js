@@ -1,6 +1,6 @@
 const apiKey = process.env.MAILGUN_API_KEY;
 const domain = process.env.MAILGUN_DOMAIN;
-const testMode = !(process.env.NODE_ENV === 'production');
+const testMode = process.env.NODE_ENV !== 'production';
 const mailgun = require('mailgun-js')({ apiKey, domain, testMode });
 const appRoot = require('app-root-path');
 const nodemailer = require('nodemailer');
@@ -58,22 +58,16 @@ module.exports = {
     return mailgun.validateWebhook(timestamp, token, signature);
   },
   transport: nodemailer.createTransport(mg(auth)),
-  sendWithTemplate(
-    template,
-    from = `info@${domain}`,
-    to,
-    variables = {},
-    callback
-  ) {
+  sendWithTemplate(template, from, to, variables, callback) {
     const email = new Email({
       message: {
-        from
+        from: from || `info@${domain}`
       },
       // uncomment below to send emails in development/test env:
       // send: true,
       transport: this.transport
     });
-    const locals = variables;
+    const locals = variables || {};
     locals.BASE_URL = process.env.BASE_URL;
 
     email
