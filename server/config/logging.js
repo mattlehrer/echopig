@@ -1,9 +1,27 @@
 const appRoot = require('app-root-path');
 const path = require('path');
 const { config, createLogger, format, transports } = require('winston');
-const Mail = require('../utilities/winston-mailgun');
+// const Mail = require('../utilities/winston-mailgun');
 
 const env = process.env.NODE_ENV || 'development';
+let formatForEnv;
+if (env === 'production') {
+  formatForEnv = format.combine(
+    format.timestamp(),
+    format.errors({ stack: true }),
+    format.json()
+  );
+} else {
+  formatForEnv = format.combine(
+    format.timestamp({ format: 'M/D HH:mm:ss' }),
+    format.colorize(),
+    // format.cli(),
+    format.printf(
+      info =>
+        `${info.timestamp} ${info.level}: \t${info.message} [${info.label}]`
+    )
+  );
+}
 
 // instantiate a new Winston Logger with the settings defined above
 const logger = (caller = '') => {
@@ -22,38 +40,29 @@ const logger = (caller = '') => {
       })
     ),
     transports: [
-      new transports.File({
-        level: 'info',
-        filename: `${appRoot}/logs/app.log`,
-        maxsize: 5242880, // 5MB
-        maxFiles: 5,
-        format: format.json()
-      }),
-      new transports.File({
-        level: 'error',
-        filename: `${appRoot}/logs/error.log`,
-        maxsize: 5242880, // 5MB
-        maxFiles: 5,
-        format: format.json()
-      }),
       new transports.Console({
-        format: format.combine(
-          format.timestamp({ format: 'M/D HH:mm:ss' }),
-          format.colorize(),
-          // format.cli(),
-          format.printf(
-            info =>
-              `${info.timestamp} ${info.level}: \t${info.message} [${
-                info.label
-              }]`
-          )
-        )
-      }),
-      new Mail({
-        level: 'alert',
-        to: 'lehrerm@gmail.com',
-        from: 'alert@echopig.com'
+        format: formatForEnv
       })
+      // ,
+      // new transports.File({
+      //   level: 'info',
+      //   filename: `${appRoot}/logs/app.log`,
+      //   maxsize: 5242880, // 5MB
+      //   maxFiles: 5,
+      //   format: format.json()
+      // }),
+      // new transports.File({
+      //   level: 'error',
+      //   filename: `${appRoot}/logs/error.log`,
+      //   maxsize: 5242880, // 5MB
+      //   maxFiles: 5,
+      //   format: format.json()
+      // }),
+      // new Mail({
+      //   level: 'alert',
+      //   to: 'lehrerm@gmail.com',
+      //   from: 'alert@echopig.com'
+      // })
     ],
     exitOnError: false // do not exit on handled exceptions
   });
