@@ -173,10 +173,9 @@ module.exports = {
           req.logIn(user, err => {
             if (err) {
               logger.error(err);
-              res.redirect('/login');
-              return;
+              return res.redirect('/login');
             }
-            res.redirect('/settings');
+            return res.redirect('/settings');
           });
         }
         user.set('isVerified', true);
