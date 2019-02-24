@@ -10,17 +10,24 @@ module.exports = {
       (err, profiledUser) => {
         if (err) {
           next(err);
+          return;
         }
-        if (profiledUser === null) {
-          const error = new Error('User Not Found');
-          error.status = 404;
-          next(error);
-        } else {
-          res.render('profile/profile', {
-            currentUser: req.user,
-            profiledUser
-          });
+        if (!profiledUser) {
+          if (req.user) {
+            req.flash('errors', "We can't find a user with that name.");
+          } else {
+            req.flash(
+              'errors',
+              "We can't find a user with that name. Do you want to create it?"
+            );
+            res.redirect('/');
+            return;
+          }
         }
+        res.render('profile/profile', {
+          currentUser: req.user,
+          profiledUser
+        });
       }
     );
   }
