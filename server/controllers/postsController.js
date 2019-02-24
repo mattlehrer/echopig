@@ -229,7 +229,7 @@ module.exports = {
           return;
         }
         mail.sendWithTemplate(
-          'post',
+          'postConfirmation',
           'Echopig <post@echopig.com>',
           postingUser,
           { user: postingUser, post },
