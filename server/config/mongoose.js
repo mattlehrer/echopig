@@ -9,7 +9,6 @@ const PostModel = require('../data/models/Post');
 
 module.exports = config => {
   mongoose.Promise = global.Promise;
-  logger.info(`${config.db}`);
   mongoose.connect(config.db, {
     dbName: 'echopig',
     useNewUrlParser: true,
