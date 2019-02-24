@@ -25,7 +25,7 @@ function createNewUser(userData, callback) {
       callback(err);
       return;
     }
-
+    logger.info(`New registration: ${user}`);
     // Create a verification token for this user
     tokenData.createToken(
       {
@@ -178,6 +178,7 @@ module.exports = {
             return res.redirect('/settings');
           });
         }
+        logger.info(`New user confirmation: ${user}`);
         user.set('isVerified', true);
         // eslint-disable-next-line no-shadow
         user.save(err => {

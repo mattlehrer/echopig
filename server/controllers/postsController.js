@@ -51,8 +51,11 @@ function createPost(postData, cb) {
       if (!alreadyPosted) {
         newPost.episode = episode;
         postsData.addNewPost(newPost, (err, post) => {
-          if (err) cb(err, null);
-          // logger.debug(`added post: ${post}`);
+          if (err) {
+            cb(err, null);
+            return;
+          }
+          logger.info(`New post: ${post}`);
           // add post reference to User
           usersController.addPostByUser(post, newPost.byUser, (err, user) => {
             if (err) {
