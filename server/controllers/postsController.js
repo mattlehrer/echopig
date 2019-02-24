@@ -200,7 +200,7 @@ module.exports = {
         next(err);
         return;
       }
-      if (postingUser === null) {
+      if (!postingUser) {
         res.status(400).send('No such user');
         return;
       }
@@ -232,7 +232,11 @@ module.exports = {
           'post',
           'Echopig <post@echopig.com>',
           postingUser,
-          { user: postingUser, post }
+          { user: postingUser, post },
+          // eslint-disable-next-line no-shadow
+          err => {
+            if (err) logger.error(err);
+          }
         );
         res.status(201).send();
       });
