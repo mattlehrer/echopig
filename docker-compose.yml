@@ -41,6 +41,7 @@ services:
     # volumes:
     #  - .:/usr/src/app
     #  - /usr/src/app/node_modules
+    restart: always
     environment:
       ENV: production
       NODE_ENV: production
