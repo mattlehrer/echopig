@@ -12,6 +12,11 @@ services:
     ports:
       - 80:80
       - 443:443
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: "ep-nginx"
+        awslogs-region: "us-east-1"
     links:
      - "web:epweb"
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
