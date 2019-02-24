@@ -17,9 +17,9 @@ module.exports = {
   },
   production: {
     rootPath,
-    db: `mongodb://${process.env.MONGO_EPDB_USERNAME}:${
+    db: `mongodb+srv://${process.env.MONGO_EPDB_USERNAME}:${
       process.env.MONGO_EPDB_PASSWORD
-    }@${mongoHost}`,
+    }@${process.env.MONGO_HOST}`,
     waitForDb: true,
     port: process.env.PORT || 9001
   }
