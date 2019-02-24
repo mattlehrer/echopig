@@ -84,7 +84,7 @@ function cleanTimeframeQuery(query = '') {
 }
 
 module.exports = {
-  cp: createPost,
+  createPost,
   getNewPost(req, res, next) {
     if (!req.user) {
       res.redirect('/');
