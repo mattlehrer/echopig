@@ -33,8 +33,8 @@ services:
       NODE_ENV: production
     env_file:
      - .env
-    # logging:
-    #   driver: awslogs
-    #   options:
-    #     awslogs-group: "epweb"
-    #     awslogs-region: "us-east-1"
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: "epweb"
+        awslogs-region: "us-east-1"
