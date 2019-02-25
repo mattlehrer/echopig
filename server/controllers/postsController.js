@@ -22,6 +22,9 @@ function createPost(postData, cb) {
         return;
       }
       // check if user has already posted this episode
+      // Apple Podcasts ignores multiple items with same enclosure URL
+      // so don't let people post the same episode / mp3 twice
+      // See: https://help.apple.com/itc/podcasts_connect/#/itc1723472cb
       let alreadyPosted = false;
       newPost.byUser.posts.forEach(post => {
         if (!alreadyPosted && episode.id === post.episode.id) {
