@@ -185,9 +185,6 @@ module.exports = app => {
   // catch 404
   // eslint-disable-next-line no-unused-vars
   app.use((req, res, next) => {
-    if (!res.locals.messages) {
-      req.flash('Page Not Found');
-    }
     logger.info(`404 - URL requested: ${req.originalUrl}`);
     res.render('404', { currentUser: req.user });
   });
