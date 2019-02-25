@@ -20,9 +20,9 @@ module.exports = {
               'errors',
               "We can't find a user with that name. Do you want to create it?"
             );
-            res.redirect('/');
-            return;
           }
+          res.redirect('/');
+          return;
         }
         res.render('profile/profile', {
           currentUser: req.user,
