@@ -14,30 +14,34 @@ module.exports = {
       }
       if (!user) {
         res.status(404);
-        res.send('No such user');
+        res.send('Not found');
         return;
       }
       const { posts } = user;
       // create an rss feed
       // documentation: https://www.npmjs.com/package/podcast
       const feed = new Podcast({
-        title: `${usernameForFeed}'s Favorites`,
-        description: `${usernameForFeed}'s feed of favorite podcast episodes powered by Echopig`,
-        feedUrl: `https://www.echopig.com/rss/${usernameForFeed}`,
-        siteUrl: `https://www.echopig.com/u/${usernameForFeed}`,
+        title: `${user.username}'s Favorites`,
+        itunesSummary: `${
+          user.username
+        }'s feed of favorite podcast episodes. Powered by Echopig`,
+        description: `${
+          user.username
+        }'s feed of favorite podcast episodes. Powered by Echopig`,
+        itunesSubtitle: 'Create your own feed at https://www.echopig.com',
+        itunesAuthor: user.username,
+        feedUrl: `https://www.echopig.com/rss/${user.username}`,
+        siteUrl: `https://www.echopig.com/u/${user.username}`,
         generator: 'Echopig.com',
         imageUrl: 'https://www.echopig.com/images/logo.png',
         itunesImage: 'https://www.echopig.com/images/logo1500.png',
         // docs: TODO: 'https://www.echopig.com/rssDocs.html',
-        author: usernameForFeed,
+        author: user.name || user.username,
         language: 'en',
-        categories: ['Personal'],
-        itunesCategory: ['Personal'],
+        categories: ['Personal Journals'],
+        itunesCategory: ['Personal Journals'],
         pubDate: posts.length > 0 ? posts[0].updatedAt : user.updatedAt,
-        ttl: '120',
-        itunesAuthor: usernameForFeed,
-        itunesSubtitle: `${usernameForFeed}'s feed of favorite podcast episodes powered by Echopig`,
-        itunesSummary: 'Create your own feed at http://www.echopig.com',
+        ttl: '60',
         itunesOwner: {
           name: usernameForFeed,
           email: 'rss@echopig.com'
