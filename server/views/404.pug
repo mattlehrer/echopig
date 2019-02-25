@@ -1,0 +1,11 @@
+extends shared/layout
+block main-content
+  .div.text-center.mx-auto.col-md.mt-4
+    .display-1 404
+    .h2 Oops! We can't find that page
+    p The page you are looking for might have been removed or had its name changed. 
+      .row.col-md.mx-auto
+        a.text-center.mx-auto.pt-3(href='/') Return to the homepage
+        if (!currentUser)
+          a.text-center.mx-auto.pt-3(href='/register') Register for an account
+        a.text-center.mx-auto.pt-3(href='/top') Check out hot episodes

@@ -21,7 +21,7 @@ module.exports = {
               "We can't find a user with that name. Do you want to create it?"
             );
           }
-          res.redirect('/');
+          next();
           return;
         }
         res.render('profile/profile', {

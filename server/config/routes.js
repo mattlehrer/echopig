@@ -182,11 +182,14 @@ module.exports = app => {
     controllers.posts.deletePost
   );
 
-  // catch 404 and forward to error handler
+  // catch 404
+  // eslint-disable-next-line no-unused-vars
   app.use((req, res, next) => {
-    const err = new Error('Page Not Found');
-    err.status = 404;
-    next(err);
+    if (!res.locals.messages) {
+      req.flash('Page Not Found');
+    }
+    logger.info(`404 - URL requested: ${req.originalUrl}`);
+    res.render('404', { currentUser: req.user });
   });
 
   app.use(
