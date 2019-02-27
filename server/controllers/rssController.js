@@ -1,7 +1,10 @@
 /* eslint-disable no-unused-vars */
 const Podcast = require('podcast');
+const ua = require('universal-analytics');
 const usersData = require('../data/usersData');
 const logger = require('../utilities/logger')(__filename);
+
+const gaTag = 'UA-107421772-3';
 
 module.exports = {
   getRSSFeed(req, res, next) {
@@ -17,6 +20,15 @@ module.exports = {
         res.send('Not found');
         return;
       }
+      // log request to GA
+      const feedReader = ua(gaTag);
+      feedReader
+        .event({
+          ec: `/rss/${user.username}`, // feed for category
+          ea: `${req.headers['user-agent']}` // podcatcher for action
+        })
+        .send();
+
       const { posts } = user;
       // create an rss feed
       // documentation: https://www.npmjs.com/package/podcast

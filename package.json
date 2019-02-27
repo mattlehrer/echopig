@@ -43,6 +43,7 @@
     "serve-favicon": "^2.5.0",
     "shortid": "^2.2.14",
     "simple-get": "^3.0.3",
+    "universal-analytics": "^0.4.20",
     "uuid": "^3.3.2",
     "validator": "^10.11.0",
     "vcards-js": "^2.10.0",
