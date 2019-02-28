@@ -27,7 +27,7 @@
     "jquery": "^3.3.1",
     "mailgun-js": "^0.22.0",
     "moment": "^2.24.0",
-    "mongoose": "^5.4.15",
+    "mongoose": "^5.4.16",
     "mongoose-autopopulate": "^0.9.1",
     "node-sass-middleware": "^0.11.0",
     "nodemailer": "^5.1.1",
@@ -51,10 +51,10 @@
     "winston-transport": "^4.3.0"
   },
   "devDependencies": {
-    "acorn": "^6.1.0",
+    "acorn": "^6.1.1",
     "eslint": "^5.14.1",
     "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^4.0.0",
+    "eslint-config-prettier": "^4.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-security": "^1.4.0",
