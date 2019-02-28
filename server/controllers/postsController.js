@@ -35,7 +35,7 @@ function createPost(postData, cb) {
             const error = new Error(
               'You have already posted that episode within the last 24 hours'
             );
-            error.status = 400;
+            error.status = 409;
             cb(error, null);
           } else {
             // update post time to now
@@ -135,9 +135,17 @@ module.exports = {
               req.user.username
             } with error: ${err}`
           );
-          if (err.status === 400) {
+          if (err.status === 409) {
             req.flash('errors', err.message);
-            res.status(400).redirect(`/u/${req.user.username}`);
+            res.status(409).redirect(`/u/${req.user.username}`);
+            return;
+          }
+          if (err.status === 400) {
+            req.flash(
+              'errors',
+              "We don't know what to do with that link. Please try again by linking to an individual episode."
+            );
+            res.status(400).redirect(`/post`);
             return;
           }
           next(err);

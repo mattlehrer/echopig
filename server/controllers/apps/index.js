@@ -6,8 +6,10 @@ module.exports = (url, callback) => {
   if (url.search('overcast.fm') !== -1) {
     overcast(url, (error, epData) => {
       if (error) {
+        const err = error;
         logger.error(error);
-        callback(error, null);
+        err.status = 400;
+        callback(err, null);
         return;
       }
       const newEpData = epData;
@@ -17,8 +19,10 @@ module.exports = (url, callback) => {
   } else if (url.search('itunes.apple.com') !== -1) {
     podcastsApp(url, (error, epData) => {
       if (error) {
+        const err = error;
         logger.error(error);
-        callback(error, null);
+        err.status = 400;
+        callback(err, null);
         return;
       }
       const newEpData = epData;
