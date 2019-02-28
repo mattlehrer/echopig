@@ -119,11 +119,11 @@ module.exports = app => {
   app.get('/g/:genre', controllers.posts.mostPostedEpisodesInGenreInTimeframe);
   app.get('/top', controllers.posts.mostPostedEpisodesInTimeframe);
 
-  app.get('/', (req, res) => {
+  app.get('/', csrfProtection, (req, res) => {
     if (req.isAuthenticated()) {
       res.render('loggedInIndex', { currentUser: req.user });
     } else {
-      res.render('loggedOutIndex');
+      res.render('loggedOutIndex', { csrfToken: req.csrfToken() });
     }
   });
 

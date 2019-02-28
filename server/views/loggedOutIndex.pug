@@ -1,9 +1,40 @@
 extends shared/layout
 block main-content
-  div.col-md
-    div.align-middle.h5
-      div.my-4 Keep the podcast app you love
-      div.my-4 Share favorite episodes
-      div.my-4 Follow friends and interests
-  div.col-md
-    div.align-middle
+  .row.pt-3
+    div.col-md
+      div.align-middle.h4.mx-auto
+        div.my-3 Keep the podcast app you love
+        div.my-3 Share your favorite episodes
+        div.my-3 Follow friends and interests
+    div.col-md
+      div.align-middle
+        .row.py-2
+          .col.py-1
+            a.btn.btn-block.btn-twitter.btn-social(href="/auth/twitter")
+              span.fab.fa-twitter.fa-sm
+              span Login with Twitter
+          .col.py-1
+            a.btn.btn-block.btn-facebook.btn-social(href='/auth/facebook')
+              span.fab.fa-facebook-f.fa-sm
+              span Login with Facebook
+      form(method="post", action="/register", class='form-horizontal')
+        .h6.text-muted.text-center.py-3 OR
+        fieldset
+          legend Sign up with username and password
+          .form-group
+            label.control-label(for="username") Username
+            input(id="username" class="form-control" type="text" name="username" placeholder="Username" autofocus required)
+          .form-group
+            label.control-label(for="email") Email
+            input(id="email" class="form-control" type="text" name="email" placeholder="Email Address" required)
+          .form-group
+            label.control-label(for="password") Password
+            input(id="password" class="form-control" type="password" name="password" placeholder="Password" required)
+          .form-group
+            label.control-label(for="confirmPassword") Confirm Password
+            input(id="confirmPassword" class="form-control" type="password" name="confirmPassword" placeholder="Confirm Password" required)
+          .form-group
+            input(type="hidden" name="_csrf" value=csrfToken)
+          .form-group
+            //- button(type="reset" class="btn btn-default") Cancel
+            button(type="submit" class="btn btn-primary") Sign up
