@@ -14,7 +14,39 @@ const auth = require('./auth');
 
 module.exports = (app, config) => {
   app.set('trust proxy', 1);
-  app.use(helmet());
+  app.use(
+    helmet({
+      frameguard: false, // turned on in nginx config
+      noSniff: false, // turned on in nginx config
+      featurePolicy: {
+        features: {
+          geolocation: ["'none'"],
+          midi: ["'none'"],
+          notifications: ["'none'"],
+          push: ["'none'"],
+          syncXhr: ["'none'"],
+          microphone: ["'none'"],
+          camera: ["'none'"],
+          magnetometer: ["'none'"],
+          gyroscope: ["'none'"],
+          speaker: ["'self'"],
+          vibrate: ["'none'"],
+          fullscreen: ["'none'"],
+          payment: ["'none'"]
+        }
+      },
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'", 'www.google-analytics.com'],
+          styleSrc: ["'self'", 'fonts.googleapis.com'],
+          imgSrc: ['*'],
+          mediaSrc: ['*'],
+          fontSrc: ["'self'", 'fonts.gstatic.com']
+        }
+      },
+      referrerPolicy: { policy: 'no-referrer-when-downgrade' }
+    })
+  );
   app.set('view engine', 'pug');
   app.use(favicon(`${config.rootPath}/public/favicon.ico`));
   app.set('views', `${config.rootPath}/server/views`);
