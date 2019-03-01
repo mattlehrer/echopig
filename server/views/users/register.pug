@@ -13,19 +13,20 @@ block main-content
             span.fab.fa-facebook-f.fa-sm
             span Login with Facebook
     form(method="post", action="", class='form-horizontal')
+      .h6.text-muted.text-center.py-2.mb-0 OR
       fieldset
-        legend Or sign up with email and password
+        legend Sign up with username and password
         .form-group
-          label.control-label(for="username") Username
+          label.control-label.mb-1(for="username") Username
           input(id="username" class="form-control" type="text" name="username" placeholder="Username" autofocus required)
         .form-group
-          label.control-label(for="email") Email
+          label.control-label.mb-1(for="email") Email
           input(id="email" class="form-control" type="text" name="email" placeholder="Email Address" required)
         .form-group
-          label.control-label(for="password") Password
+          label.control-label.mb-1(for="password") Password
           input(id="password" class="form-control" type="password" name="password" placeholder="Password" required)
         .form-group
-          label.control-label(for="confirmPassword") Confirm Password
+          label.control-label.mb-1(for="confirmPassword") Confirm Password
           input(id="confirmPassword" class="form-control" type="password" name="confirmPassword" placeholder="Confirm Password" required)
         .form-group
           input(type="hidden" name="_csrf" value=csrfToken)

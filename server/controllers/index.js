@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const UsersController = require('./usersController');
 const PostsController = require('./postsController');
 const EpisodesController = require('./episodesController');
@@ -11,5 +12,71 @@ module.exports = {
   episodes: EpisodesController,
   podcasts: PodcastsController,
   profiles: ProfilesController,
-  rss: RSSController
+  rss: RSSController,
+  loggedInIndex(req, res, next) {
+    const hours = 24 * 30;
+    const timeframe = hours * 60 * 60 * 1000;
+    const since = new Date(Date.now() - timeframe);
+    const maxEpisodes = 3;
+    PostsController.mostPostedEpisodesInTimeframe(
+      since,
+      maxEpisodes,
+      (err, episodes) => {
+        if (err) {
+          next(err);
+          return;
+        }
+        const maxPodcasts = 3;
+        PostsController.mostPostedPodcastsInTimeframe(
+          since,
+          maxPodcasts,
+          // eslint-disable-next-line no-shadow
+          (err, podcasts) => {
+            if (err) {
+              next(err);
+              return;
+            }
+            res.render('loggedInIndex', {
+              currentUser: req.user,
+              episodes,
+              podcasts
+            });
+          }
+        );
+      }
+    );
+  },
+  loggedOutIndex(req, res, next) {
+    const hours = 24 * 30;
+    const timeframe = hours * 60 * 60 * 1000;
+    const since = new Date(Date.now() - timeframe);
+    const maxEpisodes = 3;
+    PostsController.mostPostedEpisodesInTimeframe(
+      since,
+      maxEpisodes,
+      (err, episodes) => {
+        if (err) {
+          next(err);
+          return;
+        }
+        const maxPodcasts = 3;
+        PostsController.mostPostedPodcastsInTimeframe(
+          since,
+          maxPodcasts,
+          // eslint-disable-next-line no-shadow
+          (err, podcasts) => {
+            if (err) {
+              next(err);
+              return;
+            }
+            res.render('loggedOutIndex', {
+              currentUser: req.user,
+              episodes,
+              podcasts
+            });
+          }
+        );
+      }
+    );
+  }
 };

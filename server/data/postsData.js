@@ -1,4 +1,6 @@
+/* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
+// const logger = require('../utilities/logger')(__filename);
 
 const Post = mongoose.model('Post');
 
@@ -16,10 +18,11 @@ module.exports = {
   },
 
   // returns a sorted array of objects with _id of episode and numberOfPosts after since
-  findMostPostedEpisodesInTimeframe(since, callback) {
+  findMostPostedEpisodesInTimeframe(since, maxEpisodes, callback) {
     Post.aggregate([
       { $match: { updatedAt: { $gte: since } } },
       { $sortByCount: '$episode' },
+      { $limit: maxEpisodes },
       {
         $lookup: {
           from: 'episodes',
@@ -40,7 +43,7 @@ module.exports = {
       { $unwind: '$episode.podcast' }
     ]).exec((err, episodes) => {
       if (err) callback(err, null);
-      else
+      else {
         callback(
           null,
           episodes.map(e => {
@@ -50,11 +53,55 @@ module.exports = {
             return e.episode;
           })
         );
+      }
+    });
+  },
+
+  // returns a sorted array of objects with _id of podcasts and numberOfPosts after since
+  findMostPostedPodcastsInTimeframe(since, maxPodcasts, callback) {
+    Post.aggregate([
+      { $match: { updatedAt: { $gte: since } } },
+      {
+        $lookup: {
+          from: 'episodes',
+          localField: 'episode',
+          foreignField: '_id',
+          as: 'episode'
+        }
+      },
+      { $unwind: '$episode' },
+      {
+        $lookup: {
+          from: 'podcasts',
+          localField: 'episode.podcast',
+          foreignField: '_id',
+          as: 'episode.podcast'
+        }
+      },
+      { $unwind: '$episode.podcast' },
+      { $sortByCount: '$episode.podcast' },
+      { $limit: maxPodcasts }
+    ]).exec((err, podcasts) => {
+      if (err) callback(err, null);
+      else {
+        callback(
+          null,
+          podcasts.map(e => {
+            e._id.posts = e.count;
+            return e._id;
+          })
+        );
+      }
     });
   },
 
   // returns a sorted array of objects with _id of episode and numberOfPosts after since
-  findMostPostedEpisodesInGenreInTimeframe(genre, since, callback) {
+  findMostPostedEpisodesInGenreInTimeframe(
+    genre,
+    since,
+    maxEpisodes,
+    callback
+  ) {
     Post.aggregate([
       { $match: { updatedAt: { $gte: since } } },
       { $sortByCount: '$episode' },
@@ -82,7 +129,8 @@ module.exports = {
         $match: {
           'episode.podcast.genres': { $regex: `^${genre}$`, $options: 'i' }
         }
-      }
+      },
+      { $limit: maxEpisodes }
     ]).exec((err, episodes) => {
       if (err) callback(err, null);
       else

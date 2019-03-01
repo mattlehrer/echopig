@@ -3,7 +3,7 @@ extends ../shared/layout
 block main-content
   if episodes.length > 0
     .w-100.py-4
-      //- .h4 Top Posts
+      .h4 Hot Episodes
       //- div.btn-group.btn-group-lg.pb-3(role="group" aria-label="kind of top posts")
       //-   button.btn.btn-secondary(type="button") Hot
       //-   div.btn-group.btn-group-lg(role="group")
@@ -17,7 +17,7 @@ block main-content
       //-   button.btn.btn-secondary(type="button") New
       ul.pl-0
         each episode in episodes
-          li.media.border-top.py-3
+          li.media.border-bottom.py-3
             if (episode.image !== undefined)
               img.rounded.w-25(
                 src=episode.image

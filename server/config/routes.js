@@ -107,23 +107,30 @@ module.exports = app => {
 
   app.get('/logout', auth.logout);
 
-  app.get('/u/:username', controllers.profiles.getProfile);
+  app.get('/u(ser)?(s)?/:username', controllers.profiles.getProfile);
   app.get('/rss/:username', controllers.rss.getRSSFeed);
-  app.get('/e/:episode', controllers.episodes.getEpisode);
-  app.get('/p/i:iTunesID', controllers.podcasts.getPodcastByITunesID);
+  app.get('/e(pisode)?(s)?', controllers.posts.getTopEpisodes);
+  app.get('/e(pisode)?(s)?/:episode', controllers.episodes.getEpisode);
+  app.get('/p(odcast)?(s)?', controllers.podcasts.getTopPodcasts);
+  app.get(
+    '/p(odcast)?(s)?/i:iTunesID',
+    controllers.podcasts.getPodcastByITunesID
+  );
   app.get(
     '/p/i:iTunesID/update',
     ensureAuthenticated,
     controllers.podcasts.updatePodcast
   );
-  app.get('/g/:genre', controllers.posts.mostPostedEpisodesInGenreInTimeframe);
-  app.get('/top', controllers.posts.mostPostedEpisodesInTimeframe);
+  app.get(
+    '/g(enre)?(s)?/:genre',
+    controllers.posts.mostPostedEpisodesInGenreInTimeframe
+  );
 
-  app.get('/', csrfProtection, (req, res) => {
+  app.get('/', csrfProtection, (req, res, next) => {
     if (req.isAuthenticated()) {
-      res.render('loggedInIndex', { currentUser: req.user });
+      controllers.loggedInIndex(req, res, next);
     } else {
-      res.render('loggedOutIndex', { csrfToken: req.csrfToken() });
+      controllers.loggedOutIndex(req, res, next);
     }
   });
 

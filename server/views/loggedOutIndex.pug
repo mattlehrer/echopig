@@ -6,7 +6,7 @@ block main-content
         div.my-3 Keep the podcast app you love
         div.my-3 Share your favorite episodes
         div.my-3 Follow friends and interests
-    div.col-md
+    div.col-md-5
       div.align-middle
         .row.py-2
           .col.py-1
@@ -18,23 +18,56 @@ block main-content
               span.fab.fa-facebook-f.fa-sm
               span Login with Facebook
       form(method="post", action="/register", class='form-horizontal')
-        .h6.text-muted.text-center.py-3 OR
+        .h6.text-muted.text-center.py-2.mb-0 OR
         fieldset
           legend Sign up with username and password
           .form-group
-            label.control-label(for="username") Username
+            label.control-label.mb-1(for="username") Username
             input(id="username" class="form-control" type="text" name="username" placeholder="Username" autofocus required)
           .form-group
-            label.control-label(for="email") Email
+            label.control-label.mb-1(for="email") Email
             input(id="email" class="form-control" type="text" name="email" placeholder="Email Address" required)
           .form-group
-            label.control-label(for="password") Password
+            label.control-label.mb-1(for="password") Password
             input(id="password" class="form-control" type="password" name="password" placeholder="Password" required)
           .form-group
-            label.control-label(for="confirmPassword") Confirm Password
+            label.control-label.mb-1(for="confirmPassword") Confirm Password
             input(id="confirmPassword" class="form-control" type="password" name="confirmPassword" placeholder="Confirm Password" required)
           .form-group
             input(type="hidden" name="_csrf" value=csrfToken)
           .form-group
             //- button(type="reset" class="btn btn-default") Cancel
             button(type="submit" class="btn btn-primary") Sign up
+  .mt-4.justify-content-md-center
+    .pl-0
+      a.h4(href='/episodes') Hot Episodes
+      .row.equal-height.mt-3
+        each episode in episodes
+          .col-12.col-sm-5.col-md-4.col-lg-3
+            .card.mx-0.mb-4
+              img.card-img-top.img-fluid(
+                  src=episode.image || episode.podcast.artworkUrl600 || episode.podcast.artworkUrl100 || ''
+                )
+              .card-body
+                a.card-text(href=`/p/i${episode.podcast.iTunesID}`) !{episode.podcast.title}
+                .h5.mb-0
+                  a(href=`/e/${episode.id}`) !{episode.title}
+                div.card-text.pt-1.small.font-weight-lighter Published #{relativeTime(episode.releaseDate)}
+              .card-footer
+                .small.font-weight-light.text-right 🐽 #{episode.posts.length} 
+  .mt-4.justify-content-md-center    
+    .pl-0
+      a.h4(href='/podcasts') Hot Podcasts
+      .row.equal-height.mt-3
+        each podcast in podcasts
+          .col-12.col-sm-5.col-md-4.col-lg-3
+            .card.mx-0.mb-4
+              img.card-img-top.img-fluid(
+                  src=podcast.artworkUrl600 || podcast.artworkUrl100 || ''
+                )
+              .card-body
+                a.card-title(href=`/p/i${podcast.iTunesID}`) !{podcast.title}
+                if podcast.author
+                  div.card-text By #{podcast.author}
+              .card-footer
+                .small.font-weight-light.text-right 🐽 #{podcast.posts} 

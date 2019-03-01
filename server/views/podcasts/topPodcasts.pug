@@ -1,0 +1,20 @@
+extends ../shared/layout
+
+block main-content
+  if podcasts.length > 0
+    .w-100.py-4
+      .h4 Hot Podcasts
+      .pl-0
+        .row.equal-height
+          each podcast, index in podcasts
+            .col-12.col-sm-5.col-md-4.col-lg-3
+              .card.mx-0.mb-4
+                img.card-img-top.img-fluid(
+                    src=podcast.artworkUrl600 || podcast.artworkUrl100 || ''
+                  )
+                .card-body
+                  a.card-title(href=`/p/i${podcast.iTunesID}`) !{podcast.title}
+                  if podcast.author
+                    div.card-text By #{podcast.author}
+                .card-footer
+                  .small.font-weight-light.text-right 🐽 #{podcast.posts} 

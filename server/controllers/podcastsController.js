@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const searchitunes = require('searchitunes');
 
 const logger = require('../utilities/logger')(__filename);
@@ -5,7 +6,10 @@ const podcastsData = require('../data/podcastsData');
 // getting TypeError: episodesController.findAllEpisodesOfPodcast is not a function
 // and don't know why
 // const episodesController = require('./episodesController');
-const episodesData = require('../data/episodesData');
+const { findAllEpisodesOfPodcast } = require('../data/episodesData');
+// const { findAllEpisodesOfPodcast } = require('./episodesController');
+const { findMostPostedPodcastsInTimeframe } = require('../data/postsData');
+const { cleanTimeframeQuery } = require('../utilities/queryUtils');
 
 module.exports = {
   findOrCreatePodcast(podcastData, callback) {
@@ -81,7 +85,7 @@ module.exports = {
         error.status = 404;
         return next(error);
       }
-      return episodesData.findAllEpisodesOfPodcast(
+      return findAllEpisodesOfPodcast(
         // can't figure out this error
         // return episodesController.findAllEpisodesOfPodcast(
         podcast,
@@ -98,6 +102,19 @@ module.exports = {
           });
         }
       );
+    });
+  },
+  getTopPodcasts(req, res, next) {
+    const hours = cleanTimeframeQuery(req.query.t || 7 * 24);
+    const timeframe = hours * 60 * 60 * 1000;
+    const since = new Date(Date.now() - timeframe);
+    const maxPodcasts = 50;
+    findMostPostedPodcastsInTimeframe(since, maxPodcasts, (err, podcasts) => {
+      if (err) return next(err);
+      return res.render('podcasts/topPodcasts', {
+        currentUser: req.user,
+        podcasts
+      });
     });
   },
   updatePodcast(req, res, next) {
