@@ -10,6 +10,7 @@ const postsData = require('../data/postsData');
 const usersController = require('./usersController');
 const episodesController = require('./episodesController');
 const mail = require('../utilities/email');
+const { cleanTimeframeQuery } = require('../utilities/queryUtils');
 
 function createPost(postData, cb) {
   const newPost = postData;
@@ -80,13 +81,6 @@ function createPost(postData, cb) {
       }
     }
   );
-}
-
-function cleanTimeframeQuery(query = '') {
-  if (validator.isInt(query, { min: 1 })) {
-    return query;
-  }
-  return 24 * 7; // this week
 }
 
 module.exports = {
@@ -298,21 +292,54 @@ module.exports = {
       });
     });
   },
-  mostPostedEpisodesInTimeframe(req, res, next) {
+  getTopEpisodes(req, res, next) {
     const hours = cleanTimeframeQuery(req.query.t);
     const timeframe = hours * 60 * 60 * 1000;
     const since = new Date(Date.now() - timeframe);
-    postsData.findMostPostedEpisodesInTimeframe(since, (err, episodes) => {
-      if (err) {
-        logger.error(err);
-        next(err);
-        return;
+    const maxEpisodes = 50;
+    postsData.findMostPostedEpisodesInTimeframe(
+      since,
+      maxEpisodes,
+      (err, episodes) => {
+        if (err) {
+          logger.error(err);
+          next(err);
+          return;
+        }
+        res.render('episodes/topEpisodes', {
+          currentUser: req.user,
+          episodes
+        });
       }
-      res.render('episodes/top', {
-        currentUser: req.user,
-        episodes
-      });
-    });
+    );
+  },
+  mostPostedEpisodesInTimeframe(since, maxEpisodes, callback) {
+    postsData.findMostPostedEpisodesInTimeframe(
+      since,
+      maxEpisodes,
+      (err, episodes) => {
+        if (err) {
+          logger.error(err);
+          callback(err);
+          return;
+        }
+        callback(null, episodes);
+      }
+    );
+  },
+  mostPostedPodcastsInTimeframe(since, maxPodcasts, callback) {
+    postsData.findMostPostedPodcastsInTimeframe(
+      since,
+      maxPodcasts,
+      (err, podcasts) => {
+        if (err) {
+          logger.error(err);
+          callback(err);
+          return;
+        }
+        callback(null, podcasts);
+      }
+    );
   },
   mostPostedEpisodesInGenreInTimeframe(req, res, next) {
     const { genre } = req.params;
@@ -325,9 +352,11 @@ module.exports = {
     const hours = cleanTimeframeQuery(req.query.t);
     const timeframe = hours * 60 * 60 * 1000;
     const since = new Date(Date.now() - timeframe);
+    const maxEpisodes = 50;
     postsData.findMostPostedEpisodesInGenreInTimeframe(
       genre,
       since,
+      maxEpisodes,
       (err, episodes) => {
         if (err) {
           logger.error(err);
