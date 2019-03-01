@@ -39,7 +39,8 @@ module.exports = (app, config) => {
         directives: {
           defaultSrc: ["'self'", 'www.google-analytics.com'],
           styleSrc: ["'self'", 'fonts.googleapis.com'],
-          imgSrc: ['*'],
+          scriptSrc: ["'self'"],
+          imgSrc: ["'self'", '*', 'data:'],
           mediaSrc: ['*'],
           fontSrc: ["'self'", 'fonts.gstatic.com']
         }
