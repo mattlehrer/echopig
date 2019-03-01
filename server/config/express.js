@@ -54,7 +54,8 @@ module.exports = (app, config) => {
   app.use(
     sass({
       src: `${config.rootPath}/public`,
-      dest: `${config.rootPath}/public`
+      dest: `${config.rootPath}/public`,
+      outputStyle: 'compressed'
     })
   );
   app.use(express.json());
