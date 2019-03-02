@@ -67,7 +67,8 @@ module.exports = {
       res.render('loggedOutIndex', {
         currentUser: req.user,
         episodes,
-        podcasts
+        podcasts,
+        csrfToken: req.csrfToken()
       });
     });
   }
