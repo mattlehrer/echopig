@@ -20,7 +20,6 @@ function generateTopEpisodesAndPodcasts(done) {
         done(err);
         return;
       }
-      logger.debug(episodes);
       const maxPodcasts = 3;
       PostsController.mostPostedPodcastsInTimeframe(
         since,
