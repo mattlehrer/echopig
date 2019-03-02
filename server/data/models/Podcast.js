@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 module.exports.init = () => {
   const podcastSchema = new mongoose.Schema({
-    iTunesID: { type: Number, alias: 'collectionId' },
+    iTunesID: { type: Number, alias: 'collectionId', unique: true },
     author: { type: String, alias: 'artistName' },
     title: { type: String, alias: 'collectionName' },
     collectionViewUrl: { type: String, alias: 'iTunesURL' },
