@@ -14,9 +14,11 @@ block main-content
                 a.card-text(href=`/p/i${episode.podcast.iTunesID}`) !{episode.podcast.title}
                 .h5.mb-0
                   a(href=`/e/${episode.id}`) !{episode.title}
-                div.card-text.pt-1.small.font-weight-lighter Published #{relativeTime(episode.releaseDate)}
               .card-footer
-                .small.font-weight-light.text-right 🐽 #{episode.posts.length} 
+                .d-flex
+                  .w-100
+                    .small.font-weight-lighter Published #{relativeTime(episode.releaseDate)}
+                  .flex-shrink-0.small.font-weight-light.text-right 🐽 #{episode.posts.length}
   .row.mt-4.justify-content-md-center    
     .pl-0
       a.h4(href='/podcasts') Hot Podcasts
