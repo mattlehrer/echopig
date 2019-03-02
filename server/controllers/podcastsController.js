@@ -105,7 +105,7 @@ module.exports = {
     });
   },
   getTopPodcasts(req, res, next) {
-    const hours = cleanTimeframeQuery(req.query.t || 7 * 24);
+    const hours = cleanTimeframeQuery(req.query.t || 30 * 24);
     const timeframe = hours * 60 * 60 * 1000;
     const since = new Date(Date.now() - timeframe);
     const maxPodcasts = 50;

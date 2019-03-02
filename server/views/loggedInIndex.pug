@@ -32,4 +32,9 @@ block main-content
                 if podcast.author
                   div.card-text By #{podcast.author}
               .card-footer
-                .small.font-weight-light.text-right 🐽 #{podcast.posts} 
+                .d-flex
+                  .w-100
+                    each genre in podcast.genres
+                      if (genre !== 'Podcasts')
+                        a.small(href=`/g/${genre.toLowerCase()}`)= `#${genre.toLowerCase()} `
+                  .flex-shrink-0.small.font-weight-light.mt-auto 🐽 #{podcast.posts}

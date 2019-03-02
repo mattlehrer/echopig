@@ -52,9 +52,11 @@ block main-content
                 a.card-text(href=`/p/i${episode.podcast.iTunesID}`) !{episode.podcast.title}
                 .h5.mb-0
                   a(href=`/e/${episode.id}`) !{episode.title}
-                div.card-text.pt-1.small.font-weight-lighter Published #{relativeTime(episode.releaseDate)}
               .card-footer
-                .small.font-weight-light.text-right 🐽 #{episode.posts.length} 
+                .d-flex
+                  .w-100
+                    .small.font-weight-lighter Published #{relativeTime(episode.releaseDate)}
+                  .flex-shrink-0.small.font-weight-light.text-right 🐽 #{episode.posts.length} 
   .mt-4.justify-content-md-center    
     .pl-0
       a.h4(href='/podcasts') Hot Podcasts
@@ -70,4 +72,9 @@ block main-content
                 if podcast.author
                   div.card-text By #{podcast.author}
               .card-footer
-                .small.font-weight-light.text-right 🐽 #{podcast.posts} 
+                .d-flex
+                  .w-100
+                    each genre in podcast.genres
+                      if (genre !== 'Podcasts')
+                        a.small(href=`/g/${genre.toLowerCase()}`)= `#${genre.toLowerCase()} `
+                  .flex-shrink-0.small.font-weight-light.mt-auto 🐽 #{podcast.posts}
