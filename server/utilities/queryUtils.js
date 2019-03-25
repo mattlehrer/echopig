@@ -9,6 +9,6 @@ module.exports = {
     if (validator.isInt(s, { min: 1 })) {
       return Number(s);
     }
-    return 24 * 7; // one week
+    return 24 * 100; // 100 days
   }
 };
