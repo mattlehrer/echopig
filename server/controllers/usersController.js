@@ -13,7 +13,9 @@ const tokenData = require('../data/tokenData');
 
 function createNewUser(userData, callback) {
   const newUserData = userData;
-  newUserData.normalizedEmail = validator.normalizeEmail(newUserData.email);
+  if (newUserData.normalizedEmail) {
+    newUserData.normalizedEmail = validator.normalizeEmail(newUserData.email);
+  }
   // skip username if social login signup
   if (newUserData.username !== undefined)
     newUserData.normalizedUsername = newUserData.username.toLowerCase();
