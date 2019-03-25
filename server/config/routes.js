@@ -1,6 +1,6 @@
 const csrf = require('csurf');
 const expressWinston = require('express-winston');
-const { check } = require('express-validator/check');
+const { check, oneOf } = require('express-validator/check');
 const logger = require('../utilities/logger')(__filename);
 const auth = require('./auth');
 const controllers = require('../controllers');
@@ -140,22 +140,28 @@ module.exports = app => {
     .post(
       ensureAuthenticated,
       csrfProtection,
-      check(
-        'username',
-        'Please choose a username of only letters and numbers longer than 3 characters.'
-      )
-        .isAlphanumeric()
-        .isLength({ min: 3 }),
-      check('username', 'That username is unavailable. Please try again.')
-        .not()
-        .isIn(reservedNames),
-      check(
-        'password',
-        'Please choose a password longer than 4 characters'
-      ).isLength({ min: 4 }),
-      check('confirmPassword', `Passwords didn't match. Please try again`)
-        .exists()
-        .custom((value, { req }) => value === req.body.password),
+      oneOf([
+        [
+          check(
+            'username',
+            'Please choose a username of only letters and numbers longer than 3 characters.'
+          )
+            .isAlphanumeric()
+            .isLength({ min: 3 }),
+          check('username', 'That username is unavailable. Please try again.')
+            .not()
+            .isIn(reservedNames)
+        ],
+        [
+          check(
+            'password',
+            'Please choose a password longer than 4 characters'
+          ).isLength({ min: 4 }),
+          check('confirmPassword', `Passwords didn't match. Please try again`)
+            .exists()
+            .custom((value, { req }) => value === req.body.password)
+        ]
+      ]),
       controllers.users.postSettings
     );
 
