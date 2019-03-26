@@ -498,7 +498,10 @@ module.exports = {
     if (!req.user) {
       res.redirect('/');
     } else if (!req.user.isVerified) {
-      req.flash('errors', 'Please verify your email address.');
+      req.flash(
+        'info',
+        `Please verify your email address by clicking the link in the email we sent you. If you need a new email, please enter your address below.`
+      );
       res.redirect('/resend');
     } else {
       res.render('users/settings', {
