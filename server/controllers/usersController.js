@@ -13,7 +13,7 @@ const tokenData = require('../data/tokenData');
 
 function createNewUser(userData, callback) {
   const newUserData = userData;
-  if (newUserData.normalizedEmail) {
+  if (newUserData.email) {
     newUserData.normalizedEmail = validator.normalizeEmail(newUserData.email);
   }
   // skip username if social login signup
@@ -496,6 +496,9 @@ module.exports = {
   getSettings(req, res, next) {
     if (!req.user) {
       res.redirect('/');
+    } else if (!req.user.isVerified) {
+      req.flash('errors', 'Please verify your email address.');
+      res.redirect('/resend');
     } else {
       res.render('users/settings', {
         currentUser: req.user,
