@@ -44,7 +44,7 @@ function createNewUser(userData, callback) {
         // send the email
         mail.sendWithTemplate(
           'signupToken', // template
-          'Echopig <welcome@echopig.com>', // from
+          'Echopig <token@echopig.com>', // from
           user, // to
           { user, token: token.token }, // variables for mail template
           // eslint-disable-next-line no-shadow
@@ -179,6 +179,7 @@ module.exports = {
             }
             return res.redirect('/settings');
           });
+          return;
         }
         logger.info(`New user confirmation: ${user}`);
         user.set('isVerified', true);
@@ -267,7 +268,7 @@ module.exports = {
             // send the email
             mail.sendWithTemplate(
               'signupToken', // template
-              'Echopig <welcome@echopig.com>', // from
+              'Echopig <token@echopig.com>', // from
               user, // to
               { user, token: token.token }, // variables for mail template
               // eslint-disable-next-line no-shadow

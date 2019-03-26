@@ -114,6 +114,9 @@ module.exports = app => {
   app.get('/p(odcast)?(s)?', controllers.podcasts.getTopPodcasts);
   app.get(
     '/p(odcast)?(s)?/i:iTunesID',
+    check('iTunesID', `Podcast not found.`)
+      .isNumeric()
+      .isLength({ min: 8, max: 10 }),
     controllers.podcasts.getPodcastByITunesID
   );
   app.get(

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const searchitunes = require('searchitunes');
+const { validationResult } = require('express-validator/check');
 
 const logger = require('../utilities/logger')(__filename);
 const podcastsData = require('../data/podcastsData');
@@ -75,6 +76,14 @@ module.exports = {
     }
   },
   getPodcastByITunesID(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(e => {
+        req.flash('errors', e.msg);
+      });
+      res.redirect('back');
+      return;
+    }
     podcastsData.findPodcastByITunesID(req.params.iTunesID, (err, podcast) => {
       if (err) {
         logger.error(err);
