@@ -247,7 +247,7 @@ module.exports = {
         }
         if (!user) {
           req.flash(
-            'errors',
+            'info',
             'We were unable to find a user with that email address. Please try again or register for an account.'
           );
           res.redirect('/resend');
