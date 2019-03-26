@@ -222,7 +222,8 @@ module.exports = {
     });
   },
   getResend(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.user.isVerified) {
+      req.flash('info', 'Your email is verified. Thank you.');
       res.redirect('/');
       return;
     }
