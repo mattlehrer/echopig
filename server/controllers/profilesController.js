@@ -1,10 +1,22 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
+const { validationResult } = require('express-validator/check');
+
 const usersData = require('../data/usersData');
 // const logger = require('../utilities/logger')(__filename);
 
 module.exports = {
   getProfile(req, res, next) {
+    // skip db find on invalid username
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      // just serve 404 page
+      // errors.array().forEach(e => {
+      //   req.flash('errors', e.msg);
+      // });
+      next();
+      return;
+    }
     usersData.findUserByUsername(
       req.params.username.toLowerCase(),
       (err, profiledUser) => {

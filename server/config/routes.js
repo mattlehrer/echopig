@@ -107,7 +107,13 @@ module.exports = app => {
 
   app.get('/logout', auth.logout);
 
-  app.get('/u(ser)?(s)?/:username', controllers.profiles.getProfile);
+  app.get(
+    '/u(ser)?(s)?/:username',
+    check('username', 'Invalid username.')
+      .isAlphanumeric()
+      .isLength({ min: 3 }),
+    controllers.profiles.getProfile
+  );
   app.get('/rss/:username', controllers.rss.getRSSFeed);
   app.get('/e(pisode)?(s)?', controllers.posts.getTopEpisodes);
   app.get('/e(pisode)?(s)?/:episode', controllers.episodes.getEpisode);
