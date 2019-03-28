@@ -6,6 +6,7 @@ const appRoot = require('app-root-path');
 const nodemailer = require('nodemailer');
 const Email = require('email-templates');
 const mg = require('nodemailer-mailgun-transport');
+const validator = require('validator');
 
 const logger = require('../utilities/logger')(__filename);
 
@@ -69,7 +70,12 @@ module.exports = {
     });
     const locals = variables || {};
     locals.BASE_URL = process.env.BASE_URL;
-
+    if (!to.email || !validator.isEmail(to.email)) {
+      const err = new Error('Invalid email address');
+      logger.error(`Invalid email: ${to.email}`);
+      callback(err);
+      return;
+    }
     email
       .send({
         template: `${appRoot}/server/views/emails/${template}`,
