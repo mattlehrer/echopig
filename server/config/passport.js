@@ -129,6 +129,8 @@ module.exports = () => {
             }
             // put profile in our User format
             const newUser = {
+              // temp username
+              username: `temp{${profile.id}}twitter`,
               email: profile.email,
               twitter: profile.id,
               tokens: [{ kind: 'twitter', accessToken, tokenSecret }],
@@ -242,6 +244,8 @@ module.exports = () => {
             }
             // put profile in our User format
             const newUser = {
+              // temp username
+              username: `temp{${profile.id}}facebook`,
               // eslint-disable-next-line no-underscore-dangle
               email: profile.email || profile._json.email,
               facebook: profile.id,
