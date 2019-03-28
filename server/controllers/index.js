@@ -8,7 +8,7 @@ const RSSController = require('./rssController');
 const logger = require('../utilities/logger')(__filename);
 
 function generateTopEpisodesAndPodcasts(done) {
-  const hours = 24 * 30;
+  const hours = 24 * 100;
   const timeframe = hours * 60 * 60 * 1000;
   const since = new Date(Date.now() - timeframe);
   const maxEpisodes = 3;
