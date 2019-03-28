@@ -26,9 +26,12 @@ html
             ul.navbar-nav.ml-auto
               if(currentUser)
                 li.nav-item
-                  - profile = '/u/'+currentUser.username
-                  a.nav-link(href=profile) Hello 
-                      span#currentUsername #{currentUser.username}   
+                  if (currentUser.username.startsWith('temp{'))
+                    a.nav-link(href='/settings') Hello
+                  else
+                    - profile = '/u/'+currentUser.username
+                    a.nav-link(href=profile) Hello 
+                        span#currentUsername #{currentUser.username}   
                 li.nav-item
                   a.nav-link(href='/post') Post an episode
                 li.nav-item
