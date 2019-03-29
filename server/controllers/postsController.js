@@ -165,7 +165,7 @@ module.exports = {
     ) {
       // Unauthorized
       logger.notice('Received request, but not from Mailgun');
-      res.status(401).send('Unauthorized access');
+      res.status(406).send('Unauthorized access');
       return;
     }
 
@@ -182,14 +182,14 @@ module.exports = {
         logger.notice(
           `received post from mailgun, but without a share URL: ${strippedText}`
         );
-        res.status(400).send('No share URL');
+        res.status(406).send('No share URL');
         return;
       }
     } catch (error) {
       logger.notice(
         `received post from mailgun, but without a share URL: ${strippedText}`
       );
-      res.status(400).send('No share URL');
+      res.status(406).send('No share URL');
       return;
     }
 
@@ -197,7 +197,7 @@ module.exports = {
     const tag = postJson.recipient.split('@')[0].split('+')[1];
     if (!shortid.isValid(tag)) {
       logger.notice('received post from mailgun, but without a valid tag');
-      res.status(400).send('No such user');
+      res.status(406).send('No such user');
       return;
     }
     usersController.findUserByTag(tag, (err, postingUser) => {
@@ -209,7 +209,7 @@ module.exports = {
         return;
       }
       if (!postingUser) {
-        res.status(400).send('No such user');
+        res.status(406).send('No such user');
         return;
       }
 
@@ -233,7 +233,8 @@ module.exports = {
               postingUser.username
             } with error: ${err}`
           );
-          next(err);
+          // next(err);
+          res.status(406).send('Something went wrong');
           return;
         }
         mail.sendWithTemplate(
@@ -246,7 +247,7 @@ module.exports = {
             if (err) logger.error(err);
           }
         );
-        res.status(201).send();
+        res.status(200).send();
       });
     });
   },
