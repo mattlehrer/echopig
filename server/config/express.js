@@ -8,6 +8,7 @@ const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const mongoose = require('mongoose');
 const sass = require('node-sass-middleware');
+const he = require('he');
 // const logger = require('../utilities/logger')(__filename);
 const relativeTime = require('../utilities/relativeTime');
 const auth = require('./auth');
@@ -92,6 +93,7 @@ module.exports = (app, config) => {
     )
   );
   app.locals.relativeTime = relativeTime;
+  app.locals.decode = he.decode;
 
   app.use('/admin', (req, res, next) => {
     if (!auth.isInRole('admin')(req, res, next)) {
