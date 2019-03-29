@@ -37,7 +37,7 @@ module.exports = (url, callback) => {
     if (resultArray === null) {
       errLog.podcastiTunesID = null;
       logger.alert(errLog);
-      const error = new Error(`no podcast iTunesID found for ${url}`);
+      const error = new Error(`No podcast iTunesID found for ${url}`);
       return callback(error, null);
     }
     [, episodeData.podcastiTunesID] = resultArray;
@@ -62,7 +62,7 @@ module.exports = (url, callback) => {
     if (resultArray === null) {
       errLog.mp3URL = null;
       logger.alert(errLog);
-      const error = new Error('no mp3 URL found');
+      const error = new Error('No mp3 URL found');
       return callback(error, null);
     }
     [, episodeData.mp3URL] = resultArray;
@@ -73,7 +73,7 @@ module.exports = (url, callback) => {
     if (resultArray === null) {
       errLog.title = null;
       logger.alert(errLog);
-      const error = new Error('no episode title found');
+      const error = new Error('No episode title found');
       return callback(error, null);
     }
     [, episodeData.title] = resultArray;
@@ -116,7 +116,7 @@ module.exports = (url, callback) => {
     if (Object.keys(errLog).length > 2) {
       logger.alert(errLog);
     } else {
-      logger.debug(`overcast successfully parsed ${url}`);
+      logger.debug(`Overcast successfully parsed ${url}`);
     }
     return callback(null, episodeData);
   });
