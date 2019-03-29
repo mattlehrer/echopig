@@ -11,6 +11,38 @@ const mail = require('../utilities/email');
 const usersData = require('../data/usersData');
 const tokenData = require('../data/tokenData');
 
+function sendToken(user, callback) {
+  tokenData.createToken(
+    {
+      _userId: user._id,
+      token: crypto.randomBytes(16).toString('hex')
+    },
+    // eslint-disable-next-line no-shadow
+    (err, token) => {
+      if (err) {
+        logger.error(err);
+        callback(err);
+        return;
+      }
+      // and send the email
+      mail.sendWithTemplate(
+        'signupToken', // template
+        'Echopig <token@echopig.com>', // from
+        user, // to
+        { user, token: token.token }, // variables for mail template
+        // eslint-disable-next-line no-shadow
+        err => {
+          if (err) {
+            logger.error(err);
+            callback(err);
+          }
+          callback(null, user);
+        }
+      );
+    }
+  );
+}
+
 function createNewUser(userData, callback) {
   const newUserData = userData;
   if (newUserData.email) {
@@ -28,36 +60,16 @@ function createNewUser(userData, callback) {
       return;
     }
     logger.info(`New registration: ${user}`);
-    // Create a verification token for this user
-    tokenData.createToken(
-      {
-        _userId: user._id,
-        token: crypto.randomBytes(16).toString('hex')
-      },
-      // eslint-disable-next-line no-shadow
-      (err, token) => {
-        if (err) {
-          logger.error(err);
-          callback(err);
-          return;
-        }
-        // send the email
-        mail.sendWithTemplate(
-          'signupToken', // template
-          'Echopig <token@echopig.com>', // from
-          user, // to
-          { user, token: token.token }, // variables for mail template
-          // eslint-disable-next-line no-shadow
-          err => {
-            if (err) {
-              logger.error(err);
-              callback(err);
-            }
-            callback(null, user);
-          }
-        );
-      }
-    );
+    // if social login that didn't provide email address,
+    // redirect to settings, ask for username and email
+    // then send email confirmation token
+    if (!user.email) {
+      callback(null, user);
+      return;
+    }
+    // if we have email address, create a verification token for this user
+    // and send via email
+    sendToken(user, callback);
   });
 }
 
@@ -227,7 +239,10 @@ module.exports = {
       res.redirect('/');
       return;
     }
-    res.render('users/resend', { csrfToken: req.csrfToken() });
+    res.render('users/resend', {
+      csrfToken: req.csrfToken(),
+      currentUser: req.user
+    });
   },
   postResendToken(req, res, next) {
     const errors = validationResult(req);
@@ -497,7 +512,8 @@ module.exports = {
   getSettings(req, res, next) {
     if (!req.user) {
       res.redirect('/');
-    } else if (!req.user.isVerified) {
+    } else if (req.user.email && !req.user.isVerified) {
+      logger.debug(req.user.email);
       req.flash(
         'info',
         `Please verify your email address by clicking the link in the email we sent you. If you need a new email, please enter your address below.`
@@ -516,37 +532,147 @@ module.exports = {
       errors.array().forEach(e => {
         req.flash('errors', e.msg);
       });
-      res.redirect('back');
+      res.redirect('/settings');
       return;
     }
     const settingsData = req.body;
-    usersData.findUserByUsername(settingsData.username, (err, existingUser) => {
-      if (err) {
-        logger.error(err);
-        next(err);
-        return;
-      }
-      if (existingUser) {
-        req.flash('error', 'That username is taken. Please try again.');
-        res.redirect('/register');
-        return;
-      }
-      usersData.updateUser(
-        req.user,
-        {
-          username: settingsData.username,
-          normalizedUsername: settingsData.username.toLowerCase()
-        },
-        // eslint-disable-next-line no-shadow
-        err => {
+
+    if (settingsData.email) {
+      usersData.findUserByEmail(
+        validator.normalizeEmail(settingsData.email),
+        (err, existingUser) => {
           if (err) {
             logger.error(err);
             next(err);
+            return;
           }
-          res.redirect('/settings');
+          if (existingUser) {
+            req.flash(
+              'errors',
+              'There is already an account with that email address. Please login or use a new email.'
+            );
+            res.redirect('/settings');
+          } else if (!settingsData.username) {
+            usersData.updateUser(
+              req.user,
+              {
+                email: settingsData.email,
+                normalizedEmail: validator.normalizeEmail(settingsData.email)
+              },
+              // eslint-disable-next-line no-shadow
+              err => {
+                if (err) {
+                  logger.error(err);
+                  next(err);
+                }
+                req.flash('info', 'Email saved.');
+                // eslint-disable-next-line no-shadow
+                sendToken(req.user, err => {
+                  if (err) {
+                    logger.error(err);
+                    next(err);
+                  }
+                  logger.debug(`token sent`);
+                  res.redirect('/settings');
+                });
+              }
+            );
+          } else {
+            usersData.findUserByUsername(
+              settingsData.username,
+              // eslint-disable-next-line no-shadow
+              (err, existingUser) => {
+                if (err) {
+                  logger.error(err);
+                  next(err);
+                  return;
+                }
+                if (existingUser) {
+                  req.flash(
+                    'error',
+                    'That username is taken. Please try again.'
+                  );
+                  res.redirect('/settings');
+                } else {
+                  usersData.updateUser(
+                    req.user,
+                    {
+                      email: settingsData.email,
+                      normalizedEmail: validator.normalizeEmail(
+                        settingsData.email
+                      ),
+                      username: settingsData.username,
+                      normalizedUsername: settingsData.username.toLowerCase()
+                    },
+                    // eslint-disable-next-line no-shadow
+                    err => {
+                      if (err) {
+                        logger.error(err);
+                        next(err);
+                        return;
+                      }
+                      req.flash('info', 'Username and email saved.');
+                      sendToken(
+                        {
+                          _id: req.user._id,
+                          name: req.user.name || '',
+                          email: settingsData.email
+                        },
+                        // eslint-disable-next-line no-shadow
+                        err => {
+                          if (err) {
+                            logger.error(err);
+                            next(err);
+                            return;
+                          }
+                          logger.debug(`token sent`);
+                          res.redirect('/settings');
+                        }
+                      );
+                    }
+                  );
+                }
+              }
+            );
+          }
         }
       );
-    });
+    } else if (settingsData.username) {
+      usersData.findUserByUsername(
+        settingsData.username,
+        (err, existingUser) => {
+          if (err) {
+            logger.error(err);
+            next(err);
+            return;
+          }
+          if (existingUser) {
+            req.flash('errors', 'That username is taken. Please try again.');
+            res.redirect('/settings');
+            return;
+          }
+          usersData.updateUser(
+            req.user,
+            {
+              username: settingsData.username,
+              normalizedUsername: settingsData.username.toLowerCase()
+            },
+            // eslint-disable-next-line no-shadow
+            err => {
+              if (err) {
+                logger.error(err);
+                next(err);
+              }
+              req.flash('info', 'Username saved.');
+              res.redirect('/settings');
+            }
+          );
+        }
+      );
+    } else {
+      req.flash('errors', 'Something went wrong.');
+      res.redirect('/settings');
+    }
   },
   getVcard(req, res, next) {
     if (!req.user) {

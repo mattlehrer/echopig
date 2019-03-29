@@ -2,14 +2,19 @@ extends ../shared/layout
 
 block main-content
   .h2 Settings
-  if (currentUser.username === undefined || currentUser.username.startsWith('temp{'))
+  if (!currentUser.email || !currentUser.username || currentUser.username.startsWith('temp{'))
     .col-md-6.col-md-offset-3
     form(method="post", action="", class='form-horizontal')
       fieldset
-        legend Please pick a username to complete registration
-        .form-group
-          label.control-label(for="username") Username
-          input(id="username" class="form-control" type="text" name="username" placeholder="Username")
+        legend Please complete your registration
+        if (!currentUser.username || currentUser.username.startsWith('temp{'))
+          .form-group
+            label.control-label(for="username") Username
+            input(id="username" class="form-control" type="text" name="username" placeholder="Username" autofocus required)
+        if (!currentUser.email)
+          .form-group
+            label.control-label(for="email") Email address
+            input.form-control(id="email" type="text" name="email" placeholder="Email" required autocomplete='email')
         .form-group
           input(type="hidden" name="_csrf" value=csrfToken)
         .form-group
