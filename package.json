@@ -23,7 +23,6 @@
     "express-session": "^1.12.1",
     "express-validator": "^5.3.1",
     "express-winston": "^3.1.0",
-    "he": "^1.2.0",
     "helmet": "^3.15.1",
     "jquery": "^3.3.1",
     "mailgun-js": "^0.22.0",
