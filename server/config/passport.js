@@ -3,6 +3,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const TwitterStrategy = require('passport-twitter').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
+const validator = require('validator');
 const User = require('mongoose').model('User');
 const { createUser } = require('../controllers/usersController');
 const logger = require('../utilities/logger')(__filename);
@@ -131,24 +132,84 @@ module.exports = () => {
             const newUser = {
               // temp username
               username: `temp{${profile.id}}twitter`,
-              email: profile.email,
+              email: profile.emails[0].value,
               twitter: profile.id,
               tokens: [{ kind: 'twitter', accessToken, tokenSecret }],
               name: profile.displayName,
               // eslint-disable-next-line no-underscore-dangle
               avatar: profile._json.profile_image_url_https
             };
-            // eslint-disable-next-line no-shadow
-            createUser(newUser, (err, user) => {
-              if (err) {
-                logger.error(
-                  `TwitterStrategy createUser error for user: ${newUser} with: ${err}`
-                );
-                return done(err);
-              }
-              logger.info(`created user on twitter login: ${user}`);
-              return done(null, user);
-            });
+            // no twitter profile id found, now check for existing user with that email
+            // if twitter gave us an email address
+            if (newUser.email) {
+              User.findOne(
+                { normalizedEmail: validator.normalizeEmail(newUser.email) },
+                // eslint-disable-next-line no-shadow
+                (err, existingEmail) => {
+                  if (err) {
+                    logger.error(
+                      `TwitterStrategy find email error for user: ${newUser} with: ${err}`
+                    );
+                    return done(err);
+                  }
+                  if (existingEmail) {
+                    existingEmail.set({ twitter: profile.id });
+                    existingEmail.tokens.push({
+                      kind: 'twitter',
+                      accessToken,
+                      tokenSecret
+                    });
+                    existingEmail.set({ name: profile.displayName });
+                    if (!existingEmail.avatar) {
+                      existingEmail.set({
+                        // eslint-disable-next-line no-underscore-dangle
+                        avatar: profile._json.profile_image_url_https
+                      });
+                    }
+                    // eslint-disable-next-line no-shadow
+                    existingEmail.save((err, user) => {
+                      if (err) {
+                        logger.error(
+                          `TwitterStrategy found existing email error on update for user: ${existingEmail} with: ${err}`
+                        );
+                        // return done(err);
+                        // error on save but return the right user anyway
+                        return done(null, user);
+                      }
+                      logger.info(
+                        `Updated user on Twitter login matching existing email: ${user}`
+                      );
+                      return done(null, user);
+                    });
+                  } else {
+                    // no existing email found
+                    // eslint-disable-next-line no-shadow
+                    return createUser(newUser, (err, user) => {
+                      if (err) {
+                        logger.error(
+                          `TwitterStrategy createUser error for user: ${newUser} with: ${err}`
+                        );
+                        return done(err);
+                      }
+                      logger.info(`Created user on Twitter login: ${user}`);
+                      return done(null, user);
+                    });
+                  }
+                }
+              );
+            } else {
+              // eslint-disable-next-line no-shadow
+              createUser(newUser, (err, user) => {
+                if (err) {
+                  logger.error(
+                    `TwitterStrategy createUser error for user: ${newUser} with: ${err}`
+                  );
+                  return done(err);
+                }
+                logger.info(`Created user on Twitter login: ${user}`);
+                return done(null, user);
+              });
+            }
           });
         }
       }
@@ -239,6 +300,7 @@ module.exports = () => {
               return done(err);
             }
             if (existingUser) {
+              // user has previously logged in with facebook
               logger.info(`Facebook login: ${existingUser.username}`);
               return done(null, existingUser);
             }
@@ -256,17 +318,80 @@ module.exports = () => {
                 profile.id
               }/picture?type=large`
             };
-            // eslint-disable-next-line no-shadow
-            createUser(newUser, (err, user) => {
-              if (err) {
-                logger.error(
-                  `FacebookStrategy createUser error for user: ${newUser} with: ${err}`
-                );
-                return done(err);
-              }
-              logger.info(`created user on facebook login: ${user}`);
-              return done(null, user);
-            });
+            // no facebook profile id found, now check for existing user with that email
+            // if facebook gave us an email address
+            if (newUser.email) {
+              User.findOne(
+                { normalizedEmail: validator.normalizeEmail(newUser.email) },
+                // eslint-disable-next-line no-shadow
+                (err, existingEmail) => {
+                  if (err) {
+                    logger.error(
+                      `FacebookStrategy find email error for user: ${newUser} with: ${err}`
+                    );
+                    return done(err);
+                  }
+                  if (existingEmail) {
+                    existingEmail.set({ facebook: profile.id });
+                    existingEmail.tokens.push({
+                      kind: 'facebook',
+                      accessToken,
+                      refreshToken
+                    });
+                    existingEmail.set({
+                      name: profile.displayName || profile.name
+                    });
+                    if (!existingEmail.avatar) {
+                      existingEmail.set({
+                        avatar: `https://graph.facebook.com/${
+                          profile.id
+                        }/picture?type=large`
+                      });
+                    }
+                    // eslint-disable-next-line no-shadow
+                    existingEmail.save((err, user) => {
+                      if (err) {
+                        logger.error(
+                          `FacebookStrategy found existing email error on update for user: ${existingEmail} with: ${err}`
+                        );
+                        // return done(err);
+                        // error on save but return the right user anyway
+                        return done(null, user);
+                      }
+                      logger.info(
+                        `updated user on facebook login matching existing email: ${user}`
+                      );
+                      return done(null, user);
+                    });
+                  } else {
+                    // no existing email found
+                    // eslint-disable-next-line no-shadow
+                    return createUser(newUser, (err, user) => {
+                      if (err) {
+                        logger.error(
+                          `FacebookStrategy createUser error for user: ${newUser} with: ${err}`
+                        );
+                        return done(err);
+                      }
+                      logger.info(`created user on facebook login: ${user}`);
+                      return done(null, user);
+                    });
+                  }
+                }
+              );
+            } else {
+              // eslint-disable-next-line no-shadow
+              createUser(newUser, (err, user) => {
+                if (err) {
+                  logger.error(
+                    `FacebookStrategy createUser error for user: ${newUser} with: ${err}`
+                  );
+                  return done(err);
+                }
+                logger.info(`created user on facebook login: ${user}`);
+                return done(null, user);
+              });
+            }
           });
         }
       }
