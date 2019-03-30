@@ -2,16 +2,16 @@ extends ../shared/layout
 
 block main-content
   .col-md-8.col-md-offset-3
-    .py-4.mb-3.border-bottom.border-dark
+    .py-3
       .row
         .col.py-1
           a.btn.btn-block.btn-twitter.btn-social(href="/auth/twitter")
             span.fab.fa-twitter.fa-sm
             span Login with Twitter
-        //- .col.py-1
-        //-   a.btn.btn-block.btn-facebook.btn-social(href='/auth/facebook')
-        //-     span.fab.fa-facebook-f.fa-sm
-        //-     span Login with Facebook
+        .col.py-1
+          a.btn.btn-block.btn-facebook.btn-social(href='/auth/facebook')
+            span.fab.fa-facebook-f.fa-sm
+            span Login with Facebook
     form(method="post", action="", class='form-horizontal')
       .h6.text-muted.text-center.py-2.mb-0 OR
       fieldset
