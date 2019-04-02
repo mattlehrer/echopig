@@ -78,7 +78,7 @@ module.exports = {
     successRedirect: '/settings',
     failureRedirect: '/login'
   }),
-  facebookLogin: passport.authenticate('facebook'),
+  facebookLogin: passport.authenticate('facebook', { scope: ['email'] }),
   facebookCallback: passport.authenticate('facebook', {
     successRedirect: '/settings',
     failureRedirect: '/login'
