@@ -87,11 +87,16 @@ module.exports = {
   createPost,
   getNewPost(req, res, next) {
     if (!req.user) {
+      req.flash(
+        'errors',
+        'Please log in or register for an account to submit posts.'
+      );
       res.redirect('/');
     } else {
       res.render('posts/post', {
         currentUser: req.user,
-        csrfToken: req.csrfToken()
+        csrfToken: req.csrfToken(),
+        submitURL: req.query.url || ''
       });
     }
   },

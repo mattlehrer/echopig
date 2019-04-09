@@ -1,5 +1,6 @@
 const overcast = require('./overcast');
 const podcastsApp = require('./podcastsdotapp');
+const pocketcasts = require('./pocketcasts');
 const logger = require('../../utilities/logger')(__filename);
 
 module.exports = (url, callback) => {
@@ -18,6 +19,19 @@ module.exports = (url, callback) => {
     });
   } else if (url.search('itunes.apple.com') !== -1) {
     podcastsApp(url, (error, epData) => {
+      if (error) {
+        const err = error;
+        logger.error(error);
+        err.status = 400;
+        callback(err, null);
+        return;
+      }
+      const newEpData = epData;
+      newEpData.shareURLs = [url];
+      callback(null, newEpData);
+    });
+  } else if (url.search('pca.st') !== -1) {
+    pocketcasts(url, (error, epData) => {
       if (error) {
         const err = error;
         logger.error(error);
