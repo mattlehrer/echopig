@@ -59,7 +59,7 @@ module.exports = (url, callback) => {
     // }
 
     // find mp3 URL
-    regex = new RegExp(/(?:id="audio_player" src=")(.*mp3)(?:" )/gm);
+    regex = new RegExp(/(?:id="audio_player" src=")(.*mp3)(?:[?"])/gm);
     resultArray = regex.exec(html);
     if (resultArray === null) {
       errLog.mp3URL = null;
