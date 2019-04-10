@@ -199,12 +199,10 @@ module.exports = {
     }
 
     // lookup user by tag
-    const tag = postJson.recipient.split('@')[0].split('+')[1];
-    if (!shortid.isValid(tag)) {
-      logger.notice('received post from mailgun, but without a valid tag');
-      res.status(406).send('No such user');
-      return;
-    }
+    const tag = postJson.recipient
+      .split('@')[0]
+      .split('+')[1]
+      .toLowerCase();
     usersController.findUserByTag(tag, (err, postingUser) => {
       if (err) {
         logger.error(
