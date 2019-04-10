@@ -52,7 +52,10 @@ function createNewUser(userData, callback) {
   if (newUserData.username !== undefined)
     newUserData.normalizedUsername = newUserData.username.toLowerCase();
   // create secret email tag for posting
-  newUserData.postTag = shortid.generate();
+  // make sure it's lowercase as it's an email address and add two characters to shortid to compensate
+  newUserData.postTag = (
+    shortid.generate() + shortid.generate().slice(0, 1)
+  ).toLowerCase();
   usersData.createUser(newUserData, (err, user) => {
     if (err) {
       logger.error(err);
