@@ -44,6 +44,15 @@ module.exports = (url, callback) => {
     }
     [, episodeData.podcastiTunesID] = resultArray;
 
+    // find Podcast app URL
+    regex = new RegExp(
+      /(?:id="layout">\s*<div id="artwork"><a href=")(.*)(?:">)/m
+    );
+    resultArray = regex.exec(html);
+    if (resultArray !== null) {
+      [, episodeData.appPodcastURL] = resultArray;
+    }
+
     // find Podcast title
     // regex = new RegExp(/(?: &mdash; )(.*)(?: &mdash; )/gm);
     // resultArray = regex.exec(html);
@@ -81,15 +90,16 @@ module.exports = (url, callback) => {
     [, episodeData.title] = resultArray;
 
     // find episode description
-    // TODO: use puppeteer to expose this
-    // regex = new RegExp(/(?:class="section show_notes">)(.*)(?:<)/gm);
-    // resultArray = regex.exec(html);
-    // if (resultArray !== null) {
-    //   [, episodeData.description] = resultArray;
-    // } else {
-    //   episodeData.description = '';
-    //   errLog.description = null;
-    // }
+    regex = new RegExp(
+      /(?:property="og:description" content=")([\s\S]*?)(?:")/gm
+    );
+    resultArray = regex.exec(html);
+    if (resultArray !== null) {
+      [, episodeData.description] = resultArray;
+    } else {
+      episodeData.description = '';
+      errLog.description = null;
+    }
 
     // find episode image
     // regex = new RegExp(//gm);

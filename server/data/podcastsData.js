@@ -23,5 +23,9 @@ module.exports = {
 
   findPodcastByTitle(title, callback) {
     Podcast.findOne({ title }, callback);
+  },
+
+  findPodcastByAppURL(url, callback) {
+    Podcast.findOne({ appURLs: url }, callback);
   }
 };

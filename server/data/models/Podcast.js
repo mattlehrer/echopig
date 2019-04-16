@@ -17,7 +17,9 @@ module.exports.init = () => {
     contentAdvisoryRating: String,
     artworkUrl600: String,
     genreIds: [Number],
-    genres: [String]
+    genres: [String],
+    listenNotesID: String,
+    appURLs: [String]
   });
 
   mongoose.model('Podcast', podcastSchema);

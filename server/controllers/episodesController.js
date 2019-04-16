@@ -18,9 +18,11 @@ module.exports = {
           title: episodeData.podcastTitle,
           iTunesID: episodeData.podcastiTunesID,
           artwork: {
-            unknown: episodeData.podcastArtwork || ''
+            unknown: episodeData.podcastArtwork || null
           },
-          author: episodeData.podcastAuthor || ''
+          author: episodeData.podcastAuthor || null,
+          listenNotesID: episodeData.podcastListenNotesID || null,
+          appURL: episodeData.appPodcastURL || null
         };
         return podcastsController.findOrCreatePodcast(
           podcastData,
@@ -29,7 +31,7 @@ module.exports = {
             const newEpisodeData = episodeData;
             newEpisodeData.podcast = podcast;
             return episodesData.findEpisodeBymp3URL(
-              newEpisodeData,
+              newEpisodeData.mp3URL,
               (err, existingEpisode) => {
                 if (err) return callback(err, null);
                 if (existingEpisode !== null) {

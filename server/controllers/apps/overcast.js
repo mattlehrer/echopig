@@ -42,6 +42,15 @@ module.exports = (url, callback) => {
     }
     [, episodeData.podcastiTunesID] = resultArray;
 
+    // find Podcast app URL
+    regex = new RegExp(
+      /(?:class="titlestack centertext">\s*<div class="caption2 singleline"><a class="ocbutton" href=")(.*)(?:")/gm
+    );
+    resultArray = regex.exec(html);
+    if (resultArray !== null) {
+      episodeData.appPodcastURL = `https://overcast.fm${resultArray[1]}`;
+    }
+
     // find Podcast title
     // regex = new RegExp(/(?: &mdash; )(.*)(?: &mdash; )/gm);
     // resultArray = regex.exec(html);
@@ -68,7 +77,7 @@ module.exports = (url, callback) => {
     [, episodeData.mp3URL] = resultArray;
 
     // find episode title
-    regex = new RegExp(/(?:name="og:title" content=")(.*)(?: &mdash;)/gm);
+    regex = new RegExp(/(?:name="og:title" content=")(.*)(?: &mdash;)/m);
     resultArray = regex.exec(html);
     if (resultArray === null) {
       errLog.title = null;
@@ -79,7 +88,7 @@ module.exports = (url, callback) => {
     [, episodeData.title] = resultArray;
 
     // find episode description
-    regex = new RegExp(/(?:name="og:description" content=")(.*)(?:" \/>)/gm);
+    regex = new RegExp(/(?:name="og:description" content=")(.*)(?:" \/>)/m);
     resultArray = regex.exec(html);
     if (resultArray !== null) {
       [, episodeData.description] = resultArray;

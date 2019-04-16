@@ -23,25 +23,103 @@ module.exports = {
             return;
           }
           if (podcast !== null) {
+            // check if we should update
+            let updated = false;
+            if (podcastData.appURL) {
+              updated = true;
+              // add app url for podcast
+              if (podcast.appURLs) {
+                podcast.appURLs.addToSet(podcastData.appURL);
+              } else {
+                podcast.appURLs.set([podcastData.appURL]);
+              }
+            }
+            // if we don't have the listen notes ID for this podcast
+            // and we just grabbed it, save it
+            if (!podcast.listenNotesID && podcastData.listenNotesID) {
+              podcast.listenNotesID.set(podcastData.listenNotesID);
+              updated = true;
+            }
+            if (podcast.listenNotesID && podcastData.listenNotesID) {
+              if (podcast.listenNotesID !== podcastData.listenNotesID) {
+                logger.error(
+                  `Listen Notes ID doesn't match for podcast ${
+                    podcast.id
+                  }. Have ${podcast.listenNotesID} in db and now see ${
+                    podcastData.listenNotesID
+                  }`
+                );
+              }
+            }
+            if (updated) {
+              // eslint-disable-next-line no-shadow
+              podcast.save(err => {
+                if (err) logger.error(err);
+              });
+            }
             callback(null, podcast);
             return;
           }
+          // no podcast found, create one
           searchitunes({ id: podcastData.iTunesID })
             .then(data => {
+              const newPodcast = data;
+              if (podcastsData.listenNotesID)
+                newPodcast.listenNotesID = podcastData.listenNotesID;
+              if (podcastData.appURL) newPodcast.appURLs = [podcastData.appURL];
               // eslint-disable-next-line no-shadow
-              return podcastsData.addNewPodcast(data, (err, podcast) => {
+              return podcastsData.addNewPodcast(newPodcast, (err, podcast) => {
                 if (err) return callback(err, null);
                 return callback(null, podcast);
               });
             })
             .catch(error => {
               logger.error(error);
+              return callback(error);
             });
         }
       );
     } else if (podcastData.title) {
       podcastsData.findPodcastByTitle(podcastData.title, (err, podcast) => {
+        if (err) {
+          logger.error(err);
+          return callback(err, null);
+        }
         if (podcast !== null) {
+          // check if we should update
+          let updated = false;
+          if (podcastData.appURL) {
+            updated = true;
+            // add app url for podcast
+            if (podcast.appURLs) {
+              podcast.appURLs.addToSet(podcastData.appURL);
+            } else {
+              podcast.appURLs.set([podcastData.appURL]);
+            }
+          }
+          // if we don't have the listen notes ID for this podcast
+          // and we just grabbed it, save it
+          if (!podcast.listenNotesID && podcastData.listenNotesID) {
+            podcast.listenNotesID.set(podcastData.listenNotesID);
+            updated = true;
+          }
+          if (podcast.listenNotesID && podcastData.listenNotesID) {
+            if (podcast.listenNotesID !== podcastData.listenNotesID) {
+              logger.error(
+                `Listen Notes ID doesn't match for podcast ${
+                  podcast.id
+                }. Have ${podcast.listenNotesID} in db and now see ${
+                  podcastData.listenNotesID
+                }`
+              );
+            }
+          }
+          if (updated) {
+            // eslint-disable-next-line no-shadow
+            podcast.save(err => {
+              if (err) logger.error(err);
+            });
+          }
           return callback(null, podcast);
         }
         // eslint-disable-next-line no-shadow
@@ -145,5 +223,8 @@ module.exports = {
         next(error);
       });
   },
-  deletePodcast() {}
+  deletePodcast() {},
+  findPodcastByAppURL(url, callback) {
+    podcastsData.findPodcastByAppURL(url, callback);
+  }
 };
