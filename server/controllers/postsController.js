@@ -3,7 +3,6 @@
 const validator = require('validator');
 const { validationResult } = require('express-validator/check');
 const uuid = require('uuid/v4');
-const shortid = require('shortid');
 
 const logger = require('../utilities/logger')(__filename);
 const postsData = require('../data/postsData');
@@ -32,7 +31,6 @@ function createPost(postData, cb) {
           alreadyPosted = true;
           if (post.updatedAt >= Date.now() - 24 * 60 * 60 * 1000) {
             // if in the last day, do nothing
-            // cb(null, post);
             const error = new Error(
               'You have already posted that episode within the last 24 hours'
             );
