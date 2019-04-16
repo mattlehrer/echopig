@@ -27,30 +27,11 @@ module.exports = (url, callback) => {
       url
     };
 
-    let regex = new RegExp(/(?:"canonical" href\S*\?i=)(\d+)/m);
-    let resultArray = regex.exec(html);
-    if (resultArray === null) {
-      errLog.episodeID = null;
-      logger.alert(errLog);
-      const error = new Error('no episode ID found');
-      return callback(error, null);
-    }
-    const episodeID = resultArray[1];
-
-    // capture episode info = row in table of episodes
-    regex = new RegExp(`<tr .*adam-id="${episodeID}" [\\s\\S]*?</tr>`, 'm');
-    resultArray = regex.exec(html);
-    if (resultArray === null) {
-      errLog.episodeRow = null;
-      logger.alert(errLog);
-      const error = new Error('Episode info not found');
-      return callback(error, null);
-    }
-    const episodeRow = resultArray[0];
-
     // find Podcast iTunesID
-    regex = new RegExp(/(?:podcast-id=")(\d*)(?:")/m);
-    resultArray = regex.exec(html);
+    let regex = new RegExp(
+      /(?:href=".*?)(\d*?)(?:")(?:.*&quot;targetId&quot;:&quot;LinkToPodcast&quot;)/m
+    );
+    let resultArray = regex.exec(html);
     if (resultArray === null) {
       errLog.podcastiTunesID = null;
       logger.alert(errLog);
@@ -60,27 +41,33 @@ module.exports = (url, callback) => {
     [, episodeData.podcastiTunesID] = resultArray;
 
     // find mp3 URL
-    regex = new RegExp(
-      `(?:audio-preview-url=")(.*mp3)(?:.*adam-id="${episodeID})`,
-      'm'
-    );
-    resultArray = regex.exec(episodeRow);
+    regex = new RegExp(/(?:"assetUrl":")(http.*mp3.*?)(?:[?"])/gm);
+    resultArray = regex.exec(html);
     if (resultArray === null) {
       errLog.mp3URL = null;
       logger.alert(errLog);
-      const error = new Error('no mp3 URL found');
+      const error = new Error('No mp3 URL found');
       return callback(error, null);
     }
     [, episodeData.mp3URL] = resultArray;
 
-    // find Podcast title
-    regex = new RegExp(/(?:preview-album=")(.*?)(?:")/m);
+    // find Podcast app URL
+    regex = new RegExp(
+      /(?:href=")(.*?)(?:")(?:.*&quot;targetId&quot;:&quot;LinkToPodcast&quot;)/m
+    );
     resultArray = regex.exec(html);
     if (resultArray !== null) {
-      [, episodeData.podcastTitle] = resultArray;
-    } else {
-      errLog.podcastTitle = null;
+      [, episodeData.appPodcastURL] = resultArray;
     }
+
+    // find Podcast title
+    // regex = new RegExp(/(?:data-test-podcast-show-link>\s*)(.*)(?:\s*<\/a)/m);
+    // resultArray = regex.exec(html);
+    // if (resultArray !== null) {
+    //   [, episodeData.podcastTitle] = resultArray;
+    // } else {
+    //   errLog.podcastTitle = null;
+    // }
 
     // find Podcast Author
     // regex = new RegExp(/(?:preview-artist=")(.*?)(?:")/m);
@@ -97,32 +84,32 @@ module.exports = (url, callback) => {
     // }
 
     // find episode title
-    regex = new RegExp(/(?:sort-value=")(.*)(?:" class="name)/m);
-    resultArray = regex.exec(episodeRow);
+    regex = new RegExp(/(?:name="apple:title" content=")(.*?)(?:")/m);
+    resultArray = regex.exec(html);
     if (resultArray === null) {
       errLog.title = null;
       logger.alert(errLog);
-      const error = new Error('no episode title found');
+      const error = new Error('No episode title found');
       return callback(error, null);
     }
     [, episodeData.title] = resultArray;
 
-    // find episode description - this needs puppeteer
-    regex = new RegExp(/(?:sort-value=")(.*)(?:" class="description)/m);
-    resultArray = regex.exec(episodeRow);
-    if (resultArray === null) {
+    // find episode description
+    regex = new RegExp(/(?:episode-description>\s*?.*?>)(.*)(?:<\/p>)/m);
+    resultArray = regex.exec(html);
+    if (resultArray !== null) {
+      [, episodeData.description] = resultArray;
+    } else {
       episodeData.description = '';
       errLog.description = null;
-    } else {
-      [, episodeData.description] = resultArray;
     }
 
     // find episode image
-    // not exposed
+    // TODO: Does apple expose episode images?
 
     // find episode publish date
-    regex = new RegExp(/(?:")([\d/]*)(?:".*?class="release-date")/m);
-    resultArray = regex.exec(episodeRow);
+    regex = new RegExp(/(?:"datePublished":")(.*?)(?:")/m);
+    resultArray = regex.exec(html);
     if (resultArray !== null) {
       episodeData.releaseDate = new Date(resultArray[1]);
     } else {
@@ -130,26 +117,38 @@ module.exports = (url, callback) => {
     }
 
     // find episode duration
-    regex = new RegExp(/(?:duration=")(\d*)/m);
-    resultArray = regex.exec(episodeRow);
-    if (resultArray !== null) {
-      [, episodeData.duration] = resultArray;
-    } else {
+    regex = new RegExp(/(?:"duration":"PT)(.*?)(?:")/m);
+    resultArray = regex.exec(html);
+    try {
+      if (resultArray !== null) {
+        const durationString = resultArray[1];
+        episodeData.duration =
+          durationString.slice(0, durationString.indexOf('M')) * 60 +
+          Number(
+            durationString.slice(
+              durationString.indexOf('M') + 1,
+              durationString.length - 1
+            )
+          );
+      } else {
+        errLog.duration = null;
+      }
+    } catch (error) {
       errLog.duration = null;
     }
 
     // find riaa rating
-    regex = new RegExp(/(?:rating-riaa=")(\d*)/m);
-    resultArray = regex.exec(episodeRow);
-    if (resultArray !== null) {
-      [, episodeData.ratingRiaa] = resultArray;
-    } else {
-      errLog.ratingRiaa = null;
-    }
+    // regex = new RegExp(/(?:rating-riaa=")(\d*)/m);
+    // resultArray = regex.exec(html);
+    // if (resultArray !== null) {
+    //   [, episodeData.ratingRiaa] = resultArray;
+    // } else {
+    //   errLog.ratingRiaa = null;
+    // }
 
     // find parental rating
-    regex = new RegExp(/(?:parental-rating=")(\d*)/m);
-    resultArray = regex.exec(episodeRow);
+    regex = new RegExp(/(?:"contentRating":")(.*?)(?:")/m);
+    resultArray = regex.exec(html);
     if (resultArray !== null) {
       [, episodeData.parentalRating] = resultArray;
     } else {
