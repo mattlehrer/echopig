@@ -25,9 +25,10 @@ module.exports.init = () => {
         ref: 'Post'
       }
     ],
-    duration: Number,
-    parentalRating: Number,
-    ratingRiaa: Number
+    duration: Number, // in seconds
+    parentalRating: String,
+    // ratingRiaa: Number,
+    listenNotesID: String
   });
 
   episodeSchema.plugin(autopopulate);
