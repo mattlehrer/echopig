@@ -31,13 +31,13 @@ module.exports = {
               if (podcast.appURLs) {
                 podcast.appURLs.addToSet(podcastData.appURL);
               } else {
-                podcast.appURLs.set([podcastData.appURL]);
+                podcast.set({ appURLs: [podcastData.appURL] });
               }
             }
             // if we don't have the listen notes ID for this podcast
             // and we just grabbed it, save it
             if (!podcast.listenNotesID && podcastData.listenNotesID) {
-              podcast.listenNotesID.set(podcastData.listenNotesID);
+              podcast.set({ listenNotesID: podcastData.listenNotesID });
               updated = true;
             }
             if (podcast.listenNotesID && podcastData.listenNotesID) {
@@ -94,13 +94,13 @@ module.exports = {
             if (podcast.appURLs) {
               podcast.appURLs.addToSet(podcastData.appURL);
             } else {
-              podcast.appURLs.set([podcastData.appURL]);
+              podcast.set({ appURLs: [podcastData.appURL] });
             }
           }
           // if we don't have the listen notes ID for this podcast
           // and we just grabbed it, save it
           if (!podcast.listenNotesID && podcastData.listenNotesID) {
-            podcast.listenNotesID.set(podcastData.listenNotesID);
+            podcast.set({ listenNotesID: podcastData.listenNotesID });
             updated = true;
           }
           if (podcast.listenNotesID && podcastData.listenNotesID) {
