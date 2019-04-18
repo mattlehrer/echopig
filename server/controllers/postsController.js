@@ -26,7 +26,9 @@ function createPost(postData, cb) {
       // so don't let people post the same episode / mp3 twice
       // See: https://help.apple.com/itc/podcasts_connect/#/itc1723472cb
       let alreadyPosted = false;
-      newPost.byUser.posts.forEach(post => {
+      for (let i = 0; i < newPost.byUser.posts.length; i += 1) {
+        // eslint-disable-next-line security/detect-object-injection
+        const post = newPost.byUser.posts[i];
         if (!alreadyPosted && episode.id === post.episode.id) {
           alreadyPosted = true;
           if (post.updatedAt >= Date.now() - 24 * 60 * 60 * 1000) {
@@ -36,47 +38,50 @@ function createPost(postData, cb) {
             );
             error.status = 409;
             cb(error, null);
-          } else {
-            // update post time to now
-            logger.debug(`updating post ${post.id}`);
-            postsData.updatePost(
-              post,
-              { $currentDate: { updatedAt: true } },
-              (err, post) => {
-                if (err) cb(err, null);
-                else cb(null, post);
-              }
-            );
-          }
-        }
-      });
-      if (!alreadyPosted) {
-        newPost.episode = episode;
-        postsData.addNewPost(newPost, (err, post) => {
-          if (err) {
-            cb(err, null);
             return;
           }
-          logger.info(`New post: ${post}`);
-          // add post reference to User
-          usersController.addPostByUser(post, newPost.byUser, (err, user) => {
-            if (err) {
-              logger.alert(
-                `failed to add post ${post} to user ${user}'s posts array`
-              );
+          // update post time to now
+          logger.debug(`updating post ${post.id}`);
+          postsData.updatePost(
+            post,
+            { $currentDate: { updatedAt: true } },
+            (err, post) => {
+              if (err) {
+                cb(err, null);
+                return;
+              }
+              cb(null, post);
+              // eslint-disable-next-line no-useless-return
+              return;
             }
-          });
-          // add post reference to Episode
-          episodesController.addPostOfEpisode(post, episode, (err, ep) => {
-            if (err) {
-              logger.alert(
-                `failed to add post ${post} to episode ${episode}'s posts array`
-              );
-            }
-          });
-          cb(null, post);
-        });
+          );
+        }
       }
+      newPost.episode = episode;
+      postsData.addNewPost(newPost, (err, post) => {
+        if (err) {
+          cb(err, null);
+          return;
+        }
+        logger.info(`New post: ${post}`);
+        // add post reference to User
+        usersController.addPostByUser(post, newPost.byUser, (err, user) => {
+          if (err) {
+            logger.alert(
+              `failed to add post ${post} to user ${user}'s posts array`
+            );
+          }
+        });
+        // add post reference to Episode
+        episodesController.addPostOfEpisode(post, episode, err => {
+          if (err) {
+            logger.alert(
+              `failed to add post ${post} to episode ${episode}'s posts array`
+            );
+          }
+        });
+        cb(null, post);
+      });
     }
   );
 }
@@ -141,6 +146,19 @@ module.exports = {
             req.flash(
               'errors',
               "We don't know what to do with that link. Please try again by linking to an individual episode."
+            );
+            res.status(400).redirect(`/post`);
+            return;
+          }
+          if (err.status === 404) {
+            req.flash('errors', err.message);
+            res.status(400).redirect(`/post`);
+            return;
+          }
+          if (err.status === 501) {
+            req.flash(
+              'errors',
+              "We don't know how to find episodes on that site yet. We have logged the error and will try to do better."
             );
             res.status(400).redirect(`/post`);
             return;
