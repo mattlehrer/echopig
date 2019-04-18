@@ -121,15 +121,28 @@ module.exports = (url, callback) => {
     resultArray = regex.exec(html);
     try {
       if (resultArray !== null) {
-        const durationString = resultArray[1];
-        episodeData.duration =
-          durationString.slice(0, durationString.indexOf('M')) * 60 +
-          Number(
-            durationString.slice(
-              durationString.indexOf('M') + 1,
-              durationString.length - 1
-            )
+        let durationString = resultArray[1];
+        let duration = 0;
+        if (durationString.includes('H')) {
+          duration +=
+            Number(durationString.slice(0, durationString.indexOf('H'))) * 3600;
+          durationString = durationString.slice(
+            durationString.indexOf('H') + 1
           );
+        }
+        if (durationString.includes('M')) {
+          duration +=
+            Number(durationString.slice(0, durationString.indexOf('M'))) * 60;
+          durationString = durationString.slice(
+            durationString.indexOf('M') + 1
+          );
+        }
+        if (durationString.length) {
+          duration += Number(
+            durationString.slice(0, durationString.indexOf('S'))
+          );
+        }
+        episodeData.duration = duration;
       } else {
         errLog.duration = null;
       }
