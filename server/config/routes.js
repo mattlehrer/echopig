@@ -4,7 +4,6 @@ const { check } = require('express-validator/check');
 const logger = require('../utilities/logger')(__filename);
 const auth = require('./auth');
 const controllers = require('../controllers');
-// const importOldPosts = require('../utilities/import');
 const reservedNames = require('../utilities/reservedNames').reserved;
 
 function ensureAuthenticated(req, res, next) {
@@ -28,10 +27,6 @@ module.exports = app => {
       }
     })
   );
-  // app.get('/import', (req, res, next) => {
-  //   if (env === 'development') importOldPosts();
-  //   else next();
-  // });
   app
     .route('/register')
     .get(csrfProtection, controllers.users.getRegister)
