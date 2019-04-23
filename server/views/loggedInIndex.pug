@@ -17,7 +17,8 @@ block main-content
               .card-footer
                 .d-flex
                   .w-100
-                    .small.font-weight-lighter Published #{relativeTime(episode.releaseDate)}
+                    if (episode.releaseDate)
+                      .small.font-weight-lighter Published #{relativeTime(episode.releaseDate)}
                   .flex-shrink-0.small.font-weight-light.text-right 🐽 #{episode.posts.length}
   .row.mt-4.justify-content-md-center    
     .pl-0

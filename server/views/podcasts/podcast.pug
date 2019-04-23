@@ -34,6 +34,7 @@ block main-content
           div.media-body
             div.h5.mb-0
               a(href=`/e/${episode.id}`) !{episode.title}
-            div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(episode.releaseDate)}
+            if (episode.releaseDate)
+              div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(episode.releaseDate)}
             div.small !{episode.description}
             div.small.font-weight-light.pt-2 🐽 #{episode.posts.length}
