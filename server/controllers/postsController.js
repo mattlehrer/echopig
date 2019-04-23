@@ -21,6 +21,14 @@ function createPost(postData, cb) {
         cb(err, null);
         return;
       }
+      if (!episode) {
+        const err = new Error(
+          'We encountered an error on this episode. We have logged the error and will try to do better.'
+        );
+        logger.error('failed to return an episode on createPost');
+        cb(err, null);
+        return;
+      }
       // check if user has already posted this episode
       // Apple Podcasts ignores multiple items with same enclosure URL
       // so don't let people post the same episode / mp3 twice
@@ -29,7 +37,7 @@ function createPost(postData, cb) {
       for (let i = 0; i < newPost.byUser.posts.length; i += 1) {
         // eslint-disable-next-line security/detect-object-injection
         const post = newPost.byUser.posts[i];
-        if (!alreadyPosted && episode.id === post.episode.id) {
+        if (!alreadyPosted && post.episode && episode.id === post.episode.id) {
           alreadyPosted = true;
           if (post.updatedAt >= Date.now() - 24 * 60 * 60 * 1000) {
             // if in the last day, do nothing
@@ -51,37 +59,37 @@ function createPost(postData, cb) {
                 return;
               }
               cb(null, post);
-              // eslint-disable-next-line no-useless-return
-              return;
             }
           );
         }
       }
-      newPost.episode = episode;
-      postsData.addNewPost(newPost, (err, post) => {
-        if (err) {
-          cb(err, null);
-          return;
-        }
-        logger.info(`New post: ${post}`);
-        // add post reference to User
-        usersController.addPostByUser(post, newPost.byUser, (err, user) => {
+      if (!alreadyPosted) {
+        newPost.episode = episode;
+        postsData.addNewPost(newPost, (err, post) => {
           if (err) {
-            logger.alert(
-              `failed to add post ${post} to user ${user}'s posts array`
-            );
+            cb(err, null);
+            return;
           }
+          logger.info(`New post: ${post}`);
+          // add post reference to User
+          usersController.addPostByUser(post, newPost.byUser, (err, user) => {
+            if (err) {
+              logger.alert(
+                `failed to add post ${post} to user ${user}'s posts array`
+              );
+            }
+          });
+          // add post reference to Episode
+          episodesController.addPostOfEpisode(post, episode, err => {
+            if (err) {
+              logger.alert(
+                `failed to add post ${post} to episode ${episode}'s posts array`
+              );
+            }
+          });
+          cb(null, post);
         });
-        // add post reference to Episode
-        episodesController.addPostOfEpisode(post, episode, err => {
-          if (err) {
-            logger.alert(
-              `failed to add post ${post} to episode ${episode}'s posts array`
-            );
-          }
-        });
-        cb(null, post);
-      });
+      }
     }
   );
 }
@@ -215,8 +223,7 @@ module.exports = {
     }
 
     // lookup user by tag
-    const tag = postJson.recipient
-      .split('@')[0]
+    const tag = postJson.To.split('@')[0]
       .split('+')[1]
       .toLowerCase();
     usersController.findUserByTag(tag, (err, postingUser) => {
