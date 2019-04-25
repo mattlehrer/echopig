@@ -2,13 +2,15 @@ extends ../shared/layout
 
 block main-content
   .h2 #{currentUser.username}
-  div User since: #{relativeTime(currentUser.createdAt)}
   div Saves: #{currentUser.saves.length}
   div
     a(href=`/saved/${currentUser.saveForLaterId}`) Save for Later RSS feed
   if currentUser.saves.length > 0
     .w-100.py-4
-      .h4 Saves
+      .row.m-0
+        .h4.mr-3
+          a.text-muted(href=`/u/${currentUser.username}`) Posts
+        .h4 Saves
       ul
       each save in currentUser.saves
         li.media.border-top.py-3

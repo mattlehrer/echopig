@@ -5,10 +5,16 @@ block main-content
   div User since: #{relativeTime(profiledUser.createdAt)}
   div Posts: #{profiledUser.posts.length}
   div
-    a(href=`/rss/${profiledUser.normalizedUsername}`) RSS feed
+    a(href=`/rss/${profiledUser.normalizedUsername}`) RSS feed of recommendations
   if profiledUser.posts.length > 0
     .w-100.py-4
-      .h4 Posts
+      if (profiledUser.normalizedUsername === currentUser.normalizedUsername)
+        .row.m-0
+          .h4.mr-3 Posts
+          .h4
+            a.text-muted(href='/saved') Saves
+      else
+        .h4 Posts
       ul
       each post in profiledUser.posts
         li.media.border-top.py-3
