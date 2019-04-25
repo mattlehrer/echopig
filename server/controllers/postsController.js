@@ -6,6 +6,7 @@ const uuid = require('uuid/v4');
 
 const logger = require('../utilities/logger')(__filename);
 const postsData = require('../data/postsData');
+const savesData = require('../data/savesData');
 const usersController = require('./usersController');
 const episodesController = require('./episodesController');
 const mail = require('../utilities/email');
@@ -70,7 +71,11 @@ function createPost(postData, cb) {
             cb(err, null);
             return;
           }
-          logger.info(`New post: ${post}`);
+          logger.info(
+            `New post: ${post.id} of ${post.episode.title} by ${
+              post.byUser.username
+            }`
+          );
           // add post reference to User
           usersController.addPostByUser(post, newPost.byUser, (err, user) => {
             if (err) {
@@ -90,6 +95,57 @@ function createPost(postData, cb) {
           cb(null, post);
         });
       }
+    }
+  );
+}
+
+function createSave(saveData, cb) {
+  const newSave = saveData;
+  episodesController.findOrCreateEpisodeWithShareURL(
+    newSave.shareURL,
+    (err, episode) => {
+      if (err) {
+        logger.error(err);
+        cb(err, null);
+        return;
+      }
+      if (!episode) {
+        const err = new Error(
+          'We encountered an error on this episode. We have logged the error and will try to do better.'
+        );
+        logger.error('failed to return an episode on createPost');
+        cb(err, null);
+        return;
+      }
+      newSave.episode = episode;
+      savesData.addNewSave(newSave, (err, save) => {
+        if (err) {
+          cb(err, null);
+          return;
+        }
+        logger.info(
+          `New save: ${save.id} of ${save.episode.title} by ${
+            save.byUser.username
+          }`
+        );
+        // add save reference to User
+        usersController.addSaveByUser(save, newSave.byUser, (err, user) => {
+          if (err) {
+            logger.alert(
+              `failed to add save ${save} to user ${user}'s saves array`
+            );
+          }
+        });
+        // add save reference to Episode
+        episodesController.addSaveOfEpisode(save, episode, err => {
+          if (err) {
+            logger.alert(
+              `failed to add post ${save} to episode ${episode}'s saves array`
+            );
+          }
+        });
+        cb(null, save);
+      });
     }
   );
 }
@@ -121,7 +177,7 @@ module.exports = {
       return;
     }
     const postData = req.body;
-
+    postData.publicShare = postData.publicShare === 'recommend';
     usersController.findUserByIdWithPosts(req.user.id, (err, userWithPosts) => {
       const newPostData = {
         byUser: userWithPosts,
@@ -138,45 +194,87 @@ module.exports = {
         next(err);
         return;
       }
-      createPost(newPostData, (err, post) => {
-        if (err) {
-          logger.error(
-            `Error creating post via web for user: ${
-              req.user.username
-            } with error: ${err}`
-          );
-          if (err.status === 409) {
-            req.flash('errors', err.message);
-            res.status(409).redirect(`/u/${req.user.username}`);
-            return;
-          }
-          if (err.status === 400) {
-            req.flash(
-              'errors',
-              "We don't know what to do with that link. Please try again by linking to an individual episode."
+      if (postData.publicShare) {
+        createPost(newPostData, (err, post) => {
+          if (err) {
+            logger.error(
+              `Error creating post via web for user: ${
+                req.user.username
+              } with error: ${err}`
             );
-            res.status(400).redirect(`/post`);
+            if (err.status === 409) {
+              req.flash('errors', err.message);
+              res.status(409).redirect(`/u/${req.user.username}`);
+              return;
+            }
+            if (err.status === 400) {
+              req.flash(
+                'errors',
+                "We don't know what to do with that link. Please try again by linking to an individual episode."
+              );
+              res.status(400).redirect(`/post`);
+              return;
+            }
+            if (err.status === 404) {
+              req.flash('errors', err.message);
+              res.status(400).redirect(`/post`);
+              return;
+            }
+            if (err.status === 501) {
+              req.flash(
+                'errors',
+                "We don't know how to find episodes on that site yet. We have logged the error and will try to do better."
+              );
+              res.status(400).redirect(`/post`);
+              return;
+            }
+            next(err);
             return;
           }
-          if (err.status === 404) {
-            req.flash('errors', err.message);
-            res.status(400).redirect(`/post`);
-            return;
-          }
-          if (err.status === 501) {
-            req.flash(
-              'errors',
-              "We don't know how to find episodes on that site yet. We have logged the error and will try to do better."
+          req.flash('info', `${post.episode.title} posted`);
+          res.redirect(`/u/${req.user.username}`);
+        });
+      } else {
+        createSave(newPostData, (err, post) => {
+          if (err) {
+            logger.error(
+              `Error creating post via web for user: ${
+                req.user.username
+              } with error: ${err}`
             );
-            res.status(400).redirect(`/post`);
+            if (err.status === 409) {
+              req.flash('errors', err.message);
+              res.status(409).redirect(`/u/${req.user.username}`);
+              return;
+            }
+            if (err.status === 400) {
+              req.flash(
+                'errors',
+                "We don't know what to do with that link. Please try again by linking to an individual episode."
+              );
+              res.status(400).redirect(`/post`);
+              return;
+            }
+            if (err.status === 404) {
+              req.flash('errors', err.message);
+              res.status(400).redirect(`/post`);
+              return;
+            }
+            if (err.status === 501) {
+              req.flash(
+                'errors',
+                "We don't know how to find episodes on that site yet. We have logged the error and will try to do better."
+              );
+              res.status(400).redirect(`/post`);
+              return;
+            }
+            next(err);
             return;
           }
-          next(err);
-          return;
-        }
-        req.flash('info', `${post.episode.title} posted`);
-        res.redirect(`/u/${req.user.username}`);
-      });
+          req.flash('info', `${post.episode.title} saved`);
+          res.redirect(`/saved`);
+        });
+      }
     });
   },
   addNewPostViaMailgun(req, res, next) {
@@ -314,6 +412,46 @@ module.exports = {
         if (err) {
           logger.error(
             `failed to delete post ${postId} from user ${user}'s posts array`
+          );
+        }
+      });
+    });
+  },
+  deleteSave(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(e => {
+        req.flash('errors', e.msg);
+      });
+      res.redirect('back');
+      return;
+    }
+    const saveId = req.query.s;
+    savesData.deleteSave({ _id: saveId, byUser: req.user.id }, err => {
+      if (err) {
+        // this is almost definitely a user error, changing the saveId in the URL
+        logger.error(
+          `Error deleting save for user: ${
+            req.user.username
+          } with error: ${err}`
+        );
+        next(err);
+        return;
+      }
+      res.status(200).redirect(`/u/${req.user.username}`);
+      // pull from episode posts array
+      episodesController.removeSaveOfEpisode(saveId, (err, episode) => {
+        if (err) {
+          logger.error(
+            `failed to delete save ${saveId} from episode ${episode}'s saves array`
+          );
+        }
+      });
+      // pull from user's posts array
+      usersController.removeSaveByUser(saveId, req.user, (err, user) => {
+        if (err) {
+          logger.error(
+            `failed to delete post ${saveId} from user ${user}'s posts array`
           );
         }
       });

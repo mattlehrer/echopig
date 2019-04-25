@@ -15,11 +15,19 @@ module.exports.init = () => {
       email: String,
       normalizedEmail: { type: String, unique: true },
       postTag: { type: String, unique: true },
+      saveForLaterId: { type: String, unique: true },
       avatar: String,
       posts: [
         {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'Post',
+          default: []
+        }
+      ],
+      saves: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Save',
           default: []
         }
       ],

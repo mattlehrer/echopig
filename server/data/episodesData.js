@@ -44,6 +44,23 @@ module.exports = {
     );
   },
 
+  addSaveOfEpisode(save, episode, callback) {
+    Episode.findByIdAndUpdate(
+      { _id: episode.id },
+      { $push: { saves: save } },
+      callback
+    );
+  },
+
+  removeSaveOfEpisode(saveId, callback) {
+    const objId = mongoose.Types.ObjectId(saveId);
+    Episode.findOneAndUpdate(
+      { posts: objId },
+      { $pull: { saves: objId } },
+      callback
+    );
+  },
+
   addShareURLtoEpisode(shareURL, episode, callback) {
     Episode.findByIdAndUpdate(
       { _id: episode.id },

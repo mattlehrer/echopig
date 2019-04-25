@@ -6,6 +6,7 @@ const TokenModel = require('../data/models/Token');
 const EpisodeModel = require('../data/models/Episode');
 const PodcastModel = require('../data/models/Podcast');
 const PostModel = require('../data/models/Post');
+const SaveModel = require('../data/models/Save');
 
 module.exports = config => {
   mongoose.Promise = global.Promise;
@@ -36,6 +37,7 @@ module.exports = config => {
   EpisodeModel.init();
   PodcastModel.init();
   PostModel.init();
+  SaveModel.init();
 
   return db;
 };

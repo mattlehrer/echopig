@@ -1,10 +1,19 @@
 extends ../shared/layout
 
 block main-content
-  .col-md-6.col-md-offset-3
+  .col-md-8.col-md-offset-3
     form(method="post", action="", class='form-horizontal')
       fieldset
         legend Post Episode
+        .form-group
+          .form-check.form-check-inline
+            input#recommend.form-check-input(type='radio' name='publicShare' value='recommend' checked)
+            label.form-check-label(for='recommend')
+              | Recommend
+          .form-check.form-check-inline
+            input#saveForLater.form-check-input(type='radio' name='publicShare' value='save')
+            label.form-check-label(for='saveForLater')
+              | Save for Later
         .form-group
           label.control-label(for="shareURL") Share URL
           input(id="shareURL" class="form-control" type="text" name="shareURL" placeholder="Apple Podcasts, Overcast, Breaker, or Pocket Casts episode share link" value=submitURL autofocus required)

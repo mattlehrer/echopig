@@ -3,7 +3,7 @@
 const { validationResult } = require('express-validator/check');
 
 const usersData = require('../data/usersData');
-// const logger = require('../utilities/logger')(__filename);
+const logger = require('../utilities/logger')(__filename);
 
 module.exports = {
   getProfile(req, res, next) {
@@ -21,6 +21,7 @@ module.exports = {
       req.params.username.toLowerCase(),
       (err, profiledUser) => {
         if (err) {
+          logger.error(err);
           next(err);
           return;
         }
@@ -42,5 +43,28 @@ module.exports = {
         });
       }
     );
+  },
+  getSaves(req, res, next) {
+    usersData.findUserByIdWithSaves(req.user.id, (err, userWithSaves) => {
+      if (err) {
+        logger.error(err);
+        next(err);
+        return;
+      }
+      if (!userWithSaves) {
+        logger.error(
+          `${req.user.id} is logged in but returned null getting saves`
+        );
+        req.flash(
+          'errors',
+          "Something went wrong. We've logged the error and will try to do better."
+        );
+        res.redirect(req.get('Referrer') || '/');
+        return;
+      }
+      res.render('profile/saves', {
+        currentUser: userWithSaves
+      });
+    });
   }
 };

@@ -25,6 +25,12 @@ module.exports.init = () => {
         ref: 'Post'
       }
     ],
+    saves: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Save'
+      }
+    ],
     duration: Number, // in seconds
     parentalRating: String,
     // ratingRiaa: Number,

@@ -20,16 +20,20 @@ block main-content
         .form-group
           button(type="submit" class="btn btn-primary") Submit
   else
-    div Username: #{currentUser.username}
-    div Email: #{currentUser.email}
-    div Send episode recommendations to 
+    div.py-1 Username: #{currentUser.username}
+    div.py-1 Email: #{currentUser.email}
+    div.py-1 Send episode recommendations to 
       - address = `post+${currentUser.postTag}@echopig.com`
       a(href=`mailto:${address}`)= address
       | 
       a(href='/vcard') (add to contacts)
-    div
-      - profile = '/u/'+currentUser.username
-      a(href=profile) See your posts
+    div.py-1
+      | Share the 
+      a(href=`/rss/${currentUser.username}`) RSS feed of your recommendations
+    div.py-1
+      | Add your 
+      a(href=`/saved/${currentUser.saveForLaterId}`) Save for Later RSS feed 
+      | to your podcast app
     .col-md-4.py-3
       if (!currentUser.twitter)
         a.btn.btn-block.btn-twitter.btn-social(href="/auth/twitter")

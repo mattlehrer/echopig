@@ -66,6 +66,12 @@ module.exports = {
   removePostOfEpisode(postId, callback) {
     episodesData.removePostOfEpisode(postId, callback);
   },
+  addSaveOfEpisode(save, episode, callback) {
+    episodesData.addSaveOfEpisode(save, episode, callback);
+  },
+  removeSaveOfEpisode(saveId, callback) {
+    episodesData.removeSaveOfEpisode(saveId, callback);
+  },
   getEpisode(req, res, next) {
     episodesData.findEpisodeById(req.params.episode, (err, episode) => {
       if (err) {

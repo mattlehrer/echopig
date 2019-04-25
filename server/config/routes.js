@@ -27,6 +27,11 @@ module.exports = app => {
       }
     })
   );
+  // TODO: Remove
+  app.get(
+    '/genUUIDsforSaveForLater',
+    controllers.users.genUUIDsforSaveForLater
+  );
   app
     .route('/register')
     .get(csrfProtection, controllers.users.getRegister)
@@ -110,6 +115,8 @@ module.exports = app => {
     controllers.profiles.getProfile
   );
   app.get('/rss/:username', controllers.rss.getRSSFeed);
+  app.get('/saved/:saveForLaterId', controllers.rss.getSaveForLaterFeed);
+  app.get('/saved', ensureAuthenticated, controllers.profiles.getSaves);
   app.get('/e(pisode)?(s)?', controllers.posts.getTopEpisodes);
   app.get('/e(pisode)?(s)?/:episode', controllers.episodes.getEpisode);
   app.get('/p(odcast)?(s)?', controllers.podcasts.getTopPodcasts);
@@ -167,10 +174,7 @@ module.exports = app => {
     .post(
       ensureAuthenticated,
       csrfProtection,
-      check(
-        'shareURL',
-        `We currently only work with episode share URLs from Apple's Podcasts.app and Overcast`
-      ).isURL(),
+      check('shareURL', `Please enter a valid URL.`).isURL(),
       check('comment')
         .trim()
         .escape()
@@ -187,6 +191,15 @@ module.exports = app => {
       .isHexadecimal()
       .withMessage('Invalid post ID'),
     controllers.posts.deletePost
+  );
+  app.get(
+    '/deleteSave',
+    ensureAuthenticated,
+    check('s')
+      .isLength({ min: 24, max: 24 })
+      .isHexadecimal()
+      .withMessage('Invalid save ID'),
+    controllers.posts.deleteSave
   );
 
   // catch 404

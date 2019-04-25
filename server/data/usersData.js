@@ -34,9 +34,21 @@ module.exports = {
       .exec(callback);
   },
 
+  findUserBySaveForLaterId(saveForLaterId, callback) {
+    User.findOne({ saveForLaterId })
+      .populate({ path: 'saves', options: { sort: { updatedAt: -1 } } })
+      .exec(callback);
+  },
+
   findUserByIdWithPosts(id, callback) {
     User.findOne({ _id: id })
       .populate({ path: 'posts', options: { sort: { updatedAt: -1 } } })
+      .exec(callback);
+  },
+
+  findUserByIdWithSaves(id, callback) {
+    User.findOne({ _id: id })
+      .populate({ path: 'saves', options: { sort: { updatedAt: -1 } } })
       .exec(callback);
   },
 
@@ -49,11 +61,31 @@ module.exports = {
   },
 
   removePostByUser(postId, user, callback) {
-    const objId = mongoose.Types.ObjectId(postId);
     User.findByIdAndUpdate(
       { _id: user.id },
-      { $pull: { posts: objId } },
+      { $pull: { posts: mongoose.Types.ObjectId(postId) } },
       callback
     );
+  },
+
+  addSaveByUser(save, user, callback) {
+    User.findByIdAndUpdate(
+      { _id: user.id },
+      { $push: { saves: save } },
+      callback
+    );
+  },
+
+  removeSaveByUser(saveId, user, callback) {
+    User.findByIdAndUpdate(
+      { _id: user.id },
+      { $pull: { saves: mongoose.Types.ObjectId(saveId) } },
+      callback
+    );
+  },
+
+  // TODO: Remove
+  genUUIDsforSaveForLater(callback) {
+    User.find({ saveForLaterId: null }, callback);
   }
 };

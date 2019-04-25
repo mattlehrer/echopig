@@ -1,0 +1,41 @@
+extends ../shared/layout
+
+block main-content
+  .h2 #{currentUser.username}
+  div User since: #{relativeTime(currentUser.createdAt)}
+  div Saves: #{currentUser.saves.length}
+  div
+    a(href=`/saved/${currentUser.saveForLaterId}`) Save for Later RSS feed
+  if currentUser.saves.length > 0
+    .w-100.py-4
+      .h4 Saves
+      ul
+      each save in currentUser.saves
+        li.media.border-top.py-3
+          if (save.episode !== null && save.episode.image !== undefined)
+            img.rounded.w-25(
+              src=save.episode.image
+              height="auto"
+            )
+          else if (save.episode !== null && save.episode.podcast !== null && save.episode.podcast.artworkUrl600)
+            img.rounded.w-25.h-100(
+              src=save.episode.podcast.artworkUrl600
+              height="auto"
+            )
+          else
+            div.w-25 
+          div.pl-3.media-body 
+            if (currentUser && currentUser.id === currentUser.id)
+              div
+                a.float-right.btn.btn-outline-danger.btn-sm(href=`/deleteSave?s=${save.id}` title='Delete save')
+                  span(aria-hidden="true") &times;
+            if (save.episode !== null && save.episode.podcast !== null)
+              div
+                a(href=`/p/i${save.episode.podcast.iTunesID}`) !{save.episode.podcast.title}
+              div.h5.mb-0
+                a(href=`/e/${save.episode.id}`) !{save.episode.title}
+              div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(save.episode.releaseDate)}
+            div.lead !{save.comment}
+            if (save.episode !== null && save.episode.description !== null)
+              div.small !{save.episode.description}
+            div.small.font-weight-light.pt-2 Saved #{relativeTime(save.updatedAt)}
