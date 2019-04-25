@@ -2,6 +2,8 @@
 ## Personalized podcast rss feed web app
 
 Use docker-compose.debug.yml for dev and docker-compose.yml for production
+Rebuild: 
+  docker-compose up -d --no-deps --build web
 
 Rebuild: 
     docker-compose up -d --no-deps --build web
