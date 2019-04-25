@@ -3,7 +3,8 @@
 
 Use docker-compose.debug.yml for dev and docker-compose.yml for production
 
-Rebuild: 
+Rebuild:
+
     docker-compose up -d --no-deps --build web
 
 **TODO**
