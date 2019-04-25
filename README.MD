@@ -2,11 +2,11 @@
 ## Personalized podcast rss feed web app
 
 Use docker-compose.debug.yml for dev and docker-compose.yml for production
+Rebuild: 
+  docker-compose up -d --no-deps --build web
 
 **TODO**
 
-* Save for Later Feed
-* Post form feed toggle - save for later vs share
 * Bookmarklet
 * Copy
   * About
