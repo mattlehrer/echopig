@@ -82,10 +82,5 @@ module.exports = {
       { $pull: { saves: mongoose.Types.ObjectId(saveId) } },
       callback
     );
-  },
-
-  // TODO: Remove
-  genUUIDsforSaveForLater(callback) {
-    User.find({ saveForLaterId: null }, callback);
   }
 };

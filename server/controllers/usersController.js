@@ -732,28 +732,5 @@ module.exports = {
   },
   removeSaveByUser(post, user, callback) {
     usersData.removeSaveByUser(post, user, callback);
-  },
-  // TODO: Remove
-  genUUIDsforSaveForLater(req, res, next) {
-    // let uuids = [];
-    usersData.genUUIDsforSaveForLater((err, users) => {
-      if (err) {
-        next(err);
-        return;
-      }
-      users.forEach(user => {
-        user.set({ saveForLaterId: uuid() });
-        user.save((error, updatedUser) => {
-          if (error) logger.error(error);
-          else
-            logger.debug(
-              `Set saveForLaterId for ${updatedUser.username}: ${
-                updatedUser.saveForLaterId
-              }`
-            );
-        });
-      });
-      next();
-    });
   }
 };

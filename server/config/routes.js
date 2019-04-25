@@ -27,11 +27,6 @@ module.exports = app => {
       }
     })
   );
-  // TODO: Remove
-  app.get(
-    '/genUUIDsforSaveForLater',
-    controllers.users.genUUIDsforSaveForLater
-  );
   app
     .route('/register')
     .get(csrfProtection, controllers.users.getRegister)
