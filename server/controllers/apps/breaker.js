@@ -77,14 +77,10 @@ module.exports = (url, callback) => {
     // find episode description
     regex = new RegExp(/(?:meta name="description" content=")([\s\S]*?)(?:")/m);
     resultArray = regex.exec(html);
-    logger.debug(`with html: ${resultArray[1]}`);
     if (resultArray !== null) {
       let $ = cheerio.load(resultArray[1]);
       $ = cheerio.load($.text());
       episodeData.description = $.text();
-      // logger.debug(`after cheerio's .text(): ${episodeData.description}`);
-      // episodeData.description = $('p').text();
-      logger.debug(`after cheerio's .text(): ${episodeData.description}`);
     } else {
       episodeData.description = '';
       errLog.description = null;
@@ -124,7 +120,6 @@ module.exports = (url, callback) => {
     const mp3URL = await redirectChain.destination(resultArray[1]);
     episodeData.mp3URL =
       mp3URL.indexOf('?') > 0 ? mp3URL.slice(0, mp3URL.indexOf('?')) : mp3URL;
-    logger.debug(episodeData.mp3URL);
 
     // find episode duration
     // not exposed
