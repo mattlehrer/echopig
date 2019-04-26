@@ -10,7 +10,9 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) next();
   else {
     req.flash('errors', 'Please log in or register for an account.');
-    res.redirect(req.get('Referrer') || '/');
+    logger.debug(`Setting redirectTo: ${req.url}`);
+    req.session.redirectTo = req.url;
+    res.redirect(req.get('Referrer') || '/login');
   }
 }
 
@@ -27,6 +29,7 @@ module.exports = app => {
       }
     })
   );
+
   app
     .route('/register')
     .get(csrfProtection, controllers.users.getRegister)
@@ -165,7 +168,7 @@ module.exports = app => {
 
   app
     .route('/post')
-    .get(csrfProtection, controllers.posts.getNewPost)
+    .get(csrfProtection, ensureAuthenticated, controllers.posts.getNewPost)
     .post(
       ensureAuthenticated,
       csrfProtection,

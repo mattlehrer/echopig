@@ -42,10 +42,7 @@ module.exports = {
           return;
         }
         logger.info(`logIn for username: ${user.username}`);
-        // TODO make the homepage more interesting
-        // until then redirect to user profile on login
-        // res.redirect('/');
-        res.redirect(`/u/${req.user.username}`);
+        res.redirect(req.session.redirectTo || req.get('Referrer') || '/');
       });
     });
 
