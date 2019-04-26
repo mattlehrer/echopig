@@ -154,18 +154,57 @@ module.exports = {
   createPost,
   getNewPost(req, res, next) {
     if (!req.user) {
+      // We should never get here because of ensureAuthenticated middleware
       req.flash(
         'errors',
         'Please log in or register for an account to submit posts.'
       );
-      res.redirect('/');
-    } else {
-      res.render('posts/post', {
-        currentUser: req.user,
-        csrfToken: req.csrfToken(),
-        submitURL: req.query.url || ''
-      });
+      res.redirect('/login');
+      return;
     }
+    if (req.query.url && validator.isURL(req.query.url)) {
+      // lookup shareURL and parse for episode details
+      episodesController.findOrCreateEpisodeWithShareURL(
+        req.query.url,
+        (err, episode) => {
+          if (err) {
+            logger.error(err);
+            req.flash(
+              'errors',
+              `We aren't sure what to do with this page. Do you have an episode share URL?`
+            );
+            res.render('posts/post', {
+              currentUser: req.user,
+              csrfToken: req.csrfToken()
+            });
+            return;
+          }
+          if (!episode) {
+            logger.error('failed to return an episode on createPost');
+            req.flash(
+              'errors',
+              `We aren't sure what to do with this page. Do you have an episode share URL?`
+            );
+            res.render('posts/post', {
+              currentUser: req.user,
+              csrfToken: req.csrfToken()
+            });
+            return;
+          }
+          res.render('posts/postParsed', {
+            currentUser: req.user,
+            csrfToken: req.csrfToken(),
+            submitURL: req.query.url,
+            episode
+          });
+        }
+      );
+      return;
+    }
+    res.render('posts/post', {
+      currentUser: req.user,
+      csrfToken: req.csrfToken()
+    });
   },
   addNewPostViaWeb(req, res, next) {
     const errors = validationResult(req);
@@ -398,7 +437,7 @@ module.exports = {
         next(err);
         return;
       }
-      res.status(200).redirect(`/u/${req.user.username}`);
+      res.redirect(`/u/${req.user.username}`);
       // pull from episode posts array
       episodesController.removePostOfEpisode(postId, (err, episode) => {
         if (err) {
@@ -438,7 +477,7 @@ module.exports = {
         next(err);
         return;
       }
-      res.status(200).redirect(`/u/${req.user.username}`);
+      res.redirect(`/saved`);
       // pull from episode posts array
       episodesController.removeSaveOfEpisode(saveId, (err, episode) => {
         if (err) {

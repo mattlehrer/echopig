@@ -1,0 +1,40 @@
+extends ../shared/layout
+
+block main-content
+  .col-md-8.col-md-offset-3
+    form(method="post", action="", class='form-horizontal')
+      fieldset
+        legend Post Episode
+        .form-group
+          .form-check.form-check-inline
+            input#recommend.form-check-input(type='radio' name='publicShare' value='recommend' checked)
+            label.form-check-label(for='recommend')
+              | Recommend
+          .form-check.form-check-inline
+            input#saveForLater.form-check-input(type='radio' name='publicShare' value='save')
+            label.form-check-label(for='saveForLater')
+              | Save for Later
+        .form-group
+          div.row
+            div.col-4
+              img.float-right.rounded.w-100.h100(
+                src=episode.podcast.artworkUrl600
+                )
+            div.col-8.px-1.pt-2
+              .h4 !{episode.title}
+              if episode.podcast.title
+                div.pb-2 !{episode.podcast.title}
+              if episode.releaseDate
+                div.small.font-weight-lighter.pt-1.pb-2 Published 
+                  =relativeTime(episode.releaseDate)
+              div.small !{episode.description}
+        .form-group
+          label.control-label(for="comment") Comment
+          input(id="comment" class="form-control" type="text" name="comment" placeholder="Comment on the episode (optional)")
+        .form-group
+          input(type="hidden" name="shareURL" value=submitURL)
+        .form-group
+          input(type="hidden" name="_csrf" value=csrfToken)
+        .form-group
+          button(type="reset" class="btn btn-default") Cancel
+          button(type="submit" class="btn btn-primary") Submit
