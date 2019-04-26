@@ -5,7 +5,10 @@ const breaker = require('./breaker');
 const logger = require('../../utilities/logger')(__filename);
 
 module.exports = (url, callback) => {
-  if (url.search('overcast.fm') !== -1) {
+  // make sure we match the domain instead of another part of the URL
+  const domainRegex = /:\/\/(.[^/]+)/;
+  const domain = url.match(domainRegex)[1];
+  if (domain.search('overcast.fm') !== -1) {
     overcast(url, (error, epData) => {
       if (error) {
         const err = error;
@@ -18,7 +21,7 @@ module.exports = (url, callback) => {
       newEpData.shareURLs = [url];
       callback(null, newEpData);
     });
-  } else if (url.search('apple.com') !== -1) {
+  } else if (domain.search('apple.com') !== -1) {
     podcastsApp(url, (error, epData) => {
       if (error) {
         const err = error;
@@ -31,7 +34,7 @@ module.exports = (url, callback) => {
       newEpData.shareURLs = [url];
       callback(null, newEpData);
     });
-  } else if (url.search('pca.st') !== -1) {
+  } else if (domain.search('pca.st') !== -1) {
     pocketcasts(url, (error, epData) => {
       if (error) {
         const err = error;
@@ -44,7 +47,7 @@ module.exports = (url, callback) => {
       newEpData.shareURLs = [url];
       callback(null, newEpData);
     });
-  } else if (url.search('breaker.audio') !== -1) {
+  } else if (domain.search('breaker.audio') !== -1) {
     breaker(url, (error, epData) => {
       if (error) {
         const err = error;
