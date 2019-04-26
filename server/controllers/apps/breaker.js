@@ -117,7 +117,8 @@ module.exports = (url, callback) => {
       callback(error, null);
       return;
     }
-    const mp3URL = await redirectChain.destination(resultArray[1]);
+    const urlsChain = await redirectChain.urls(resultArray[1]);
+    const mp3URL = urlsChain.length > 0 ? urlsChain[1] : urlsChain[0];
     episodeData.mp3URL =
       mp3URL.indexOf('?') > 0 ? mp3URL.slice(0, mp3URL.indexOf('?')) : mp3URL;
 
