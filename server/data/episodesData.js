@@ -55,7 +55,7 @@ module.exports = {
   removeSaveOfEpisode(saveId, callback) {
     const objId = mongoose.Types.ObjectId(saveId);
     Episode.findOneAndUpdate(
-      { posts: objId },
+      { saves: objId },
       { $pull: { saves: objId } },
       callback
     );
