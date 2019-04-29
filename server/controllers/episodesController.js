@@ -78,6 +78,9 @@ module.exports = {
         logger.error(err);
         return next(err);
       }
+      if (!episode) {
+        return next();
+      }
       return res.render('episodes/episode', {
         currentUser: req.user,
         episode
