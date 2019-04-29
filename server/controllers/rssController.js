@@ -72,6 +72,19 @@ function generateFeed(publicFeed, user, callback) {
       });
     }
   });
+  // if we don't have any feed items,
+  // we might not be able to add the feed to some podcast players
+  if (!feedItems.length) {
+    feed.addItem({
+      title: 'Coming soon!',
+      description: `${
+        user.username
+      } is just getting started on Echopig and will post episodes soon.`,
+      url: `https://www.echopig.com/`,
+      enclosure: { url: `https://www.echopig.com/assets/comingsoon.mp3` },
+      date: user.updatedAt
+    });
+  }
 
   callback(null, feed.buildXml());
 }
