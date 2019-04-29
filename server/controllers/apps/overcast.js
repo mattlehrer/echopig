@@ -108,7 +108,9 @@ module.exports = (url, callback) => {
     // overcast always uses the main podcast image (2019-01-18)
 
     // find episode publish date
-    regex = new RegExp(/(?:class="margintop1">\W*)(.*)(?:\W<\/div>)/m);
+    regex = new RegExp(
+      /(?:class="margintop0 lighttext">\W*)(.*)(?:\W<\/div>)/m
+    );
     resultArray = regex.exec(html);
     if (resultArray !== null) {
       [, episodeData.releaseDate] = resultArray;
@@ -123,7 +125,7 @@ module.exports = (url, callback) => {
     // not exposed
 
     if (Object.keys(errLog).length > 2) {
-      logger.alert(errLog);
+      logger.alert(JSON.stringify(errLog));
     } else {
       logger.debug(`Overcast successfully parsed ${url}`);
     }
