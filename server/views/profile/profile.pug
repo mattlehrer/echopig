@@ -6,7 +6,7 @@ block main-content
   div Posts: #{profiledUser.posts.length}
   div
     a(href=`/rss/${profiledUser.normalizedUsername}`) RSS feed of recommendations
-  if profiledUser.posts.length > 0
+  main
     .w-100.py-4
       if (profiledUser.normalizedUsername === currentUser.normalizedUsername)
         .row.m-0
@@ -15,41 +15,42 @@ block main-content
             a.text-muted(href='/saved') Saves
       else
         .h4 Posts
-      ul
-      each post in profiledUser.posts
-        if post.episode
-          li.media.border-top.py-3
-            if (post.episode !== null && post.episode.image !== undefined)
-              img.rounded.w-25(
-                src=post.episode.image
-                height="auto"
-              )
-            else if (post.episode !== null && post.episode.podcast !== null && post.episode.podcast.artworkUrl600)
-              img.rounded.w-25.h-100(
-                src=post.episode.podcast.artworkUrl600
-                height="auto"
-              )
-            else
-              div.w-25 
-            div.pl-3.media-body 
-              if (currentUser && profiledUser.id === currentUser.id)
-                div
-                  a.float-right.btn.btn-outline-danger.btn-sm(href=`/deletePost?p=${post.id}` title='Delete post')
-                    span(aria-hidden="true") &times;
-              if (post.episode && post.episode.podcast)
-                div
-                  a(href=`/p/i${post.episode.podcast.iTunesID}`) !{post.episode.podcast.title}
-                div.h5.mb-0
-                  a(href=`/e/${post.episode.id}`) !{post.episode.title}
-                if post.episode.releaseDate
-                  div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(post.episode.releaseDate)}
-                else
-                  .pb-2 
-              div.lead !{post.comment}
-              if post.episode.description
-                div.small !{post.episode.description}
-              div.small.font-weight-light.pt-2 🐽 #{relativeTime(post.updatedAt)} 
-                //- if post.episode.posts.length > 1
-                //-   | along with #{post.episode.posts.length-1} other
-                //-   if post.episode.posts.length > 2
-                //-     | s
+      if profiledUser.posts.length > 0
+        ul
+        each post in profiledUser.posts
+          if post.episode
+            li.media.border-top.py-3
+              if (post.episode !== null && post.episode.image !== undefined)
+                img.rounded.w-25(
+                  src=post.episode.image
+                  height="auto"
+                )
+              else if (post.episode !== null && post.episode.podcast !== null && post.episode.podcast.artworkUrl600)
+                img.rounded.w-25.h-100(
+                  src=post.episode.podcast.artworkUrl600
+                  height="auto"
+                )
+              else
+                div.w-25 
+              div.pl-3.media-body 
+                if (currentUser && profiledUser.id === currentUser.id)
+                  div
+                    a.float-right.btn.btn-outline-danger.btn-sm(href=`/deletePost?p=${post.id}` title='Delete post')
+                      span(aria-hidden="true") &times;
+                if (post.episode && post.episode.podcast)
+                  div
+                    a(href=`/p/i${post.episode.podcast.iTunesID}`) !{post.episode.podcast.title}
+                  div.h5.mb-0
+                    a(href=`/e/${post.episode.id}`) !{post.episode.title}
+                  if post.episode.releaseDate
+                    div.small.font-weight-lighter.pt-1.pb-2 Published #{relativeTime(post.episode.releaseDate)}
+                  else
+                    .pb-2 
+                div.lead !{post.comment}
+                if post.episode.description
+                  div.small !{post.episode.description}
+                div.small.font-weight-light.pt-2 🐽 #{relativeTime(post.updatedAt)} 
+                  //- if post.episode.posts.length > 1
+                  //-   | along with #{post.episode.posts.length-1} other
+                  //-   if post.episode.posts.length > 2
+                  //-     | s
