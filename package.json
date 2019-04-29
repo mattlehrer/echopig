@@ -40,6 +40,7 @@
     "podcast": "^1.1.0",
     "popper.js": "^1.15.0",
     "pug": "^2.0.3",
+    "puppeteer": "^1.15.0",
     "redirect-chain": "^1.0.1",
     "searchitunes": "^2.4.0",
     "serve-favicon": "^2.5.0",
