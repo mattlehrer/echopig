@@ -168,7 +168,7 @@ module.exports = {
         req.query.url,
         (err, episode) => {
           if (err) {
-            logger.error(err);
+            logger.error(err.message);
             req.flash(
               'errors',
               `We aren't sure what to do with this page. Do you have an episode share URL?`
