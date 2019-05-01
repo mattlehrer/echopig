@@ -2,12 +2,14 @@ const overcast = require('./overcast');
 const podcastsApp = require('./podcastsdotapp');
 const pocketcasts = require('./pocketcasts');
 const breaker = require('./breaker');
+const twitter = require('./twitter');
 const logger = require('../../utilities/logger')(__filename);
 
-module.exports = (url, callback) => {
-  // make sure we match the domain instead of another part of the URL
-  const domainRegex = /:\/\/(.[^/]+)/;
+const domainRegex = /:\/\/(.[^/]+)/;
+
+function handler(url, callback) {
   const domain = url.match(domainRegex)[1];
+
   if (domain.search('overcast.fm') !== -1) {
     overcast(url, (error, epData) => {
       if (error) {
@@ -68,6 +70,29 @@ module.exports = (url, callback) => {
     error.status = 501;
     callback(error, null);
   }
+}
+
+module.exports = (url, callback) => {
+  // make sure we match the domain instead of another part of the URL
+  const domain = url.match(domainRegex)[1];
+
+  if (domain.search('twitter.com') !== -1) {
+    twitter(url, (error, newUrl) => {
+      if (error) {
+        const err = error;
+        logger.error(error.message);
+        if (!err.status) {
+          err.status = 400;
+        }
+        callback(err, null);
+        return;
+      }
+      handler(newUrl, callback);
+    });
+    return;
+  }
+
+  handler(url, callback);
 };
 
 /*
