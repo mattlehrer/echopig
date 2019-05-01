@@ -27,7 +27,6 @@ block main-content
               if episode.releaseDate
                 div.small.font-weight-lighter.pt-1.pb-2 Published 
                   =relativeTime(episode.releaseDate)
-              div.small !{episode.description}
         .form-group
           label.control-label(for="comment") Comment
           input(id="comment" class="form-control" type="text" name="comment" placeholder="Comment on the episode (optional)")
