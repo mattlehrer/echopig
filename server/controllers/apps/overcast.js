@@ -66,7 +66,7 @@ module.exports = (url, callback) => {
     // }
 
     // find mp3 URL
-    regex = new RegExp(/(?:src=")(.*mp3)(?:.*" type="audio\/mpeg)/gm);
+    regex = new RegExp(/(?:src=")(.*m(p3|4a))(?:.*" type="audio\/mpeg)/gm);
     resultArray = regex.exec(html);
     if (resultArray === null) {
       errLog.mp3URL = null;

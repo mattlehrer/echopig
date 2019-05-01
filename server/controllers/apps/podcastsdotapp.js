@@ -34,18 +34,18 @@ module.exports = (url, callback) => {
     let resultArray = regex.exec(html);
     if (resultArray === null) {
       errLog.podcastiTunesID = null;
-      logger.alert(errLog);
+      logger.alert(JSON.stringify(errLog));
       const error = new Error('no podcast iTunesID found');
       return callback(error, null);
     }
     [, episodeData.podcastiTunesID] = resultArray;
 
     // find mp3 URL
-    regex = new RegExp(/(?:"assetUrl":")(http.*mp3.*?)(?:[?"])/gm);
+    regex = new RegExp(/(?:"assetUrl":")(http.*m(p3|4a).*?)(?:[?"])/gm);
     resultArray = regex.exec(html);
     if (resultArray === null) {
       errLog.mp3URL = null;
-      logger.alert(errLog);
+      logger.alert(JSON.stringify(errLog));
       const error = new Error('No mp3 URL found');
       return callback(error, null);
     }
@@ -88,7 +88,7 @@ module.exports = (url, callback) => {
     resultArray = regex.exec(html);
     if (resultArray === null) {
       errLog.title = null;
-      logger.alert(errLog);
+      logger.alert(JSON.stringify(errLog));
       const error = new Error('No episode title found');
       return callback(error, null);
     }
@@ -169,7 +169,7 @@ module.exports = (url, callback) => {
     }
 
     if (Object.keys(errLog).length > 2) {
-      logger.alert(errLog);
+      logger.alert(JSON.stringify(errLog));
     } else {
       logger.debug(`podcastsDotApp successfully parsed ${url}`);
     }

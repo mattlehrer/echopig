@@ -129,7 +129,7 @@ module.exports = (url, callback) => {
     // not exposed
 
     if (Object.keys(errLog).length > 2) {
-      logger.alert(errLog);
+      logger.alert(JSON.stringify(errLog));
     } else {
       logger.debug(`Breaker successfully parsed ${url}`);
     }

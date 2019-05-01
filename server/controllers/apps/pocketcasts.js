@@ -68,7 +68,7 @@ module.exports = (url, callback) => {
     // }
 
     // find mp3 URL
-    regex = new RegExp(/(?:id="audio_player" src=")(.*mp3)(?:[?"])/gm);
+    regex = new RegExp(/(?:id="audio_player" src=")(.*m(p3|4a))(?:[?"])/gm);
     resultArray = regex.exec(html);
     if (resultArray === null) {
       errLog.mp3URL = null;
@@ -133,7 +133,7 @@ module.exports = (url, callback) => {
     // not exposed
 
     if (Object.keys(errLog).length > 2) {
-      logger.alert(errLog);
+      logger.alert(JSON.stringify(errLog));
     } else {
       logger.debug(`Successfully parsed Pocket Casts: ${url}`);
     }
