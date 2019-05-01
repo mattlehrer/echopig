@@ -18,7 +18,7 @@
     "cheerio": "^1.0.0-rc.3",
     "connect-mongo": "^2.0.3",
     "csurf": "^1.10.0",
-    "email-templates": "^5.0.4",
+    "email-templates": "^5.0.5",
     "express": "^4.13.3",
     "express-flash": "0.0.2",
     "express-session": "^1.16.1",
@@ -28,7 +28,7 @@
     "jquery": "^3.4.0",
     "mailgun-js": "^0.22.0",
     "moment": "^2.24.0",
-    "mongoose": "^5.5.4",
+    "mongoose": "^5.5.5",
     "mongoose-autopopulate": "^0.9.1",
     "node-sass-middleware": "^0.11.0",
     "nodemailer": "^6.1.1",
@@ -40,6 +40,7 @@
     "podcast": "^1.1.0",
     "popper.js": "^1.15.0",
     "pug": "^2.0.3",
+    "puppeteer": "^1.15.0",
     "redirect-chain": "^1.0.1",
     "searchitunes": "^2.4.0",
     "serve-favicon": "^2.5.0",
@@ -60,7 +61,7 @@
     "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-security": "^1.4.0",
-    "nodemon": "^1.18.11",
+    "nodemon": "^1.19.0",
     "prettier": "^1.17.0"
   }
 }
