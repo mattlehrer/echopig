@@ -7,7 +7,7 @@ const flash = require('express-flash');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const mongoose = require('mongoose');
-const sass = require('node-sass-middleware');
+// const sass = require('node-sass-middleware');
 // const logger = require('../utilities/logger')(__filename);
 const relativeTime = require('../utilities/relativeTime');
 const auth = require('./auth');
@@ -51,13 +51,13 @@ module.exports = (app, config) => {
   app.set('view engine', 'pug');
   app.use(favicon(`${config.rootPath}/public/favicon.ico`));
   app.set('views', `${config.rootPath}/server/views`);
-  app.use(
-    sass({
-      src: `${config.rootPath}/public`,
-      dest: `${config.rootPath}/public`,
-      outputStyle: 'compressed'
-    })
-  );
+  // app.use(
+  //   sass({
+  //     src: `${config.rootPath}/public`,
+  //     dest: `${config.rootPath}/public`,
+  //     outputStyle: 'compressed'
+  //   })
+  // );
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(
