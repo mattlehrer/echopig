@@ -27,10 +27,9 @@ block main-content
       a(href=`mailto:${address}`)= address
       | 
       a(href='/vcard') (add to contacts)
-    .py-1 Add the 
+    .py-1 Add the bookmarklet to your web browser: 
       a(href=`javascript:(function(){q=location.href;void(open('https://echopig.com/post?url='+encodeURIComponent(q),'Post to Echopig','toolbar=no,scrollbars=yes,width=750,height=700'));})();
-`) bookmarklet
-      |  to your web browser
+`) Post to Echopig
     div.py-1
       | Share the 
       a(href=`/rss/${currentUser.username}`) RSS feed of your recommendations
