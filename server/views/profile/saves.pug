@@ -29,10 +29,9 @@ block main-content
               else
                 div.w-25 
               div.pl-3.media-body 
-                if (currentUser && currentUser.id === currentUser.id)
-                  div
-                    a.float-right.btn.btn-outline-danger.btn-sm(href=`/deleteSave?s=${save.id}` title='Delete save')
-                      span(aria-hidden="true") &times;
+                div
+                  a.float-right.btn.btn-outline-danger.btn-sm(href=`/deleteSave?s=${save.id}` title='Delete save')
+                    span(aria-hidden="true") &times;
                 if save.episode.podcast
                   div
                     a(href=`/p/i${save.episode.podcast.iTunesID}`) !{save.episode.podcast.title}
