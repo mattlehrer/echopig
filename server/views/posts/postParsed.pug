@@ -17,9 +17,10 @@ block main-content
         .form-group
           div.row
             div.col-4
-              img.float-right.rounded.w-100.h100(
-                src=episode.podcast.artworkUrl600
-                )
+              if episode.podcast && episode.podcast.artworkUrl600
+                img.float-right.rounded.w-100.h100(
+                  src=episode.podcast.artworkUrl600
+                  )
             div.col-8.px-1.pt-2
               .h4 !{episode.title}
               if episode.podcast.title
