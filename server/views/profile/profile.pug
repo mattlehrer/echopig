@@ -8,7 +8,7 @@ block main-content
     a(href=`/rss/${profiledUser.normalizedUsername}`) RSS feed of recommendations
   main
     .w-100.py-4
-      if (profiledUser.normalizedUsername === currentUser.normalizedUsername)
+      if (currentUser && profiledUser.normalizedUsername === currentUser.normalizedUsername)
         .row.m-0
           .h4.mr-3 Posts
           .h4
