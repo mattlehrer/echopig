@@ -122,31 +122,25 @@ module.exports = {
           }
           return callback(null, podcast);
         }
-        // eslint-disable-next-line no-shadow
-        return podcastsData.addNewPodcast(podcastData, (err, podcast) => {
-          if (err) return callback(err, null);
-          searchitunes({ entity: 'podcast', term: podcastData.title, limit: 1 })
-            .then(data => {
-              podcastsData.updatePodcast(
-                podcast.id,
-                data.results[0],
-                // eslint-disable-next-line no-shadow
-                (err, updatedPodcast) => {
-                  if (err) logger.error(err);
-                  else {
-                    logger.debug(
-                      `updated podcast id: ${updatedPodcast.id} 
-                      - title: ${updatedPodcast.title}`
-                    );
-                  }
-                }
-              );
-            })
-            .catch(error => {
-              logger.error(error);
+        return searchitunes({
+          entity: 'podcast',
+          term: podcastData.title,
+          limit: 1
+        })
+          .then(data => {
+            const newPodcast = data.results[0];
+            if (podcastData.appURL) newPodcast.appURLs = [podcastData.appURL];
+            // eslint-disable-next-line no-shadow
+            return podcastsData.addNewPodcast(newPodcast, (err, podcast) => {
+              if (err) return callback(err);
+              logger.info(`Added new podcast: ${JSON.stringify(podcast)}`);
+              return callback(null, podcast);
             });
-          return callback(null, podcast);
-        });
+          })
+          .catch(error => {
+            logger.error(error);
+            return callback(error);
+          });
       });
     } else {
       const error = new Error('Not enough info to create podcast');
