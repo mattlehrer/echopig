@@ -1,5 +1,7 @@
+/* eslint-disable security/detect-object-injection */
 const puppeteer = require('puppeteer');
 const redirectChain = require('redirect-chain')();
+const { handlerExists } = require('./index');
 const logger = require('../../utilities/logger')(__filename);
 
 module.exports = (url, callback) => {
@@ -41,7 +43,17 @@ module.exports = (url, callback) => {
         }
         // TODO: if we never matched to apple.com or overcast,
         // look for other apps we can handle
-        callback(null, destinationArray[0]);
+        let i = 0;
+        while (!handlerExists(destinationArray[i])) {
+          i += 1;
+        }
+        if (i < destinationArray.length) {
+          callback(null, destinationArray[i]);
+        } else {
+          logger.debug(`No handler for URLs in tweet ${url}`);
+          const err = new Error(`No handler for URLs in tweet ${url}`);
+          callback(err);
+        }
       } else if (urlsInTitle.length === 1) {
         logger.debug(urlsInTitle[0]);
         const destination = await redirectChain.destination(urlsInTitle[0]);

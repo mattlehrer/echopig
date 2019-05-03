@@ -72,27 +72,46 @@ function handler(url, callback) {
   }
 }
 
-module.exports = (url, callback) => {
-  // make sure we match the domain instead of another part of the URL
-  const domain = url.match(domainRegex)[1];
+module.exports = {
+  shareURLHandler(url, callback) {
+    // make sure we match the domain instead of another part of the URL
+    const domain = url.match(domainRegex)[1];
 
-  if (domain.search('twitter.com') !== -1) {
-    twitter(url, (error, newUrl) => {
-      if (error) {
-        const err = error;
-        logger.error(error.message);
-        if (!err.status) {
-          err.status = 400;
+    if (domain.search('twitter.com') !== -1) {
+      twitter(url, (error, newUrl) => {
+        if (error) {
+          const err = error;
+          logger.error(error.message);
+          if (!err.status) {
+            err.status = 400;
+          }
+          callback(err, null);
+          return;
         }
-        callback(err, null);
-        return;
-      }
-      handler(newUrl, callback);
-    });
-    return;
-  }
+        handler(newUrl, callback);
+      });
+      return;
+    }
 
-  handler(url, callback);
+    handler(url, callback);
+  },
+  handlerExists(url) {
+    const domain = url.match(domainRegex)[1];
+
+    if (domain.search('overcast.fm') !== -1) {
+      return true;
+    }
+    if (domain.search('apple.com') !== -1) {
+      return true;
+    }
+    if (domain.search('pca.st') !== -1) {
+      return true;
+    }
+    if (domain.search('breaker.audio') !== -1) {
+      return true;
+    }
+    return false;
+  }
 };
 
 /*
