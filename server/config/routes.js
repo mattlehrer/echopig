@@ -12,7 +12,7 @@ function ensureAuthenticated(req, res, next) {
     req.flash('errors', 'Please log in or register for an account.');
     logger.debug(`Setting redirectTo: ${req.url}`);
     req.session.redirectTo = req.url;
-    res.redirect(req.get('Referrer') || '/login');
+    res.redirect('/login');
   }
 }
 
@@ -218,7 +218,10 @@ module.exports = app => {
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
     // set locals, only providing error in development
-    res.locals.message = err.message;
+    res.locals.message =
+      req.app.get('env') === 'development'
+        ? err.message
+        : 'Something went wrong. We have logged the error and will try to do better. Please reach out to us at contact@echopig.com with any concerns.';
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
     // render the error page
