@@ -54,7 +54,7 @@ module.exports = {
             if (updated) {
               // eslint-disable-next-line no-shadow
               podcast.save(err => {
-                if (err) logger.error(err);
+                if (err) logger.error(JSON.stringify(err));
               });
             }
             callback(null, podcast);
@@ -74,7 +74,7 @@ module.exports = {
               });
             })
             .catch(error => {
-              logger.error(error);
+              logger.error(JSON.stringify(error));
               return callback(error);
             });
         }
@@ -82,7 +82,7 @@ module.exports = {
     } else if (podcastData.title) {
       podcastsData.findPodcastByTitle(podcastData.title, (err, podcast) => {
         if (err) {
-          logger.error(err);
+          logger.error(JSON.stringify(err));
           return callback(err, null);
         }
         if (podcast !== null) {
@@ -117,7 +117,7 @@ module.exports = {
           if (updated) {
             // eslint-disable-next-line no-shadow
             podcast.save(err => {
-              if (err) logger.error(err);
+              if (err) logger.error(JSON.stringify(err));
             });
           }
           return callback(null, podcast);
@@ -129,6 +129,12 @@ module.exports = {
         })
           .then(data => {
             const newPodcast = data.results[0];
+            if (newPodcast.title !== podcastData.title)
+              logger.alert(
+                `Created podcast without exact match on title; from share URL: ${
+                  podcastData.title
+                } and from iTunes: ${newPodcast.title}`
+              );
             if (podcastData.appURL) newPodcast.appURLs = [podcastData.appURL];
             // eslint-disable-next-line no-shadow
             return podcastsData.addNewPodcast(newPodcast, (err, podcast) => {
@@ -138,13 +144,13 @@ module.exports = {
             });
           })
           .catch(error => {
-            logger.error(error);
+            logger.error(JSON.stringify(error));
             return callback(error);
           });
       });
     } else {
       const error = new Error('Not enough info to create podcast');
-      callback(error, null);
+      callback(error);
     }
   },
   getPodcastByITunesID(req, res, next) {
@@ -158,7 +164,7 @@ module.exports = {
     }
     podcastsData.findPodcastByITunesID(req.params.iTunesID, (err, podcast) => {
       if (err) {
-        logger.error(err);
+        logger.error(JSON.stringify(err));
         return next(err);
       }
       if (podcast === null) {
@@ -173,7 +179,7 @@ module.exports = {
         // eslint-disable-next-line no-shadow
         (err, episodes) => {
           if (err) {
-            logger.error(err);
+            logger.error(JSON.stringify(err));
             return next(err);
           }
           return res.render('podcasts/podcast', {
@@ -213,7 +219,7 @@ module.exports = {
         });
       })
       .catch(error => {
-        logger.error(error);
+        logger.error(JSON.stringify(error));
         next(error);
       });
   },

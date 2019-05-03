@@ -6,7 +6,7 @@ module.exports = {
   localLogin(req, res, next) {
     const auth = passport.authenticate('local', (err, user) => {
       if (err) {
-        logger.error(`localLogin auth error: ${err}`);
+        logger.error(`localLogin auth error: ${JSON.stringify(err)}`);
         if (err.message === 'data and hash arguments required') {
           req.flash(
             'errors',
@@ -36,7 +36,9 @@ module.exports = {
       req.logIn(user, err => {
         if (err) {
           logger.error(
-            `req.logIn failure on username: ${user.username} with err: ${err}`
+            `req.logIn failure on username: ${
+              user.username
+            } with err: ${JSON.stringify(err)}`
           );
           next(err);
           return;

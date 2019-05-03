@@ -21,7 +21,9 @@ module.exports = () => {
           { normalizedUsername: username.toLowerCase() },
           (err, user) => {
             if (err) {
-              logger.error(`localStrategy find by username error: ${err}`);
+              logger.error(
+                `localStrategy find by username error: ${JSON.stringify(err)}`
+              );
               return done(err);
             }
             if (!user) {
@@ -67,7 +69,7 @@ module.exports = () => {
               logger.error(
                 `TwitterStrategy find by twitter error for user: ${
                   req.user.username
-                }: ${err}`
+                }: ${JSON.stringify(err)}`
               );
               return done(err);
             }
@@ -88,7 +90,9 @@ module.exports = () => {
               // eslint-disable-next-line no-shadow
               User.findById(req.user.id, (err, user) => {
                 if (err) {
-                  logger.error(`TwitterStrategy findById error: ${err}`);
+                  logger.error(
+                    `TwitterStrategy findById error: ${JSON.stringify(err)}`
+                  );
                   return done(err);
                 }
                 user.set('twitter', profile.id);
@@ -105,7 +109,7 @@ module.exports = () => {
                     logger.error(
                       `TwitterStrategy user.save error for user: ${
                         user.username
-                      }: with: ${err}`
+                      }: with: ${JSON.stringify(err)}`
                     );
                     return done(err);
                   }
@@ -120,7 +124,9 @@ module.exports = () => {
           User.findOne({ twitter: profile.id }, (err, existingUser) => {
             if (err) {
               logger.error(
-                `TwitterStrategy find by twitter error for new user: ${err}`
+                `TwitterStrategy find by twitter error for new user: ${JSON.stringify(
+                  err
+                )}`
               );
               return done(err);
             }
@@ -148,7 +154,9 @@ module.exports = () => {
                 (err, existingEmail) => {
                   if (err) {
                     logger.error(
-                      `TwitterStrategy find email error for user: ${newUser} with: ${err}`
+                      `TwitterStrategy find email error for user: ${newUser} with: ${JSON.stringify(
+                        err
+                      )}`
                     );
                     return done(err);
                   }
@@ -170,14 +178,18 @@ module.exports = () => {
                     existingEmail.save((err, user) => {
                       if (err) {
                         logger.error(
-                          `TwitterStrategy found existing email error on update for user: ${existingEmail} with: ${err}`
+                          `TwitterStrategy found existing email error on update for user: ${existingEmail} with: ${JSON.stringify(
+                            err
+                          )}`
                         );
                         // return done(err);
                         // error on save but return the right user anyway
                         return done(null, user);
                       }
                       logger.info(
-                        `Updated user on Twitter login matching existing email: ${user}`
+                        `Updated user on Twitter login matching existing email: ${JSON.stringify(
+                          user
+                        )}`
                       );
                       return done(null, user);
                     });
@@ -187,11 +199,15 @@ module.exports = () => {
                     return createUser(newUser, (err, user) => {
                       if (err) {
                         logger.error(
-                          `TwitterStrategy createUser error for user: ${newUser} with: ${err}`
+                          `TwitterStrategy createUser error for user: ${newUser} with: ${JSON.stringify(
+                            err
+                          )}`
                         );
                         return done(err);
                       }
-                      logger.info(`Created user on Twitter login: ${user}`);
+                      logger.info(
+                        `Created user on Twitter login: ${JSON.stringify(user)}`
+                      );
                       return done(null, user);
                     });
                   }
@@ -202,11 +218,15 @@ module.exports = () => {
               createUser(newUser, (err, user) => {
                 if (err) {
                   logger.error(
-                    `TwitterStrategy createUser error for user: ${newUser} with: ${err}`
+                    `TwitterStrategy createUser error for user: ${newUser} with: ${JSON.stringify(
+                      err
+                    )}`
                   );
                   return done(err);
                 }
-                logger.info(`Created user on Twitter login: ${user}`);
+                logger.info(
+                  `Created user on Twitter login: ${JSON.stringify(user)}`
+                );
                 return done(null, user);
               });
             }
@@ -232,7 +252,7 @@ module.exports = () => {
               logger.error(
                 `FacebookStrategy find by facebook error for user: ${
                   req.user.username
-                }: ${err}`
+                }: ${JSON.stringify(err)}`
               );
               return done(err);
             }
@@ -253,7 +273,9 @@ module.exports = () => {
               // eslint-disable-next-line no-shadow
               User.findById(req.user.id, (err, user) => {
                 if (err) {
-                  logger.error(`FacebookStrategy findById error: ${err}`);
+                  logger.error(
+                    `FacebookStrategy findById error: ${JSON.stringify(err)}`
+                  );
                   return done(err);
                 }
                 user.set('facebook', profile.id);
@@ -280,7 +302,7 @@ module.exports = () => {
                     logger.error(
                       `FacebookStrategy user.save error for user: ${
                         user.username
-                      }: with: ${err}`
+                      }: with: ${JSON.stringify(err)}`
                     );
                     return done(err);
                   }
@@ -295,7 +317,9 @@ module.exports = () => {
           User.findOne({ facebook: profile.id }, (err, existingUser) => {
             if (err) {
               logger.error(
-                `FacebookStrategy find by facebook error for new user: ${err}`
+                `FacebookStrategy find by facebook error for new user: ${JSON.stringify(
+                  err
+                )}`
               );
               return done(err);
             }
@@ -327,7 +351,9 @@ module.exports = () => {
                 (err, existingEmail) => {
                   if (err) {
                     logger.error(
-                      `FacebookStrategy find email error for user: ${newUser} with: ${err}`
+                      `FacebookStrategy find email error for user: ${newUser} with: ${JSON.stringify(
+                        err
+                      )}`
                     );
                     return done(err);
                   }
@@ -352,14 +378,18 @@ module.exports = () => {
                     existingEmail.save((err, user) => {
                       if (err) {
                         logger.error(
-                          `FacebookStrategy found existing email error on update for user: ${existingEmail} with: ${err}`
+                          `FacebookStrategy found existing email error on update for user: ${existingEmail} with: ${JSON.stringify(
+                            err
+                          )}`
                         );
                         // return done(err);
                         // error on save but return the right user anyway
                         return done(null, user);
                       }
                       logger.info(
-                        `updated user on facebook login matching existing email: ${user}`
+                        `updated user on facebook login matching existing email: ${JSON.stringify(
+                          user
+                        )}`
                       );
                       return done(null, user);
                     });
@@ -369,11 +399,17 @@ module.exports = () => {
                     return createUser(newUser, (err, user) => {
                       if (err) {
                         logger.error(
-                          `FacebookStrategy createUser error for user: ${newUser} with: ${err}`
+                          `FacebookStrategy createUser error for user: ${newUser} with: ${JSON.stringify(
+                            err
+                          )}`
                         );
                         return done(err);
                       }
-                      logger.info(`created user on facebook login: ${user}`);
+                      logger.info(
+                        `created user on facebook login: ${JSON.stringify(
+                          user
+                        )}`
+                      );
                       return done(null, user);
                     });
                   }
@@ -384,11 +420,15 @@ module.exports = () => {
               createUser(newUser, (err, user) => {
                 if (err) {
                   logger.error(
-                    `FacebookStrategy createUser error for user: ${newUser} with: ${err}`
+                    `FacebookStrategy createUser error for user: ${newUser} with: ${JSON.stringify(
+                      err
+                    )}`
                   );
                   return done(err);
                 }
-                logger.info(`created user on facebook login: ${user}`);
+                logger.info(
+                  `created user on facebook login: ${JSON.stringify(user)}`
+                );
                 return done(null, user);
               });
             }
@@ -408,7 +448,7 @@ module.exports = () => {
   passport.deserializeUser((id, done) => {
     User.findOne({ _id: id }).exec((err, user) => {
       if (err) {
-        logger.error(`Error loading user: ${err}`);
+        logger.error(`Error loading user: ${JSON.stringify(err)}`);
         return;
       }
 

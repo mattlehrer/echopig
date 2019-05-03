@@ -65,7 +65,7 @@ module.exports = (url, callback) => {
       }
     })
     .catch(err => {
-      logger.error(err.message);
+      logger.error(JSON.stringify(err));
       callback(err);
     });
 };

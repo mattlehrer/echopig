@@ -18,8 +18,8 @@ function createPost(postData, cb) {
     newPost.shareURL,
     (err, episode) => {
       if (err) {
-        logger.error(err);
-        cb(err, null);
+        logger.error(JSON.stringify(err));
+        cb(err);
         return;
       }
       if (!episode) {
@@ -27,7 +27,7 @@ function createPost(postData, cb) {
           'We encountered an error on this episode. We have logged the error and will try to do better.'
         );
         logger.error('failed to return an episode on createPost');
-        cb(err, null);
+        cb(err);
         return;
       }
       // check if user has already posted this episode
@@ -80,7 +80,9 @@ function createPost(postData, cb) {
           usersController.addPostByUser(post, newPost.byUser, (err, user) => {
             if (err) {
               logger.alert(
-                `failed to add post ${post} to user ${user}'s posts array`
+                `failed to add post ${JSON.stringify(
+                  post
+                )} to user ${JSON.stringify(user)}'s posts array`
               );
             }
           });
@@ -88,7 +90,9 @@ function createPost(postData, cb) {
           episodesController.addPostOfEpisode(post, episode, err => {
             if (err) {
               logger.alert(
-                `failed to add post ${post} to episode ${episode}'s posts array`
+                `failed to add post ${JSON.stringify(
+                  post
+                )} to episode ${JSON.stringify(episode)}'s posts array`
               );
             }
           });
@@ -105,7 +109,7 @@ function createSave(saveData, cb) {
     newSave.shareURL,
     (err, episode) => {
       if (err) {
-        logger.error(err);
+        logger.error(JSON.stringify(err));
         cb(err, null);
         return;
       }
@@ -132,7 +136,9 @@ function createSave(saveData, cb) {
         usersController.addSaveByUser(save, newSave.byUser, (err, user) => {
           if (err) {
             logger.alert(
-              `failed to add save ${save} to user ${user}'s saves array`
+              `failed to add save ${JSON.stringify(
+                save
+              )} to user ${JSON.stringify(user)}'s saves array`
             );
           }
         });
@@ -140,7 +146,9 @@ function createSave(saveData, cb) {
         episodesController.addSaveOfEpisode(save, episode, err => {
           if (err) {
             logger.alert(
-              `failed to add post ${save} to episode ${episode}'s saves array`
+              `failed to add post ${JSON.stringify(
+                save
+              )} to episode ${JSON.stringify(episode)}'s saves array`
             );
           }
         });
@@ -168,7 +176,7 @@ module.exports = {
         req.query.url,
         (err, episode) => {
           if (err) {
-            logger.error(err.message);
+            logger.error(JSON.stringify(err));
             req.flash(
               'errors',
               `We aren't sure what to do with this page. Do you have an episode share URL?`
@@ -228,7 +236,7 @@ module.exports = {
         logger.error(
           `findUserByIdWithPosts error while adding post via web for user: ${
             req.user.username
-          } with error: ${err}`
+          } with error: ${JSON.stringify(err)}`
         );
         next(err);
         return;
@@ -239,7 +247,7 @@ module.exports = {
             logger.error(
               `Error creating post via web for user: ${
                 req.user.username
-              } with error: ${err}`
+              } with error: ${JSON.stringify(err)}`
             );
             if (err.status === 409) {
               req.flash('errors', err.message);
@@ -279,7 +287,7 @@ module.exports = {
             logger.error(
               `Error creating post via web for user: ${
                 req.user.username
-              } with error: ${err}`
+              } with error: ${JSON.stringify(err)}`
             );
             if (err.status === 409) {
               req.flash('errors', err.message);
@@ -366,7 +374,9 @@ module.exports = {
     usersController.findUserByTag(tag, (err, postingUser) => {
       if (err) {
         logger.error(
-          `findUserByTag error while adding post via mail for tag: ${tag} with error: ${err}`
+          `findUserByTag error while adding post via mail for tag: ${tag} with error: ${JSON.stringify(
+            err
+          )}`
         );
         next(err);
         return;
@@ -394,7 +404,7 @@ module.exports = {
           logger.error(
             `Error creating post via mail for user: ${
               postingUser.username
-            } with error: ${err}`
+            } with error: ${JSON.stringify(err)}`
           );
           // next(err);
           res.status(406).send('Something went wrong');
@@ -407,7 +417,7 @@ module.exports = {
           { user: postingUser, post },
           // eslint-disable-next-line no-shadow
           err => {
-            if (err) logger.error(err);
+            if (err) logger.error(JSON.stringify(err));
           }
         );
         res.status(200).send();
@@ -432,7 +442,7 @@ module.exports = {
         logger.error(
           `Error deleting post for user: ${
             req.user.username
-          } with error: ${err}`
+          } with error: ${JSON.stringify(err)}`
         );
         next(err);
         return;
@@ -442,7 +452,9 @@ module.exports = {
       episodesController.removePostOfEpisode(postId, (err, episode) => {
         if (err) {
           logger.error(
-            `failed to delete post ${postId} from episode ${episode}'s posts array`
+            `failed to delete post ${postId} from episode ${JSON.stringify(
+              episode
+            )}'s posts array`
           );
         }
       });
@@ -450,7 +462,9 @@ module.exports = {
       usersController.removePostByUser(postId, req.user, (err, user) => {
         if (err) {
           logger.error(
-            `failed to delete post ${postId} from user ${user}'s posts array`
+            `failed to delete post ${postId} from user ${JSON.stringify(
+              user
+            )}'s posts array`
           );
         }
       });
@@ -472,7 +486,7 @@ module.exports = {
         logger.error(
           `Error deleting save for user: ${
             req.user.username
-          } with error: ${err}`
+          } with error: ${JSON.stringify(err)}`
         );
         next(err);
         return;
@@ -482,7 +496,9 @@ module.exports = {
       episodesController.removeSaveOfEpisode(saveId, (err, episode) => {
         if (err) {
           logger.error(
-            `failed to delete save ${saveId} from episode ${episode}'s saves array`
+            `failed to delete save ${saveId} from episode ${JSON.stringify(
+              episode
+            )}'s saves array`
           );
         }
       });
@@ -490,7 +506,9 @@ module.exports = {
       usersController.removeSaveByUser(saveId, req.user, (err, user) => {
         if (err) {
           logger.error(
-            `failed to delete post ${saveId} from user ${user}'s posts array`
+            `failed to delete post ${saveId} from user ${JSON.stringify(
+              user
+            )}'s posts array`
           );
         }
       });
@@ -506,7 +524,7 @@ module.exports = {
       maxEpisodes,
       (err, episodes) => {
         if (err) {
-          logger.error(err);
+          logger.error(JSON.stringify(err));
           next(err);
           return;
         }
@@ -523,7 +541,7 @@ module.exports = {
       maxEpisodes,
       (err, episodes) => {
         if (err) {
-          logger.error(err);
+          logger.error(JSON.stringify(err));
           callback(err);
           return;
         }
@@ -537,7 +555,7 @@ module.exports = {
       maxPodcasts,
       (err, podcasts) => {
         if (err) {
-          logger.error(err);
+          logger.error(JSON.stringify(err));
           callback(err);
           return;
         }
@@ -563,7 +581,7 @@ module.exports = {
       maxEpisodes,
       (err, episodes) => {
         if (err) {
-          logger.error(err);
+          logger.error(JSON.stringify(err));
           next(err);
           return;
         }

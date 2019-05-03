@@ -21,19 +21,12 @@ module.exports = {
       req.params.username.toLowerCase(),
       (err, profiledUser) => {
         if (err) {
-          logger.error(err);
+          logger.error(JSON.stringify(err));
           next(err);
           return;
         }
         if (!profiledUser) {
-          if (req.user) {
-            req.flash('errors', "We can't find a user with that name.");
-          } else {
-            req.flash(
-              'errors',
-              "We can't find a user with that name. Do you want to create it?"
-            );
-          }
+          // send to 404
           next();
           return;
         }
@@ -47,7 +40,7 @@ module.exports = {
   getSaves(req, res, next) {
     usersData.findUserByIdWithSaves(req.user.id, (err, userWithSaves) => {
       if (err) {
-        logger.error(err);
+        logger.error(JSON.stringify(err));
         next(err);
         return;
       }

@@ -20,7 +20,7 @@ module.exports = config => {
 
   db.once('open', err => {
     if (err) {
-      logger.alert(`Database could not be opened: ${err}`);
+      logger.alert(`Database could not be opened: ${JSON.stringify(err)}`);
       return;
     }
     // tell pm2 server is ready to take requests
@@ -29,7 +29,7 @@ module.exports = config => {
   });
 
   db.on('error', err => {
-    logger.error(`Database error: ${err}`);
+    logger.error(`Database error: ${JSON.stringify(err)}`);
   });
 
   UserModel.init();
