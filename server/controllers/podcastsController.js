@@ -129,11 +129,11 @@ module.exports = {
         })
           .then(data => {
             const newPodcast = data.results[0];
-            if (newPodcast.title !== podcastData.title)
+            if (newPodcast.collectionName !== podcastData.title)
               logger.alert(
                 `Created podcast without exact match on title; from share URL: ${
                   podcastData.title
-                } and from iTunes: ${newPodcast.title}`
+                } and from iTunes: ${newPodcast.collectionName}`
               );
             if (podcastData.appURL) newPodcast.appURLs = [podcastData.appURL];
             // eslint-disable-next-line no-shadow
