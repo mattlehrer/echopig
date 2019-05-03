@@ -3,7 +3,7 @@
 const logger = require('../utilities/logger')(__filename);
 const episodesData = require('../data/episodesData');
 const podcastsController = require('./podcastsController');
-const shareURLHandler = require('./apps');
+const { shareURLHandler } = require('./apps');
 
 module.exports = {
   findOrCreateEpisodeWithShareURL(shareURL, callback) {
@@ -50,6 +50,9 @@ module.exports = {
                   newEpisodeData,
                   (err, newEpisode) => {
                     if (err) return callback(err, null);
+                    logger.info(
+                      `Added new episode: ${JSON.stringify(newEpisode)}`
+                    );
                     return callback(null, newEpisode);
                   }
                 );
