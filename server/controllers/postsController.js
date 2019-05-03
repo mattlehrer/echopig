@@ -50,7 +50,7 @@ function createPost(postData, cb) {
             return;
           }
           // update post time to now
-          logger.debug(`updating post ${post.id}`);
+          logger.debug(`updating post ${JSON.stringify(post)}`);
           postsData.updatePost(
             post,
             { $currentDate: { updatedAt: true } },
