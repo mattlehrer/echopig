@@ -22,7 +22,10 @@ module.exports = () => {
           (err, user) => {
             if (err) {
               logger.error(
-                `localStrategy find by username error: ${JSON.stringify(err)}`
+                `localStrategy find by username error: ${JSON.stringify(
+                  err,
+                  Object.getOwnPropertyNames(err)
+                )}`
               );
               return done(err);
             }
@@ -69,7 +72,7 @@ module.exports = () => {
               logger.error(
                 `TwitterStrategy find by twitter error for user: ${
                   req.user.username
-                }: ${JSON.stringify(err)}`
+                }: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}`
               );
               return done(err);
             }
@@ -91,7 +94,10 @@ module.exports = () => {
               User.findById(req.user.id, (err, user) => {
                 if (err) {
                   logger.error(
-                    `TwitterStrategy findById error: ${JSON.stringify(err)}`
+                    `TwitterStrategy findById error: ${JSON.stringify(
+                      err,
+                      Object.getOwnPropertyNames(err)
+                    )}`
                   );
                   return done(err);
                 }
@@ -109,7 +115,10 @@ module.exports = () => {
                     logger.error(
                       `TwitterStrategy user.save error for user: ${
                         user.username
-                      }: with: ${JSON.stringify(err)}`
+                      }: with: ${JSON.stringify(
+                        err,
+                        Object.getOwnPropertyNames(err)
+                      )}`
                     );
                     return done(err);
                   }
@@ -252,7 +261,7 @@ module.exports = () => {
               logger.error(
                 `FacebookStrategy find by facebook error for user: ${
                   req.user.username
-                }: ${JSON.stringify(err)}`
+                }: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}`
               );
               return done(err);
             }
@@ -274,7 +283,10 @@ module.exports = () => {
               User.findById(req.user.id, (err, user) => {
                 if (err) {
                   logger.error(
-                    `FacebookStrategy findById error: ${JSON.stringify(err)}`
+                    `FacebookStrategy findById error: ${JSON.stringify(
+                      err,
+                      Object.getOwnPropertyNames(err)
+                    )}`
                   );
                   return done(err);
                 }
@@ -302,7 +314,10 @@ module.exports = () => {
                     logger.error(
                       `FacebookStrategy user.save error for user: ${
                         user.username
-                      }: with: ${JSON.stringify(err)}`
+                      }: with: ${JSON.stringify(
+                        err,
+                        Object.getOwnPropertyNames(err)
+                      )}`
                     );
                     return done(err);
                   }
@@ -448,7 +463,12 @@ module.exports = () => {
   passport.deserializeUser((id, done) => {
     User.findOne({ _id: id }).exec((err, user) => {
       if (err) {
-        logger.error(`Error loading user: ${JSON.stringify(err)}`);
+        logger.error(
+          `Error loading user: ${JSON.stringify(
+            err,
+            Object.getOwnPropertyNames(err)
+          )}`
+        );
         return;
       }
 

@@ -54,7 +54,10 @@ module.exports = {
             if (updated) {
               // eslint-disable-next-line no-shadow
               podcast.save(err => {
-                if (err) logger.error(JSON.stringify(err));
+                if (err)
+                  logger.error(
+                    JSON.stringify(err, Object.getOwnPropertyNames(err))
+                  );
               });
             }
             callback(null, podcast);
@@ -73,16 +76,19 @@ module.exports = {
                 return callback(null, podcast);
               });
             })
-            .catch(error => {
-              logger.error(JSON.stringify(error));
-              return callback(error);
+            // eslint-disable-next-line no-shadow
+            .catch(err => {
+              logger.error(
+                JSON.stringify(err, Object.getOwnPropertyNames(err))
+              );
+              return callback(err);
             });
         }
       );
     } else if (podcastData.title) {
       podcastsData.findPodcastByTitle(podcastData.title, (err, podcast) => {
         if (err) {
-          logger.error(JSON.stringify(err));
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
           return callback(err, null);
         }
         if (podcast !== null) {
@@ -117,36 +123,44 @@ module.exports = {
           if (updated) {
             // eslint-disable-next-line no-shadow
             podcast.save(err => {
-              if (err) logger.error(JSON.stringify(err));
+              if (err)
+                logger.error(
+                  JSON.stringify(err, Object.getOwnPropertyNames(err))
+                );
             });
           }
           return callback(null, podcast);
         }
-        return searchitunes({
-          entity: 'podcast',
-          term: podcastData.title,
-          limit: 1
-        })
-          .then(data => {
-            const newPodcast = data.results[0];
-            if (newPodcast.collectionName !== podcastData.title)
-              logger.alert(
-                `Created podcast without exact match on title; from share URL: ${
-                  podcastData.title
-                } and from iTunes: ${newPodcast.collectionName}`
-              );
-            if (podcastData.appURL) newPodcast.appURLs = [podcastData.appURL];
-            // eslint-disable-next-line no-shadow
-            return podcastsData.addNewPodcast(newPodcast, (err, podcast) => {
-              if (err) return callback(err);
-              logger.info(`Added new podcast: ${JSON.stringify(podcast)}`);
-              return callback(null, podcast);
-            });
+        return (
+          searchitunes({
+            entity: 'podcast',
+            term: podcastData.title,
+            limit: 1
           })
-          .catch(error => {
-            logger.error(JSON.stringify(error));
-            return callback(error);
-          });
+            .then(data => {
+              const newPodcast = data.results[0];
+              if (newPodcast.collectionName !== podcastData.title)
+                logger.alert(
+                  `Created podcast without exact match on title; from share URL: ${
+                    podcastData.title
+                  } and from iTunes: ${newPodcast.collectionName}`
+                );
+              if (podcastData.appURL) newPodcast.appURLs = [podcastData.appURL];
+              // eslint-disable-next-line no-shadow
+              return podcastsData.addNewPodcast(newPodcast, (err, podcast) => {
+                if (err) return callback(err);
+                logger.info(`Added new podcast: ${JSON.stringify(podcast)}`);
+                return callback(null, podcast);
+              });
+            })
+            // eslint-disable-next-line no-shadow
+            .catch(err => {
+              logger.error(
+                JSON.stringify(err, Object.getOwnPropertyNames(err))
+              );
+              return callback(err);
+            })
+        );
       });
     } else {
       const error = new Error('Not enough info to create podcast');
@@ -164,7 +178,7 @@ module.exports = {
     }
     podcastsData.findPodcastByITunesID(req.params.iTunesID, (err, podcast) => {
       if (err) {
-        logger.error(JSON.stringify(err));
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         return next(err);
       }
       if (podcast === null) {
@@ -179,7 +193,7 @@ module.exports = {
         // eslint-disable-next-line no-shadow
         (err, episodes) => {
           if (err) {
-            logger.error(JSON.stringify(err));
+            logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
             return next(err);
           }
           return res.render('podcasts/podcast', {
@@ -218,9 +232,9 @@ module.exports = {
           res.redirect(req.get('Referrer') || '/');
         });
       })
-      .catch(error => {
-        logger.error(JSON.stringify(error));
-        next(error);
+      .catch(err => {
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
+        next(err);
       });
   },
   deletePodcast() {},

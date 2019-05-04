@@ -27,7 +27,7 @@ module.exports = {
     // };
     mailgun.messages().send(data, (err, body) => {
       if (err) {
-        logger.error(JSON.stringify(err));
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         callback(err);
         return;
       }
@@ -47,7 +47,7 @@ module.exports = {
 
     list.members().create(member, (err, data) => {
       if (err) {
-        logger.error(JSON.stringify(err));
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         callback(err);
         return;
       }
@@ -91,7 +91,7 @@ module.exports = {
         callback(null, res);
       })
       .catch(err => {
-        logger.error(JSON.stringify(err));
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         callback(err);
       });
   }

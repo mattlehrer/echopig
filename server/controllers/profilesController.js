@@ -21,7 +21,7 @@ module.exports = {
       req.params.username.toLowerCase(),
       (err, profiledUser) => {
         if (err) {
-          logger.error(JSON.stringify(err));
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
           next(err);
           return;
         }
@@ -40,7 +40,7 @@ module.exports = {
   getSaves(req, res, next) {
     usersData.findUserByIdWithSaves(req.user.id, (err, userWithSaves) => {
       if (err) {
-        logger.error(JSON.stringify(err));
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         next(err);
         return;
       }

@@ -25,7 +25,7 @@ const signals = {
 const shutdown = (signal, value) => {
   server.close(err => {
     if (err) {
-      logger.error(JSON.stringify(err));
+      logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
       process.exit(1);
     }
     logger.notice(`Server stopped by ${signal} with value ${value}`);

@@ -65,7 +65,7 @@ module.exports = (url, callback) => {
       }
     })
     .catch(err => {
-      logger.error(JSON.stringify(err));
+      logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
       callback(err);
     });
 };

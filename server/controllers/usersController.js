@@ -21,7 +21,7 @@ function sendToken(user, callback) {
     // eslint-disable-next-line no-shadow
     (err, token) => {
       if (err) {
-        logger.error(JSON.stringify(err));
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         callback(err);
         return;
       }
@@ -34,7 +34,7 @@ function sendToken(user, callback) {
         // eslint-disable-next-line no-shadow
         err => {
           if (err) {
-            logger.error(JSON.stringify(err));
+            logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
             callback(err);
           }
           callback(null, user);
@@ -61,7 +61,7 @@ function createNewUser(userData, callback) {
   newUserData.saveForLaterId = uuid();
   usersData.createUser(newUserData, (err, user) => {
     if (err) {
-      logger.error(JSON.stringify(err));
+      logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
       callback(err);
       return;
     }
@@ -104,7 +104,7 @@ module.exports = {
       newUserData.username,
       (err, existingUsernamelUser) => {
         if (err) {
-          logger.error(JSON.stringify(err));
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
           next(err);
           return;
         }
@@ -118,7 +118,9 @@ module.exports = {
           // eslint-disable-next-line no-shadow
           (err, existingEmailUser) => {
             if (err) {
-              logger.error(JSON.stringify(err));
+              logger.error(
+                JSON.stringify(err, Object.getOwnPropertyNames(err))
+              );
               next(err);
               return;
             }
@@ -133,7 +135,9 @@ module.exports = {
             // eslint-disable-next-line no-shadow
             createNewUser(newUserData, (err, user) => {
               if (err) {
-                logger.error(JSON.stringify(err));
+                logger.error(
+                  JSON.stringify(err, Object.getOwnPropertyNames(err))
+                );
                 next(err);
                 return;
               }
@@ -163,7 +167,7 @@ module.exports = {
     // check if token matches
     tokenData.findToken(req.params.token, (err, token) => {
       if (err) {
-        logger.error(JSON.stringify(err));
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         next(err);
         return;
       }
@@ -177,13 +181,16 @@ module.exports = {
       // eslint-disable-next-line no-shadow
       usersData.findUserByIdWithPosts(token._userId, (err, user) => {
         if (err) {
-          logger.error(JSON.stringify(err));
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
           next(err);
           return;
         }
         if (!user) {
           logger.error(
-            `no user for token: ${token} with error: ${JSON.stringify(err)}`
+            `no user for token: ${token} with error: ${JSON.stringify(
+              err,
+              Object.getOwnPropertyNames(err)
+            )}`
           );
           req.flash('errors', 'We were unable to find a user for this token.');
           res.redirect('/register');
@@ -194,7 +201,9 @@ module.exports = {
           // eslint-disable-next-line no-shadow
           req.logIn(user, err => {
             if (err) {
-              logger.error(JSON.stringify(err));
+              logger.error(
+                JSON.stringify(err, Object.getOwnPropertyNames(err))
+              );
               return res.redirect('/login');
             }
             return res.redirect('/settings');
@@ -206,14 +215,17 @@ module.exports = {
         // eslint-disable-next-line no-shadow
         user.save(err => {
           if (err) {
-            logger.error(JSON.stringify(err));
+            logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
             next(err);
             return;
           }
           // add new user to mailing list
           // eslint-disable-next-line no-shadow
           mail.addToList(user, 'users', err => {
-            if (err) logger.error(JSON.stringify(err));
+            if (err)
+              logger.error(
+                JSON.stringify(err, Object.getOwnPropertyNames(err))
+              );
           });
           // send welcome email
           mail.sendWithTemplate(
@@ -223,14 +235,19 @@ module.exports = {
             { user }, // variables for mail template
             // eslint-disable-next-line no-shadow
             err => {
-              if (err) logger.error(JSON.stringify(err));
+              if (err)
+                logger.error(
+                  JSON.stringify(err, Object.getOwnPropertyNames(err))
+                );
             }
           );
 
           // eslint-disable-next-line no-shadow
           req.logIn(user, err => {
             if (err) {
-              logger.error(JSON.stringify(err));
+              logger.error(
+                JSON.stringify(err, Object.getOwnPropertyNames(err))
+              );
               next(err);
               return;
             }
@@ -264,7 +281,7 @@ module.exports = {
       validator.normalizeEmail(req.body.email),
       (err, user) => {
         if (err) {
-          logger.error(JSON.stringify(err));
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
           next(err);
           return;
         }
@@ -285,7 +302,9 @@ module.exports = {
           // eslint-disable-next-line no-shadow
           (err, token) => {
             if (err) {
-              logger.error(JSON.stringify(err));
+              logger.error(
+                JSON.stringify(err, Object.getOwnPropertyNames(err))
+              );
               next(err);
               return;
             }
@@ -298,7 +317,9 @@ module.exports = {
               // eslint-disable-next-line no-shadow
               err => {
                 if (err) {
-                  logger.error(JSON.stringify(err));
+                  logger.error(
+                    JSON.stringify(err, Object.getOwnPropertyNames(err))
+                  );
                   req.flash(
                     'errors',
                     'We were unable to send the email. Please try again.'
@@ -368,7 +389,7 @@ module.exports = {
     // create token
     crypto.randomBytes(16, (err, buf) => {
       if (err) {
-        logger.error(JSON.stringify(err));
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         next(err);
         return;
       }
@@ -379,7 +400,7 @@ module.exports = {
         // eslint-disable-next-line no-shadow
         (err, user) => {
           if (err) {
-            logger.error(JSON.stringify(err));
+            logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
             next(err);
             return;
           }
@@ -399,7 +420,9 @@ module.exports = {
           // eslint-disable-next-line no-shadow
           user.save((err, updatedUser) => {
             if (err) {
-              logger.error(JSON.stringify(err));
+              logger.error(
+                JSON.stringify(err, Object.getOwnPropertyNames(err))
+              );
               next(err);
               return;
             }
@@ -420,7 +443,9 @@ module.exports = {
               // eslint-disable-next-line no-shadow
               err => {
                 if (err) {
-                  logger.error(JSON.stringify(err));
+                  logger.error(
+                    JSON.stringify(err, Object.getOwnPropertyNames(err))
+                  );
                   next(err);
                   return;
                 }
@@ -484,7 +509,7 @@ module.exports = {
       // eslint-disable-next-line no-shadow
       user.save((err, updatedUser) => {
         if (err) {
-          logger.error(JSON.stringify(err));
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
           next(err);
           return;
         }
@@ -505,7 +530,9 @@ module.exports = {
           // eslint-disable-next-line no-shadow
           (err, response) => {
             if (err) {
-              logger.error(JSON.stringify(err));
+              logger.error(
+                JSON.stringify(err, Object.getOwnPropertyNames(err))
+              );
               next(err);
               return;
             }
@@ -549,7 +576,7 @@ module.exports = {
         validator.normalizeEmail(settingsData.email),
         (err, existingUser) => {
           if (err) {
-            logger.error(JSON.stringify(err));
+            logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
             next(err);
             return;
           }
@@ -569,14 +596,18 @@ module.exports = {
               // eslint-disable-next-line no-shadow
               err => {
                 if (err) {
-                  logger.error(JSON.stringify(err));
+                  logger.error(
+                    JSON.stringify(err, Object.getOwnPropertyNames(err))
+                  );
                   next(err);
                 }
                 req.flash('info', 'Email saved.');
                 // eslint-disable-next-line no-shadow
                 sendToken(req.user, err => {
                   if (err) {
-                    logger.error(JSON.stringify(err));
+                    logger.error(
+                      JSON.stringify(err, Object.getOwnPropertyNames(err))
+                    );
                     next(err);
                   }
                   logger.debug(`token sent`);
@@ -590,7 +621,9 @@ module.exports = {
               // eslint-disable-next-line no-shadow
               (err, existingUser) => {
                 if (err) {
-                  logger.error(JSON.stringify(err));
+                  logger.error(
+                    JSON.stringify(err, Object.getOwnPropertyNames(err))
+                  );
                   next(err);
                   return;
                 }
@@ -614,7 +647,9 @@ module.exports = {
                     // eslint-disable-next-line no-shadow
                     err => {
                       if (err) {
-                        logger.error(JSON.stringify(err));
+                        logger.error(
+                          JSON.stringify(err, Object.getOwnPropertyNames(err))
+                        );
                         next(err);
                         return;
                       }
@@ -628,7 +663,12 @@ module.exports = {
                         // eslint-disable-next-line no-shadow
                         err => {
                           if (err) {
-                            logger.error(JSON.stringify(err));
+                            logger.error(
+                              JSON.stringify(
+                                err,
+                                Object.getOwnPropertyNames(err)
+                              )
+                            );
                             next(err);
                             return;
                           }
@@ -649,7 +689,7 @@ module.exports = {
         settingsData.username,
         (err, existingUser) => {
           if (err) {
-            logger.error(JSON.stringify(err));
+            logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
             next(err);
             return;
           }
@@ -667,7 +707,9 @@ module.exports = {
             // eslint-disable-next-line no-shadow
             err => {
               if (err) {
-                logger.error(JSON.stringify(err));
+                logger.error(
+                  JSON.stringify(err, Object.getOwnPropertyNames(err))
+                );
                 next(err);
               }
               req.flash('info', 'Username saved.');
@@ -719,7 +761,8 @@ module.exports = {
     if (!user.explicit && String(rating).toLowerCase() === 'explicit') {
       user.set({ explicit: true });
       user.save((err, updatedUser) => {
-        if (err) logger.error(JSON.stringify(err));
+        if (err)
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         else
           logger.debug(`set explicit to true for user ${updatedUser.username}`);
       });

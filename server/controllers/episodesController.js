@@ -78,7 +78,7 @@ module.exports = {
   getEpisode(req, res, next) {
     episodesData.findEpisodeById(req.params.episode, (err, episode) => {
       if (err) {
-        logger.error(JSON.stringify(err));
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         return next(err);
       }
       if (!episode) {

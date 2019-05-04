@@ -14,7 +14,7 @@ function handler(url, callback) {
     overcast(url, (error, epData) => {
       if (error) {
         const err = error;
-        logger.error(JSON.stringify(error));
+        // logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         err.status = 400;
         callback(err, null);
         return;
@@ -27,7 +27,7 @@ function handler(url, callback) {
     podcastsApp(url, (error, epData) => {
       if (error) {
         const err = error;
-        logger.error(JSON.stringify(error));
+        // logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         err.status = 400;
         callback(err, null);
         return;
@@ -40,7 +40,7 @@ function handler(url, callback) {
     pocketcasts(url, (error, epData) => {
       if (error) {
         const err = error;
-        logger.error(JSON.stringify(error));
+        // logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         err.status = 400;
         callback(err, null);
         return;
@@ -53,7 +53,7 @@ function handler(url, callback) {
     breaker(url, (error, epData) => {
       if (error) {
         const err = error;
-        logger.error(JSON.stringify(error));
+        // logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         if (!err.status) {
           err.status = 400;
         }
@@ -81,7 +81,7 @@ module.exports = {
       twitter(url, (error, newUrl) => {
         if (error) {
           const err = error;
-          logger.error(JSON.stringify(error));
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
           if (!err.status) {
             err.status = 400;
           }

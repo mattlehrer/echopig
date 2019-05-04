@@ -18,7 +18,7 @@ function createPost(postData, cb) {
     newPost.shareURL,
     (err, episode) => {
       if (err) {
-        logger.error(JSON.stringify(err));
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         cb(err);
         return;
       }
@@ -109,7 +109,7 @@ function createSave(saveData, cb) {
     newSave.shareURL,
     (err, episode) => {
       if (err) {
-        logger.error(JSON.stringify(err));
+        logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
         cb(err, null);
         return;
       }
@@ -176,10 +176,10 @@ module.exports = {
         req.query.url,
         (err, episode) => {
           if (err) {
-            logger.error(JSON.stringify(err));
+            logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
             req.flash(
               'errors',
-              `We aren't sure what to do with this page. Do you have an episode share URL?`
+              `We aren't sure what to do with this page, maybe because it's a link to the show and not an episode. Do you have an episode share URL?`
             );
             res.render('posts/post', {
               currentUser: req.user,
@@ -236,7 +236,7 @@ module.exports = {
         logger.error(
           `findUserByIdWithPosts error while adding post via web for user: ${
             req.user.username
-          } with error: ${JSON.stringify(err)}`
+          } with error: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}`
         );
         next(err);
         return;
@@ -247,7 +247,10 @@ module.exports = {
             logger.error(
               `Error creating post via web for user: ${
                 req.user.username
-              } with error: ${JSON.stringify(err)}`
+              } with error: ${JSON.stringify(
+                err,
+                Object.getOwnPropertyNames(err)
+              )}`
             );
             if (err.status === 409) {
               req.flash('errors', err.message);
@@ -287,7 +290,10 @@ module.exports = {
             logger.error(
               `Error creating post via web for user: ${
                 req.user.username
-              } with error: ${JSON.stringify(err)}`
+              } with error: ${JSON.stringify(
+                err,
+                Object.getOwnPropertyNames(err)
+              )}`
             );
             if (err.status === 409) {
               req.flash('errors', err.message);
@@ -404,7 +410,10 @@ module.exports = {
           logger.error(
             `Error creating post via mail for user: ${
               postingUser.username
-            } with error: ${JSON.stringify(err)}`
+            } with error: ${JSON.stringify(
+              err,
+              Object.getOwnPropertyNames(err)
+            )}`
           );
           // next(err);
           res.status(406).send('Something went wrong');
@@ -417,7 +426,10 @@ module.exports = {
           { user: postingUser, post },
           // eslint-disable-next-line no-shadow
           err => {
-            if (err) logger.error(JSON.stringify(err));
+            if (err)
+              logger.error(
+                JSON.stringify(err, Object.getOwnPropertyNames(err))
+              );
           }
         );
         res.status(200).send();
@@ -442,7 +454,7 @@ module.exports = {
         logger.error(
           `Error deleting post for user: ${
             req.user.username
-          } with error: ${JSON.stringify(err)}`
+          } with error: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}`
         );
         next(err);
         return;
@@ -486,7 +498,7 @@ module.exports = {
         logger.error(
           `Error deleting save for user: ${
             req.user.username
-          } with error: ${JSON.stringify(err)}`
+          } with error: ${JSON.stringify(err, Object.getOwnPropertyNames(err))}`
         );
         next(err);
         return;
@@ -524,7 +536,7 @@ module.exports = {
       maxEpisodes,
       (err, episodes) => {
         if (err) {
-          logger.error(JSON.stringify(err));
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
           next(err);
           return;
         }
@@ -541,7 +553,7 @@ module.exports = {
       maxEpisodes,
       (err, episodes) => {
         if (err) {
-          logger.error(JSON.stringify(err));
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
           callback(err);
           return;
         }
@@ -555,7 +567,7 @@ module.exports = {
       maxPodcasts,
       (err, podcasts) => {
         if (err) {
-          logger.error(JSON.stringify(err));
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
           callback(err);
           return;
         }
@@ -581,7 +593,7 @@ module.exports = {
       maxEpisodes,
       (err, episodes) => {
         if (err) {
-          logger.error(JSON.stringify(err));
+          logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
           next(err);
           return;
         }

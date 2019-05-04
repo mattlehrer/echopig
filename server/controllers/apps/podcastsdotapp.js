@@ -4,7 +4,7 @@ const logger = require('../../utilities/logger')(__filename);
 module.exports = (url, callback) => {
   get.concat(url, (err, resp, data) => {
     if (err) {
-      return callback(err, null);
+      return callback(err);
     }
     const episodeData = {
       // podcast: {
