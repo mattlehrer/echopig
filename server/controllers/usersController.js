@@ -210,8 +210,8 @@ module.exports = {
           });
           return;
         }
-        logger.info(`New user confirmation: ${JSON.stringify(user)}`);
         user.set('isVerified', true);
+        logger.info(`New user confirmation: ${JSON.stringify(user)}`);
         // eslint-disable-next-line no-shadow
         user.save(err => {
           if (err) {
