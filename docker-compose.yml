@@ -9,6 +9,7 @@ services:
       - ./public:/usr/share/nginx/www
       - /docker-volumes/etc/letsencrypt:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
+      - /docker-volumes/data/letsencrypt:/data/letsencrypt
     ports:
       - 80:80
       - 443:443
