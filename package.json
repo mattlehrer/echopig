@@ -9,7 +9,7 @@
     "lint": "./node_modules/.bin/eslint ."
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.7.2",
+    "@fortawesome/fontawesome-free": "^5.8.2",
     "@ladjs/bootstrap-social": "^7.0.2",
     "app-root-path": "^2.1.0",
     "bcrypt": "^3.0.6",
@@ -28,7 +28,7 @@
     "jquery": "^3.4.1",
     "mailgun-js": "^0.22.0",
     "moment": "^2.24.0",
-    "mongoose": "^5.5.5",
+    "mongoose": "^5.5.8",
     "mongoose-autopopulate": "^0.9.1",
     "node-sass-middleware": "^0.11.0",
     "nodemailer": "^6.1.1",
@@ -40,7 +40,7 @@
     "podcast": "^1.1.0",
     "popper.js": "^1.15.0",
     "pug": "^2.0.3",
-    "puppeteer": "^1.15.0",
+    "puppeteer": "^1.16.0",
     "redirect-chain": "^1.0.1",
     "searchitunes": "^2.4.0",
     "serve-favicon": "^2.5.0",
@@ -59,9 +59,9 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-plugin-import": "^2.17.2",
-    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-security": "^1.4.0",
     "nodemon": "^1.19.0",
-    "prettier": "^1.17.0"
+    "prettier": "^1.17.1"
   }
 }
