@@ -578,7 +578,7 @@ module.exports = {
   mostPostedEpisodesInGenreInTimeframe(req, res, next) {
     const { genre } = req.params;
     // itunes genres only contain letters, numbers, the space and &
-    if (!genre.match(/^[a-z0-9 &]*$/i)) {
+    if (!genre.match(/^[a-z0-9 &-]*$/i)) {
       // no such genre
       next();
       return;
