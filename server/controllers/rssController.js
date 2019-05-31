@@ -51,7 +51,7 @@ function generateFeed(publicFeed, user, callback) {
   feedItems.forEach(item => {
     if (item.episode) {
       feed.addItem({
-        title: item.episode.title,
+        title: `${item.episode.title} - ${item.episode.podcast.title}`,
         description: item.episode.description,
         url: `https://www.echopig.com/e/${item.episode.id}`,
         guid: item.guid,
