@@ -1,4 +1,5 @@
 const get = require('simple-get');
+const cheerio = require('cheerio');
 const logger = require('../../utilities/logger')(__filename);
 
 module.exports = (url, callback) => {
@@ -36,6 +37,13 @@ module.exports = (url, callback) => {
       /(?:itunes\.apple\.com\/\w{2}\/podcast\/feed\/id)(\d*)(?:\?)/gm
     );
     let resultArray = regex.exec(html);
+    if (resultArray !== null) {
+      [, episodeData.podcastiTunesID] = resultArray;
+    } else {
+      episodeData.podcastiTunesID = undefined;
+      // errLog.podcastiTunesID = null;
+    }
+    /*
     if (resultArray === null) {
       errLog.podcastiTunesID = null;
       logger.alert(errLog);
@@ -43,6 +51,17 @@ module.exports = (url, callback) => {
       return callback(error, null);
     }
     [, episodeData.podcastiTunesID] = resultArray;
+    */
+    // if no iTunesID, then find podcast title
+    if (episodeData.podcastiTunesID === undefined) {
+      const $ = cheerio.load(html);
+      const pageTitle = $('title').text();
+      const epTitle = $('h1').text();
+      logger.debug(`pageTitle: ${pageTitle}, epTitle: ${epTitle}`);
+      const podcastTitle = pageTitle.slice(epTitle.length + 3);
+      logger.debug(`podcastTitle: ${podcastTitle}`);
+      episodeData.podcastTitle = podcastTitle;
+    }
 
     // find Podcast app URL
     regex = new RegExp(
