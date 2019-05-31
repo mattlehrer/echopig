@@ -18,7 +18,11 @@ if (env === 'production') {
     // format.cli(),
     format.printf(
       info =>
-        `${info.timestamp} ${info.level}: \t${info.message} [${info.label}]`
+        `${info.timestamp} ${info.level}: \t${
+          typeof info.message === 'object'
+            ? JSON.stringify(info.message)
+            : info.message
+        } [${info.label}]`
     )
   );
 }
