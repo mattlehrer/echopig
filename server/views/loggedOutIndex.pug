@@ -45,9 +45,10 @@ block main-content
         each episode in episodes
           .col-12.col-sm-5.col-md-4.col-lg-3
             .card.mx-0.mb-4
-              img.card-img-top.img-fluid.border-bottom(
-                  src=episode.image || episode.podcast.artworkUrl600 || episode.podcast.artworkUrl100 || ''
-                )
+              a(href=`/e/${episode.id}`)
+                img.card-img-top.img-fluid.border-bottom(
+                    src=episode.image || episode.podcast.artworkUrl600 || episode.podcast.artworkUrl100 || ''
+                  )
               .card-body
                 a.card-text(href=`/p/i${episode.podcast.iTunesID}`) !{episode.podcast.title}
                 .h5.mb-0
@@ -65,9 +66,10 @@ block main-content
         each podcast in podcasts
           .col-12.col-sm-5.col-md-4.col-lg-3
             .card.mx-0.mb-4
-              img.card-img-top.img-fluid.border-bottom(
-                  src=podcast.artworkUrl600 || podcast.artworkUrl100 || ''
-                )
+              a(href=`/p/i${podcast.iTunesID}`)
+                img.card-img-top.img-fluid.border-bottom(
+                    src=podcast.artworkUrl600 || podcast.artworkUrl100 || ''
+                  )
               .card-body
                 a.card-title.h5(href=`/p/i${podcast.iTunesID}`) !{podcast.title}
                 if podcast.author
