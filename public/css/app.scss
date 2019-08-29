@@ -11,12 +11,12 @@
 // }
 
 .navbar-brand {
-	font-family: "Indie Flower", sans-serif;
-	font-size: 3rem;
-	text-decoration: none;
-	color: black !important;
+  font-family: "Indie Flower", sans-serif;
+  font-size: 3rem;
+  text-decoration: none;
+  color: black !important;
   padding-left: 0px;
-	margin-left: 0px;
+  margin-left: 0px;
 }
 
 
@@ -37,19 +37,19 @@
   margin-right: 6px;
 }
 
-.row.equal-height { 
-  display: flex; 
-  flex-wrap: wrap; 
-} 
+.row.equal-height {
+  display: flex;
+  flex-wrap: wrap;
+}
 
-.row.equal-height > [class*='col-'] {
-  display: flex; 
-  flex-direction: column; 
-} 
+.row.equal-height>[class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
 
-.card { 
-  flex: 1; 
-} 
+.card {
+  flex: 1;
+}
 
 .card-footer {
   background-color: inherit;
