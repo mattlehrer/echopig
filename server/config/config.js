@@ -9,17 +9,14 @@ const mongoHost =
 module.exports = {
   development: {
     rootPath,
-    db: `mongodb://${process.env.MONGO_EPDB_USERNAME}:${
-      process.env.MONGO_EPDB_PASSWORD
-    }@${mongoHost}`,
+    db: `mongodb://${process.env.MONGO_EPDB_USERNAME}:${process.env.MONGO_EPDB_PASSWORD}@${mongoHost}`,
     waitForDb: false,
     port: process.env.PORT || 9001
   },
   production: {
     rootPath,
-    db: `mongodb+srv://${process.env.MONGO_EPDB_USERNAME}:${
-      process.env.MONGO_EPDB_PASSWORD
-    }@${process.env.MONGO_HOST}`,
+    db: `mongodb+srv://${process.env.MONGO_EPDB_USERNAME}:${process.env.MONGO_EPDB_PASSWORD}@${process.env.MONGO_HOST}`,
+    domain: 'echopig.com',
     waitForDb: true,
     port: process.env.PORT || 9001
   }
