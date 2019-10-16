@@ -2,6 +2,7 @@ const overcast = require('./overcast');
 const podcastsApp = require('./podcastsdotapp');
 const pocketcasts = require('./pocketcasts');
 const breaker = require('./breaker');
+const stitcher = require('./stitcher');
 const twitter = require('./twitter');
 const logger = require('../../utilities/logger')(__filename);
 
@@ -51,6 +52,21 @@ function handler(url, callback) {
     });
   } else if (domain.search('breaker.audio') !== -1) {
     breaker(url, (error, epData) => {
+      if (error) {
+        const err = error;
+        // logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
+        if (!err.status) {
+          err.status = 400;
+        }
+        callback(err, null);
+        return;
+      }
+      const newEpData = epData;
+      newEpData.shareURLs = [url];
+      callback(null, newEpData);
+    });
+  } else if (domain.search('stitcher.com') !== -1) {
+    stitcher(url, (error, epData) => {
       if (error) {
         const err = error;
         // logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
