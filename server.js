@@ -4,6 +4,7 @@ const logger = require('./server/utilities/logger')(__filename);
 const env = process.env.NODE_ENV || 'development';
 
 const app = express();
+// eslint-disable-next-line security/detect-object-injection
 const config = require('./server/config/config')[env];
 
 require('./server/config/express')(app, config);
