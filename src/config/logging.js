@@ -1,7 +1,7 @@
 const appRoot = require('app-root-path');
 const path = require('path');
 const { config, createLogger, format, transports } = require('winston');
-// const Mail = require('../utilities/winston-mailgun');
+// const Mail = require('../utilities/winstonMailgun');
 
 const env = process.env.NODE_ENV || 'development';
 let formatForEnv;
