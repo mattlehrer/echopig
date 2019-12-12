@@ -3,5 +3,7 @@ node_modules/
 .vscode
 *.env*
 logs
-/data
+data/certbot
+data/mongo
+data/nginx
 /.scannerwork
