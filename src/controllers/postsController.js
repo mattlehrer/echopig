@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-shadow */
 const validator = require('validator');
-const { validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator');
 const uuid = require('uuid/v4');
 
 const logger = require('../utilities/logger')(__filename);

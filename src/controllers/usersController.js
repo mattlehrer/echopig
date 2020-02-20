@@ -5,7 +5,7 @@ const shortid = require('shortid');
 const uuid = require('uuid/v4');
 const vCard = require('vcards-js');
 const crypto = require('crypto');
-const { validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator');
 
 const logger = require('../utilities/logger')(__filename);
 const mail = require('../utilities/email');

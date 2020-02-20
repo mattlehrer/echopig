@@ -1,6 +1,6 @@
 const csrf = require('csurf');
 const expressWinston = require('express-winston');
-const { check } = require('express-validator/check');
+const { check } = require('express-validator');
 const logger = require('../utilities/logger')(__filename);
 const auth = require('./auth');
 const controllers = require('../controllers');

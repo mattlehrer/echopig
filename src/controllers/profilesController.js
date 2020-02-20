@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-underscore-dangle */
-const { validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator');
 
 const usersData = require('../data/usersData');
 const logger = require('../utilities/logger')(__filename);

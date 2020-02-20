@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 const searchitunes = require('searchitunes');
-const { validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator');
 
 const logger = require('../utilities/logger')(__filename);
 const podcastsData = require('../data/podcastsData');
