@@ -15,6 +15,7 @@ module.exports = config => {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
+    useUnifiedTopology: true,
   });
   const db = mongoose.connection;
 
