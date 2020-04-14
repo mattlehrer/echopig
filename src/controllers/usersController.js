@@ -2,7 +2,7 @@
 /* eslint-disable no-underscore-dangle */
 const validator = require('validator');
 const shortid = require('shortid');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 const vCard = require('vcards-js');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
@@ -32,7 +32,7 @@ function sendToken(user, callback) {
         user, // to
         { user, token: token.token }, // variables for mail template
         // eslint-disable-next-line no-shadow
-        err => {
+        (err) => {
           if (err) {
             logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
             callback(err);
@@ -93,7 +93,7 @@ module.exports = {
   createLocalUser(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      errors.array().forEach(e => {
+      errors.array().forEach((e) => {
         req.flash('errors', e.msg);
       });
       res.redirect('back');
@@ -156,7 +156,7 @@ module.exports = {
   getConfirmation(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      errors.array().forEach(e => {
+      errors.array().forEach((e) => {
         req.flash('errors', e.msg);
       });
       res.redirect('/');
@@ -197,7 +197,7 @@ module.exports = {
         if (user.isVerified) {
           req.flash('info', 'Your account has been verified.');
           // eslint-disable-next-line no-shadow
-          req.logIn(user, err => {
+          req.logIn(user, (err) => {
             if (err) {
               logger.error(
                 JSON.stringify(err, Object.getOwnPropertyNames(err)),
@@ -211,7 +211,7 @@ module.exports = {
         user.set('isVerified', true);
         logger.info(`New user confirmation: ${JSON.stringify(user)}`);
         // eslint-disable-next-line no-shadow
-        user.save(err => {
+        user.save((err) => {
           if (err) {
             logger.error(JSON.stringify(err, Object.getOwnPropertyNames(err)));
             next(err);
@@ -219,7 +219,7 @@ module.exports = {
           }
           // add new user to mailing list
           // eslint-disable-next-line no-shadow
-          mail.addToList(user, 'users', err => {
+          mail.addToList(user, 'users', (err) => {
             if (err)
               logger.error(
                 JSON.stringify(err, Object.getOwnPropertyNames(err)),
@@ -232,7 +232,7 @@ module.exports = {
             user, // to
             { user }, // variables for mail template
             // eslint-disable-next-line no-shadow
-            err => {
+            (err) => {
               if (err)
                 logger.error(
                   JSON.stringify(err, Object.getOwnPropertyNames(err)),
@@ -241,7 +241,7 @@ module.exports = {
           );
 
           // eslint-disable-next-line no-shadow
-          req.logIn(user, err => {
+          req.logIn(user, (err) => {
             if (err) {
               logger.error(
                 JSON.stringify(err, Object.getOwnPropertyNames(err)),
@@ -270,7 +270,7 @@ module.exports = {
   postResendToken(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      errors.array().forEach(e => {
+      errors.array().forEach((e) => {
         req.flash('errors', e.msg);
       });
       res.redirect('/resend');
@@ -313,7 +313,7 @@ module.exports = {
               user, // to
               { user, token: token.token }, // variables for mail template
               // eslint-disable-next-line no-shadow
-              err => {
+              (err) => {
                 if (err) {
                   logger.error(
                     JSON.stringify(err, Object.getOwnPropertyNames(err)),
@@ -376,7 +376,7 @@ module.exports = {
   postForgot(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      errors.array().forEach(e => {
+      errors.array().forEach((e) => {
         req.flash('errors', e.msg);
       });
       res.redirect('back');
@@ -437,7 +437,7 @@ module.exports = {
               user, // to
               { token, BASE_URL: process.env.BASE_URL }, // variables for mail template
               // eslint-disable-next-line no-shadow
-              err => {
+              (err) => {
                 if (err) {
                   logger.error(
                     JSON.stringify(err, Object.getOwnPropertyNames(err)),
@@ -479,7 +479,7 @@ module.exports = {
   postReset(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      errors.array().forEach(e => {
+      errors.array().forEach((e) => {
         req.flash('errors', e.msg);
       });
       res.redirect('back');
@@ -557,7 +557,7 @@ module.exports = {
   postSettings(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      errors.array().forEach(e => {
+      errors.array().forEach((e) => {
         req.flash('errors', e.msg);
       });
       res.redirect('/settings');
@@ -588,7 +588,7 @@ module.exports = {
                 normalizedEmail: validator.normalizeEmail(settingsData.email),
               },
               // eslint-disable-next-line no-shadow
-              err => {
+              (err) => {
                 if (err) {
                   logger.error(
                     JSON.stringify(err, Object.getOwnPropertyNames(err)),
@@ -597,7 +597,7 @@ module.exports = {
                 }
                 req.flash('info', 'Email saved.');
                 // eslint-disable-next-line no-shadow
-                sendToken(req.user, err => {
+                sendToken(req.user, (err) => {
                   if (err) {
                     logger.error(
                       JSON.stringify(err, Object.getOwnPropertyNames(err)),
@@ -639,7 +639,7 @@ module.exports = {
                       normalizedUsername: settingsData.username.toLowerCase(),
                     },
                     // eslint-disable-next-line no-shadow
-                    err => {
+                    (err) => {
                       if (err) {
                         logger.error(
                           JSON.stringify(err, Object.getOwnPropertyNames(err)),
@@ -655,7 +655,7 @@ module.exports = {
                           email: settingsData.email,
                         },
                         // eslint-disable-next-line no-shadow
-                        err => {
+                        (err) => {
                           if (err) {
                             logger.error(
                               JSON.stringify(
@@ -699,7 +699,7 @@ module.exports = {
               normalizedUsername: settingsData.username.toLowerCase(),
             },
             // eslint-disable-next-line no-shadow
-            err => {
+            (err) => {
               if (err) {
                 logger.error(
                   JSON.stringify(err, Object.getOwnPropertyNames(err)),

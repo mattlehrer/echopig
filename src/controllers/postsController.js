@@ -2,7 +2,7 @@
 /* eslint-disable no-shadow */
 const validator = require('validator');
 const { validationResult } = require('express-validator');
-const uuid = require('uuid/v4');
+const { v4: uuid } = require('uuid');
 
 const logger = require('../utilities/logger')(__filename);
 const postsData = require('../data/postsData');
@@ -85,7 +85,7 @@ function createPost(postData, cb) {
             }
           });
           // add post reference to Episode
-          episodesController.addPostOfEpisode(post, episode, err => {
+          episodesController.addPostOfEpisode(post, episode, (err) => {
             if (err) {
               logger.alert(
                 `failed to add post ${JSON.stringify(
@@ -139,7 +139,7 @@ function createSave(saveData, cb) {
           }
         });
         // add save reference to Episode
-        episodesController.addSaveOfEpisode(save, episode, err => {
+        episodesController.addSaveOfEpisode(save, episode, (err) => {
           if (err) {
             logger.alert(
               `failed to add post ${JSON.stringify(
@@ -213,7 +213,7 @@ module.exports = {
   addNewPostViaWeb(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      errors.array().forEach(e => {
+      errors.array().forEach((e) => {
         req.flash('errors', e.msg);
       });
       res.redirect('back');
@@ -373,9 +373,7 @@ module.exports = {
     }
 
     // lookup user by tag
-    const tag = postJson.To.split('@')[0]
-      .split('+')[1]
-      .toLowerCase();
+    const tag = postJson.To.split('@')[0].split('+')[1].toLowerCase();
     usersController.findUserByTag(tag, (err, postingUser) => {
       if (err) {
         logger.error(
@@ -424,7 +422,7 @@ module.exports = {
           postingUser,
           { user: postingUser, post },
           // eslint-disable-next-line no-shadow
-          err => {
+          (err) => {
             if (err)
               logger.error(
                 JSON.stringify(err, Object.getOwnPropertyNames(err)),
@@ -440,14 +438,14 @@ module.exports = {
     // req.query.p === post.id
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      errors.array().forEach(e => {
+      errors.array().forEach((e) => {
         req.flash('errors', e.msg);
       });
       res.redirect('back');
       return;
     }
     const postId = req.query.p;
-    postsData.deletePost({ _id: postId, byUser: req.user.id }, err => {
+    postsData.deletePost({ _id: postId, byUser: req.user.id }, (err) => {
       if (err) {
         // this is almost definitely a user error, changing the postId in the URL
         logger.error(
@@ -487,14 +485,14 @@ module.exports = {
   deleteSave(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      errors.array().forEach(e => {
+      errors.array().forEach((e) => {
         req.flash('errors', e.msg);
       });
       res.redirect('back');
       return;
     }
     const saveId = req.query.s;
-    savesData.deleteSave({ _id: saveId, byUser: req.user.id }, err => {
+    savesData.deleteSave({ _id: saveId, byUser: req.user.id }, (err) => {
       if (err) {
         // this is almost definitely a user error, changing the saveId in the URL
         logger.error(
