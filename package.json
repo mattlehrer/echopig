@@ -33,7 +33,7 @@
     "express-session": "^1.17.1",
     "express-validator": "^6.4.1",
     "express-winston": "^4.0.3",
-    "helmet": "^3.22.0",
+    "helmet": "^3.23.2",
     "jquery": "^3.5.0",
     "mailgun-js": "^0.22.0",
     "mongoose-autopopulate": "^0.12.2",
