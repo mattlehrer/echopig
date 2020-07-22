@@ -58,7 +58,7 @@
     "sugar": "^2.0.6",
     "universal-analytics": "^0.4.20",
     "uuid": "^7.0.3",
-    "validator": "^13.0.0",
+    "validator": "^13.1.1",
     "vcards-js": "^2.10.0",
     "winston": "^3.3.3",
     "winston-transport": "^4.3.0"
