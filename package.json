@@ -27,7 +27,7 @@
     "cheerio": "^1.0.0-rc.3",
     "connect-mongo": "^3.2.0",
     "csurf": "^1.11.0",
-    "email-templates": "^7.0.4",
+    "email-templates": "^8.0.0",
     "express": "^4.17.1",
     "express-flash": "0.0.2",
     "express-session": "^1.17.1",
